@@ -1,0 +1,10 @@
+body {
+  font-family: 'Sarabun', sans-serif;
+}
+
+h1,
+p,
+span {
+  font-family: 'Roboto', 'Sarabun', sans-serif; /* ฟอนต์ภาษาอังกฤษเป็น Roboto, ฟอนต์ภาษาไทยเป็น Sarabun */
+  font-weight: 500; /* ใช้ font-weight 300 สำหรับ Thin */
+}
