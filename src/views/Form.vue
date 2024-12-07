@@ -16,23 +16,6 @@
                         {{ soi.label }}
                       </option>
                     </select>
-                    <!-- <select>
-                    <option>เลือกซอย</option>
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                    <option>13</option>
-                  </select> -->
                   </div>
                 </div>
               </div>
@@ -62,8 +45,45 @@
             </div>
           </div>
 
-          <!-- Confirm ID-CARD -->
           <div class="columns">
+            <div class="column is-2">
+              <div class="field">
+                <label class="label">คำนำหน้าชื่อ</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="formPeopleData.prefix">
+                      <option value="" selected>เลือกคำนำหน้าชื่อ</option>
+                      <option v-for="pfl in prefixListLand" 
+                      :key="pfl.value" :value="pfl.value">
+                        {{ pfl.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-5">
+              <div class="field">
+                <label class="label">ชื่อจริง</label>
+                <div class="control">
+                  <input class="input is-normal" v-model="formPeopleData.first_name" type="text" placeholder="กรุณากรอกชื่อจริง" />
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-5">
+              <div class="field">
+                <label class="label">นามสกุล</label>
+                <div class="control">
+                  <input class="input is-normal" v-model="formPeopleData.last_name" type="text" placeholder="กรุณากรอกนามสกุล" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm ID-CARD -->
+          <!-- <div class="columns">
             <div class="column is-3">
               <div class="field">
                 <label class="label">เลขบัตรประชาชน</label>
@@ -74,7 +94,6 @@
               </div>
             </div>
 
-            <!-- To check user exist -->
             <div class="column is-1">
               <div class="field">
                 <label class="label">&nbsp;</label>
@@ -103,7 +122,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- โฉนดที่ดิน -->
           <div class="columns">
@@ -332,6 +351,11 @@ export default {
         lat: '',
         notation: ''
       },
+      formPeopleData: {
+        prefix: '',
+        first_name: null,
+        last_name: null
+      },
       validForm: {
         id_card_err: '',
         transformNumber_err: '',
@@ -347,6 +371,9 @@ export default {
       ],
       land_status: [
         { value: null, label: 'ไม่พบข้อมูล' }
+      ],
+      prefixListLand: [
+        { value: null, label: 'ไม่พบข้อมูล' },
       ],
       prefix_name: null,
       btnLoad: false
@@ -393,7 +420,7 @@ export default {
         const response = await axios.get(`http://localhost:3000/people/${this.formData.id_card}`);
         const data = response.data; // Handle the response data
 
-        console.log('people:',data)
+        console.log('people:', data)
         this.formData.full_name = data.first_name + " " + data.last_name
         this.prefix_name = data.prefix_name
 
@@ -438,8 +465,21 @@ export default {
         }
       }
 
-      console.log(landStatus.data)
-      console.log(sois.data)
+      // console.log(landStatus.data)
+      // console.log(sois.data)
+      const prefix = await axios.get(`http://localhost:3000/people/prefix`);
+      const data = prefix.data; // Handle the response data
+      
+      this.prefixListLand = []
+      if (data.length > 0) {
+        for (let d of data) {
+          // console.log(d)
+          this.prefixListLand.push({
+            value: d.prefix_id,
+            label: d.prefix_name
+          },)
+        }
+      }
     } catch (err) {
       this.error = 'Error fetching sois: ' + err.message;
     }

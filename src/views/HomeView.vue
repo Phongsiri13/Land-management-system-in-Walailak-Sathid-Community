@@ -1,182 +1,82 @@
 <template>
-  <div>
-    <div style="height: 300px; width: 400px">
-      <Bar :data="chartData1" :options="chartOptions1" class="chart-card" />
-    </div>
-
-    <div style="height: 300px; width: 400px">
-      <Bar :data="chartData2" :options="chartOptions2" />
-    </div>
-
-    <div style="height: 300px; width: 400px">
-      <Pie :data="chartDataPie" :options="chartOptionsPie" />
-    </div>
-  </div>
+  <div id="map" style="height: 650px; width: 100%;"></div>
 </template>
 
 <script>
-import { store } from '@/store'
-import { defineComponent } from 'vue'
-import { Bar, Pie } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  ArcElement
-} from 'chart.js'
+import L from 'leaflet';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
-
-export default defineComponent({
-  components: { Bar, Pie },
+export default {
+  name: 'LeafletMap',
   data() {
     return {
-      store,
-      chartData1: {
-        labels: ['January', 'February', 'March'],
-        datasets: [
-          {
-            label: 'ไก่ย่าง',
-            data: [40, 20, 12],
-            backgroundColor: '#3e95cd'
-          }
-        ]
-      },
-      chartOptions1: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            stacked: true,
-            beginAtZero: true
-          },
-          y: {
-            stacked: true,
-            beginAtZero: true
-          }
-        },
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-          }
-        }
-      },
-
-      chartData2: {
-        labels: ['April', 'May', 'June'],
-        datasets: [
-          {
-            label: 'หมูย่าง',
-            data: [30, 25, 18],
-            backgroundColor: '#8e5ea2'
-          }
-        ]
-      },
-      chartOptions2: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            stacked: true,
-            beginAtZero: true
-          },
-          y: {
-            stacked: true,
-            beginAtZero: true
-          }
-        },
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0
-          }
-        }
-      },
-      // pie data
-      chartDataPie: {
-        labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
-        datasets: [
-          {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-            data: [40, 20, 80, 10]
-          }
-        ]
-      },
-      chartOptionsPie: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
-          },
-          tooltip: {
-            enabled: true // Disable tooltip if you don't need it
-          }
-        },
-        // Ref to labels
-        onClick: (event, elements) => {
-          // const chart = elements[0]._chart;
-          // const x = event.clientX;
-          // const y = event.clientY;
-
-          // Check if a label was clicked
-          // const labelClicked = chart.scales['x-axis-0'].getLabelForValue(x);
-
-          // If a label was clicked, log "hello world"
-          console.log(`hello world`)
-        }
-      }
-    }
+      map: null, // To store the map instance
+      center: [51.505, -0.09], // Define the center coordinates
+    };
+  },
+  methods: {
+    resetCenter() {
+      this.map.setView(this.center); // Reset the map to the defined center
+    },
   },
   mounted() {
-    this.store.status_path_change = false
+    // Initialize the map
+    this.map = L.map('map').setView(this.center, 15);
 
-    // Custom Plugin to display value and percentage
-    ChartJS.defaults.plugins.tooltip.enabled = true // Ensure tooltips are disabled
-    ChartJS.register({
-      id: 'show-percentages',
-      afterDatasetsDraw(chart) {
-        // Filter
-        if (chart.config.type === 'pie' || chart.config.type === 'doughnut') {
-          const ctx = chart.ctx
-          chart.data.datasets.forEach((dataset, i) => {
-            const meta = chart.getDatasetMeta(i)
+    // Add a tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(this.map);
 
-            // Calculate the total only for visible slices
-            const visibleData = dataset.data.filter((value, index) => !meta.data[index].hidden)
-            const total = visibleData.reduce((acc, val) => acc + val, 0)
+    // Add a marker at the center
+    L.marker(this.center).addTo(this.map);
 
-            meta.data.forEach((element, index) => {
-              if (!element.hidden) {
-                const dataValue = dataset.data[index]
-                const percentage = ((dataValue / total) * 100).toFixed(2) + '%'
+    // วาดสามเหลี่ยม
+    L.polygon([
+      [51.509, -0.08], // จุดแรก
+      [51.503, -0.06], // จุดที่สอง
+      [51.51, -0.047]  // จุดที่สาม
+    ], {
+      color: 'blue',
+      fillColor: '#3388ff',
+      fillOpacity: 0.5,
+    }).addTo(this.map).bindPopup("นี่คือสามเหลี่ยม");
 
-                const position = element.tooltipPosition()
-                ctx.fillStyle = '#000' // Set font color to black
-                ctx.font = 'bold 12px Arial'
+    // วาดสี่เหลี่ยม
+    L.rectangle([
+      [51.49, -0.1],  // มุมบนซ้าย
+      [51.5, -0.06]   // มุมล่างขวา
+    ], {
+      color: 'red',
+      fillColor: '#ff6666',
+      weight: 1,
 
-                // Only display percentage
-                const text = `${percentage}`
-                const textX = position.x
-                const textY = position.y
+    }).addTo(this.map).bindPopup("นี่คือสี่เหลี่ยม");
 
-                ctx.fillText(text, textX, textY)
-              }
-            })
-          })
-        }
-      }
-    })
-  }
-})
+    const roundedRectangleCoords = [
+      [51.505, -0.09],   // จุดเริ่มต้น
+      [51.505, -0.07],   // ด้านบน
+      [51.503, -0.065],  // โค้งด้านขวา
+      [51.501, -0.07],   // ด้านล่าง
+      [51.501, -0.08],   // ด้านซ้าย
+      [51.503, -0.095],  // โค้งด้านซ้าย
+      [51.505, -0.09],   // กลับมาที่จุดเริ่มต้น
+    ];
+
+    // เพิ่มเส้น Polyline
+    L.polyline(roundedRectangleCoords, {
+      color: 'green',
+      weight: 4,
+      smoothFactor: 1, // ใช้ smoothFactor เพื่อทำให้เส้นโค้งนุ่มนวลขึ้น
+    }).addTo(this.map).bindPopup("สี่เหลี่ยมโค้งมน");
+
+    // Force the map to center after drag or zoom
+    this.map.on('dragend', this.resetCenter);
+    this.map.on('zoomend', this.resetCenter);
+  },
+};
 </script>
+
+<style>
+/* Ensure the map container has a height */
+#map {}
+</style>
