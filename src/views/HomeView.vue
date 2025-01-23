@@ -78,5 +78,7 @@ export default {
 
 <style>
 /* Ensure the map container has a height */
-#map {}
+#map {
+  z-index: -1;
+}
 </style>

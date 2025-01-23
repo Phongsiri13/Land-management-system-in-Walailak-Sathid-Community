@@ -14,8 +14,8 @@
                                             <div class="select is-fullwidth">
                                                 <select>
                                                     <option selected>ชื่อ</option>
+                                                    <option>แปลงเลขที่</option>
                                                     <option>สถานะ</option>
-                                                    <option>บัตรประชาชน</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -24,12 +24,13 @@
                                         <input class="input" type="text" placeholder="ค้นหา...">
                                     </div>
                                     <div class="control">
-                                        <button class="button is-info">
+                                        <button class="button ">
                                             ค้นหา
                                         </button>
                                     </div>
                                 </div>
-                                <div class="is-flex align-self">
+                                <!-- จำนวนแสดงผล -->
+                                <!-- <div class="is-flex align-self">
                                     <div style="display: flex; justify-content: center; align-items: center;">
                                         <span class="px-1">แสดง</span>
                                     </div>
@@ -48,32 +49,26 @@
                                     <div style="display: flex; justify-content: center; align-items: center;">
                                         <span class="px-1">ตาราง</span>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <!-- f2 -->
                             <div class="table-container">
                                 <table v-if="land_values.length != 0"
                                     class="table is-striped is-bordered is-hoverable is-fullwidth">
                                     <thead class="table-header">
-                                        <tr class="is-success">
+                                        <tr class="is-warning">
                                             <th>ลำดับ</th>
-                                            <th>เลขบัตรประชาชน</th>
                                             <th>ซอย</th>
+                                            <th>แปลงเลขที่</th>
+                                            <th>เลขที่</th>
                                             <th>คำนำหน้าชื่อ</th>
                                             <th>ชื่อจริง - นามสกุล</th>
+                                            <th>เบอร์โทรศัพท์</th>
                                             <th>สถานะ</th>
-                                            <th style="width: 270px;">Action</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody v-if="land_values.length == 0">
-                                        <tr @click="sayHi" class="hoverable-row">
-                                            <td>1</td>
-                                            <td>Data 2</td>
-                                            <td>Data 3</td>
-                                            <td>Data 4</td>
-                                            <td>Data 4</td>
-                                            <td>Data 4</td>
-                                        </tr>
                                         <tr @click="fetchCompleteLandData" class="hoverable-row">
                                             <td>2</td>
                                             <td>Data 6</td>
@@ -95,17 +90,21 @@
                                         <!-- Dynamically render table rows using v-for -->
                                         <tr v-for="(land, index) in land_values" :key="land.id_land">
                                             <td>{{ ++index }}</td>
-                                            <td class="hoverable-row" @click="copyToClipboard(land.ID)">{{ land.ID }}
-                                                <span class="copy-icon" aria-hidden="true">📋</span>
-                                            </td>
                                             <td>{{ land.current_soi }}</td>
+                                            <td>{{ land.tf_number }}</td>
+                                            <td>{{ land.number }}</td>
                                             <td>{{ land.prefix_name }}</td>
-                                            <td>{{ land.first_name + " " + land.last_name }}</td>
+                                            <td>{{ (land.first_name || '-') + " " + (land.last_name || '-') }}</td>
+                                            <!-- <td class="hoverable-row" @click="copyToClipboard(land.ID)">{{ land.ID }}
+                                                <span class="copy-icon" aria-hidden="true">📋</span>
+                                            </td> -->
+                                            <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td>
                                             <td>{{ land.land_status_name }}</td>
+
                                             <td>
                                                 <div class="button-group">
                                                     <button class="button is-normal is-primary"
-                                                    @click="goToDetail(land.id_land)">
+                                                        @click="goToDetail(land.id_land)">
                                                         <span class="icon">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
@@ -114,18 +113,18 @@
                                                             ดู
                                                         </router-link> -->
                                                     </button>
-                                                    <button class="button is-normal is-warning mx-1">
+                                                    <!-- <button class="button is-normal is-warning mx-1">
                                                         <span class="icon">
                                                             <i class="fas fa-edit"></i>
                                                         </span>
                                                         <span>แก้ไข</span>
-                                                    </button>
-                                                    <button class="button is-normal is-danger">
+                                                    </button> -->
+                                                    <!-- <button class="button is-normal is-danger">
                                                         <span class="icon">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </span>
                                                         <span>ลบ</span>
-                                                    </button>
+                                                    </button> -->
                                                 </div>
                                             </td>
                                         </tr>
@@ -134,11 +133,71 @@
                                 <!-- load first data -->
                                 <div class="" v-else>
                                     <hr class="navbar-divider" />
-                                    <p>กำลังโหลดข้อมูล...</p>
+                                    <!-- <p v-if="server_failed">โหลดข้อมูลล้มเหลว</p>
+                                    <p v-else="server_failed">กำลังโหลดข้อมูล...</p> -->
+                                    <table class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                        <thead class="table-header">
+                                            <tr class="is-warning">
+                                                <th>ลำดับ</th>
+                                                <th>ซอย</th>
+                                                <th>แปลงเลขที่</th>
+                                                <th>เลขที่</th>
+                                                <th>คำนำหน้าชื่อ</th>
+                                                <th>ชื่อจริง - นามสกุล</th>
+                                                <th>เบอร์โทรศัพท์</th>
+                                                <th>สถานะ</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody v-if="land_values.length == 0">
+                                            <tr>
+                                                <td>1</td>
+                                                <td>12</td>
+                                                <td>219</td>
+                                                <td>2345</td>
+                                                <td>นาย</td>
+                                                <td>ถนอม พนาลี</td>
+                                                <td>083-2489-748</td>
+                                                <td>โฉนดสปก 4-01</td>
+                                                <td>
+                                                    <div class="button-group">
+                                                        <button class="button is-normal is-primary"
+                                                            @click="goToDetail(land.id_land)">
+                                                            <span class="icon">
+                                                                <i class="fas fa-eye"></i>
+                                                            </span>
+                                                            <span>ดู</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>0</td>
+                                                <td>222</td>
+                                                <td>1239</td>
+                                                <td>นาย</td>
+                                                <td>ถนอม พนาลี</td>
+                                                <td>083-2489-748</td>
+                                                <td>โฉนดสปก 4-01</td>
+                                                <td>
+                                                    <div class="button-group">
+                                                        <button class="button is-normal is-primary"
+                                                            @click="goToDetail(land.id_land)">
+                                                            <span class="icon">
+                                                                <i class="fas fa-eye"></i>
+                                                            </span>
+                                                            <span>ดู</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <!-- f3 -->
-                            <nav class="pagination" role="navigation" aria-label="pagination">
+                            <!-- <nav class="pagination" role="navigation" aria-label="pagination">
                                 <a href="#" class="pagination-previous">Previous</a>
                                 <a href="#" class="pagination-next">Next page</a>
                                 <ul class="pagination-list">
@@ -165,6 +224,14 @@
                                         <a href="#" class="pagination-link" aria-label="Goto page 86">86</a>
                                     </li>
                                 </ul>
+                            </nav> -->
+                            <nav class="pagination" role="navigation" aria-label="pagination">
+                                <ul class="pagination-list">
+                                    <li>
+                                        <a class="pagination-link is-current" aria-label="Page 1"
+                                            aria-current="page">1</a>
+                                    </li>
+                                </ul>
                             </nav>
                         </div>
                     </div>
@@ -180,7 +247,8 @@ export default {
     data() {
         return {
             searchResult: [],
-            land_values: []
+            land_values: [],
+            server_failed: false
         }
     },
     mounted() {
@@ -189,8 +257,10 @@ export default {
         }, 1000);
     },
     methods: {
-        sayHi() {
-            alert('hhhh')
+        formatPhoneNumber(phoneNumber) {
+            if (!phoneNumber) return '';
+            const phoneStr = String(phoneNumber); // Ensure it's a string
+            return phoneStr.slice(0, 3) + '-' + phoneStr.slice(3, 7) + '-' + phoneStr.slice(7);
         },
         copyToClipboard(id) {
             // Use the Clipboard API to copy the text
@@ -217,6 +287,7 @@ export default {
                     console.log(this.land_values)
                 }
             } catch (error) {
+                this.server_failed = true
                 // Handle errors
                 if (error.response) {
                     // The request was made and the server responded with a status code outside the range of 2xx
@@ -280,5 +351,23 @@ td.hoverable-row {
 
 td.hoverable-row:hover .copy-icon {
     opacity: 1;
+}
+
+.pagination-link.is-current {
+    border-color: none;
+    background-color: #ffdd57;
+    /* Bulma's warning color */
+    color: white;
+    /* Make the text color white for contrast */
+}
+
+.pagination-link {
+    border: none;
+    /* Remove border */
+}
+
+.pagination-link.is-current:hover {
+    background-color: #ffca28;
+    /* Darker yellow/orange on hover */
 }
 </style>

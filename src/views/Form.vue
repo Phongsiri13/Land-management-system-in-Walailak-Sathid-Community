@@ -10,7 +10,7 @@
                 <label class="label">ซอย</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formData.selectedSoi">
+                    <select v-model="formData.selectedSoi" class="custom-select">
                       <option value="" disabled selected>เลือกซอย</option>
                       <option v-for="soi in sois" :key="soi.value" :value="soi.value">
                         {{ soi.label }}
@@ -26,7 +26,7 @@
                 <label class="label">สถานะที่ดิน</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formData.selectedStatus">
+                    <select v-model="formData.selectedStatus" class="custom-select">
                       <option value="" disabled selected>เลือกซอยสถานะที่ดิน</option>
                       <option v-for="land_status in land_status" :key="land_status.value" :value="land_status.value">
                         {{ land_status.label }}
@@ -51,7 +51,7 @@
                 <label class="label">คำนำหน้าชื่อ</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formPeopleData.prefix">
+                    <select v-model="formPeopleData.prefix" class="custom-select">
                       <option value="" selected>เลือกคำนำหน้าชื่อ</option>
                       <option v-for="pfl in prefixListLand" 
                       :key="pfl.value" :value="pfl.value">
@@ -67,7 +67,7 @@
               <div class="field">
                 <label class="label">ชื่อจริง</label>
                 <div class="control">
-                  <input class="input is-normal" v-model="formPeopleData.first_name" type="text" placeholder="กรุณากรอกชื่อจริง" />
+                  <input class="input is-normal custom-select" v-model="formPeopleData.first_name" type="text" placeholder="กรุณากรอกชื่อจริง" />
                 </div>
               </div>
             </div>
@@ -76,7 +76,7 @@
               <div class="field">
                 <label class="label">นามสกุล</label>
                 <div class="control">
-                  <input class="input is-normal" v-model="formPeopleData.last_name" type="text" placeholder="กรุณากรอกนามสกุล" />
+                  <input class="input is-normal custom-select" v-model="formPeopleData.last_name" type="text" placeholder="กรุณากรอกนามสกุล" />
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@
               <div class="field">
                 <label class="label">แปลงเลขที่</label>
                 <div class="control">
-                  <input class="input is-normal" type="number" placeholder="กรุณากรอกกแปลงเลขที่" />
+                  <input class="input is-normal custom-select" type="number" placeholder="กรุณากรอกกแปลงเลขที่" />
                 </div>
               </div>
             </div>
@@ -148,7 +148,7 @@
               <div class="field">
                 <label class="label">เลขที่</label>
                 <div class="control">
-                  <input class="input is-normal" type="text" placeholder="กรุณากรอกเลขที่" />
+                  <input class="input is-normal custom-select" type="text" placeholder="กรุณากรอกเลขที่" />
                 </div>
               </div>
             </div>
@@ -157,7 +157,7 @@
               <div class="field">
                 <label class="label">เล่ม</label>
                 <div class="control">
-                  <input class="input is-normal" type="number" placeholder="กรุณากรอกเล่มที่" />
+                  <input class="input is-normal custom-select" type="number" placeholder="กรุณากรอกเล่มที่" />
                 </div>
               </div>
             </div>
@@ -311,7 +311,7 @@
 
           <!-- -------------------------------------------- End โฉนด ------------------------------------------ -->
           <!-- submit to create land -->
-          <button class="button is-dark is-fullwidth" :disabled="btnLoad">
+          <button class="button is-fullwidth has-text-white " id="submitLand" :disabled="btnLoad">
             {{ btnLoad ? 'กำลังตรวจสอบ' : 'สร้างที่ดิน' }}
           </button>
           <!-- @click="creationSumbit"  -->
@@ -488,16 +488,17 @@ export default {
 </script>
 
 <style>
+.custom-select {
+  border: 2px solid red !important; /* Red border with 2px width */
+  border-radius: 5px; /* Optional: Rounded corners */
+  padding: 8px; /* Optional: Adjust padding for better appearance */
+  width: 100%; /* Optional: Make it full width */
+}
 @media (max-width: 768px) {
   .m-5-mobile {
     padding: 5px;
     /* Adjust as needed */
   }
-}
-
-.formColor {
-  /* #b0bec5 #66bb6a*/
-  background-color: #b0bec5;
 }
 
 .custom-container {
@@ -516,5 +517,9 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
   /* Firefox */
+}
+
+#submitLand{
+  background-color: #4e4b32;
 }
 </style>

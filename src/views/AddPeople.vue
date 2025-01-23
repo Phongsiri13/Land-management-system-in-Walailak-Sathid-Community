@@ -23,7 +23,8 @@
           <div class="field">
             <label class="label">ชื่อจริง</label>
             <div class="control">
-              <input class="input is-normal" v-model="formData.fname" type="text" placeholder="กรุณากรอกชื่อจริง" />
+              <input class="input is-normal" v-model="formData.fname" type="text"
+                placeholder="กรุณากรอกชื่อจริง" />
             </div>
           </div>
         </div>
@@ -32,7 +33,8 @@
           <div class="field">
             <label class="label">นามสกุล</label>
             <div class="control">
-              <input class="input is-normal" v-model="formData.lname" type="text" placeholder="กรุณากรอกนามสกุล" />
+              <input class="input is-normal" v-model="formData.lname" type="text"
+                placeholder="กรุณากรอกนามสกุล" />
             </div>
           </div>
         </div>
@@ -40,7 +42,7 @@
 
       <!-- id_card -->
       <div class="columns">
-        <div class="column is-4">
+        <div class="column is-3">
           <div class="field">
             <label class="label">เลขบัตรประชาชน</label>
             <div class="control">
@@ -50,7 +52,7 @@
           </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-3">
           <div class="field">
             <label class="label">วันเดือนปีเกิด</label>
             <div class="date-picker-container">
@@ -61,7 +63,7 @@
           </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-3">
           <div class="field">
             <label class="label">เบอร์โทรศัพท์</label>
             <div class="control">
@@ -70,6 +72,23 @@
             </div>
           </div>
         </div>
+
+        <div class="column is-3">
+          <div class="field">
+            <label class="label">เลือกเพศ</label>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select v-model="formData.prefix">
+                  <option value="">เลือกเพศ</option>
+                  <option v-for="pfl in genderList" :key="pfl.value" :value="pfl.value">
+                    {{ pfl.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
 
       </div>
@@ -175,7 +194,7 @@
 
 
       <!-- submit -->
-      <button class="button is-dark is-fullwidth" @click="creationPeople" :disabled="btnLoad">
+      <button class="button is-dark is-fullwidth" id="submitPeople" @click="creationPeople" :disabled="btnLoad">
         {{ btnLoad ? 'กำลังตรวจสอบ' : 'เพิ่มราษฎร' }}
       </button>
 
@@ -210,6 +229,10 @@ export default {
       btnLoad: false,
       prefixList: [
         { value: null, label: 'ไม่พบข้อมูล' },
+      ],
+      genderList: [
+        { value: 0, label: 'หญิง' },
+        { value: 1, label: 'ชาย' },
       ]
     }
   },
@@ -319,5 +342,9 @@ export default {
 .date-display span {
   font-weight: bold;
   color: #007bff;
+}
+
+#submitPeople {
+  background-color: #4e4b32;
 }
 </style>

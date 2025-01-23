@@ -2,6 +2,15 @@ body {
   font-family: 'Sarabun', sans-serif;
 }
 
+.formColor{
+  background-color: #b8b7a3;
+  min-height: 100vh;
+}
+
+.titleBgColor{
+  background-color: #f0e3d3;
+}
+
 h1,
 p,
 span {

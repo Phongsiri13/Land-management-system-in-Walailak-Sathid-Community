@@ -19,6 +19,9 @@ import TableDash from '@/views/dashboard/TableDash.vue'
 import PersonDetail from '@/views/data_list/PersonDetail.vue'
 import LandTitleFile from '@/views/uploadFile/LandTitleFile.vue'
 import ShowAllFiles from '@/views/uploadFile/ShowAllFiles.vue'
+import MainDash from '@/views/dashboard/MainDash.vue'
+import AddHeir from '@/views/AddHeir.vue'
+import HistoryLand from '@/views/HistoryLand.vue'
 
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
@@ -37,6 +40,18 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/BulmaTesting.vue')
       component: BulmaTesting
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      // component: () => import('../views/BulmaTesting.vue')
+      component: MainDash,
+      meta: {
+        title: 'Dashboard'
+      }
     },
     {
       path: '/create_land',
@@ -59,12 +74,30 @@ const router = createRouter({
       component: AddPeople
     },
     {
+      path: '/create_heir',
+      name: 'fillHeir',
+      component: AddHeir,
+      meta: {
+        requiredRole: roles[2].role_id,
+        title: 'Admin | add heir'
+      }
+    },
+    {
       path: '/search',
       name: 'Search',
       component: Search
     },
     {
-      path: '/people_data',
+      path: '/history_land',
+      name: 'HistoryLand',
+      component: HistoryLand,
+      meta: {
+        requiredRole: roles[2].role_id,
+        title: 'Admin | ประวัติการแก้ไขที่ดิน'
+      }
+    },
+    {
+      path: '/land_data',
       name: 'DisplayPeople',
       component: DisplayPeople,
       children: [
@@ -79,13 +112,13 @@ const router = createRouter({
         //   component: DisplayPeople
         // }
       ],
-      meta: {
-        requiredRole: roles[2].role_id,
-        title: 'Admin | create-people'
-      }
+      // meta: {
+      //   requiredRole: roles[2].role_id,
+      //   title: 'Admin | create-people'
+      // }
     },
     {
-      path: '/people_data/detail/:id', // Child route for detail view
+      path: '/land_data/detail/:id', // Child route for detail view
       name: 'PersonDetail',
       component: PersonDetail,
       meta: {
@@ -94,7 +127,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/people_data/upload_files/:id', // Child route for detail view
+      path: '/land_data/upload_files/:id', // Child route for detail view
       name: 'LandTitle',
       component: LandTitleFile,
       meta: {
@@ -118,7 +151,11 @@ const router = createRouter({
     {
       path: '/table_dashboard',
       name: 'TableDashboard',
-      component: TableDash
+      component: TableDash,
+      meta: {
+        requiredRole: roles[2].role_id,
+        title: 'Admin | Home'
+      }
     },
     {
       path: '/login',

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="is-primary has-background-dark">
-      <h2 class="title is-2 has-text-centered has-text-white">ผลสรุป</h2>
-      <h2 class="subtitle is-4 has-text-centered has-text-white">เกษตรฟาร์ม</h2>
+    <div class="is-primary formColor">
+      <h2 class="title is-2 has-text-centered has-text-dark">ผลสรุป</h2>
+      <h2 class="subtitle is-4 has-text-centered has-text-dark">เกษตรฟาร์ม</h2>
       <!-- select -->
       <div class="columns is-centered is-mobile">
         <div class="column is-narrow">
