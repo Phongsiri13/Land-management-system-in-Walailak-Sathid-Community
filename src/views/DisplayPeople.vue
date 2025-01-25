@@ -1,6 +1,6 @@
 <template>
-    <div class="formColor">
-        <div class="container is-fullhd custom-container">
+    <div class="content">
+        <div class="is-fullhd custom-container">
             <!-- content people's data -->
             <div class="full-screen-card mx-5 py-5">
                 <div class="card">

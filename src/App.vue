@@ -9,155 +9,8 @@
     </div>
 
     <!-- Navigator -->
-    <header>
-      <nav v-if="$route.name !== 'Login'" class="navbar headerTitle" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-          <a class="navbar-item" >
-            <!-- Your SVG logo here -->
-          </a>
-
-          <div class="navbar-burger" 
-          :class="{'is-active': isActive}"
-          data-target="nbMenu" :aria-expanded="isActive.toString()" @click="toggleMenu">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-
-        <div id="nbMenu" class="navbar-menu" :class="{ 'is-active': isActive }">
-          <div class="navbar-start">
-            <RouterLink to="/" class="navbar-item has-text-white" active-class="is-active" exact-active-class="is-active">
-              หน้าแรก
-            </RouterLink>
-
-            <div v-if="userRole === roles[2].role_id" class="navbar-item has-dropdown"
-              :class="{ 'is-active': isDropdownReportActive }" ref="dropdownReport">
-              <a class="navbar-link" :class="{ 'is-active': isDropdownReportActive || isLinkReportActive }"
-                @click="toggleReportDropdown">
-                <span class="has-text-white">รายงาน</span>
-              </a>
-              <div class="navbar-dropdown" v-if="isDropdownReportActive">
-                <RouterLink to="/table_dashboard" class="navbar-item" active-class="is-active" exact-active-class="is-active"
-                  @click="closeReportDropdown">
-                  ผลการจัดพื้นที่
-                </RouterLink>
-                <RouterLink to="/dashboard" class="navbar-item" active-class="is-active" exact-active-class="is-active"
-                  @click="closeReportDropdown">
-                  การใช้ประโยชน์ที่ดิน
-                </RouterLink>
-              </div>
-            </div>
-            <!-- for not user -->
-            <RouterLink v-else to="/dashboard" class="navbar-item" active-class="is-active"
-              exact-active-class="is-active">
-              การใช้ประโยชน์ที่ดิน
-            </RouterLink>
-
-            <!-- Add data -->
-            <div v-if="userRole === roles[2].role_id" class="navbar-item has-dropdown"
-              :class="{ 'is-active': isDropdownActive }" ref="dropdown">
-              <a class="navbar-link" :class="{ 'is-active': isDropdownActive || isLinkActive }" @click="toggleDropdown">
-                <span class="has-text-white">เพิ่มข้อมูล</span>
-              </a>
-              <div class="navbar-dropdown" v-if="isDropdownActive">
-                <RouterLink to="/create_land" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDropdown">
-                  เพิ่มที่ดิน
-                </RouterLink>
-                <RouterLink to="/create_people" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDropdown">
-                  เพิ่มราษฎร
-                </RouterLink>
-                <RouterLink to="/create_heir" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDropdown">
-                  เพิ่มทายาท
-                </RouterLink>
-                <!-- <hr class="navbar-divider" /> -->
-                <!-- <a class="navbar-item" @click="closeDropdown">Report an issue</a> -->
-              </div>
-            </div>
-
-            <!-- Display data -->
-            <div v-if="userRole === roles[2].role_id" class="navbar-item has-dropdown"
-              :class="{ 'is-active': isDropdownDisplayActive }" ref="dropdownDisplay">
-              <a class="navbar-link" :class="{ 'is-active': isDropdownDisplayActive || isLinkDisplayActive }"
-                @click="toggleDisplayDropdown">
-                <span class="has-text-white">รายการข้อมูล</span>
-              </a>
-              <div class="navbar-dropdown" v-if="isDropdownDisplayActive">
-                <RouterLink to="/land_data" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDisplayDropdown">
-                  ราษฎร
-                </RouterLink>
-                <hr class="navbar-divider" />
-                <RouterLink to="/history_land" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDisplayDropdown">
-                  ประวัติการแก้ไข ที่ดิน
-                </RouterLink>
-                <RouterLink to="/up2" class="navbar-item" active-class="is-active"
-                  exact-active-class="is-active" @click="closeDisplayDropdown">
-                  ประวัติการแก้ไข ราษฎร
-                </RouterLink>
-              </div>
-            </div>
-
-            <!-- <RouterLink v-if="userRole === roles[2].role_id" to="/search" class="navbar-item" active-class="is-active"
-              exact-active-class="is-active">
-              ค้นหา
-            </RouterLink>
-            <div v-else class="is-flex-wrap-nowrap is-align-content-center is-justify-content-center">
-              <div class="field has-addons">
-                <div class="control mx-3">
-                  <input class="input" type="text" placeholder="แปลงเลขที่ เช่น 2345">
-                </div>
-                <div class="control">
-                  <button class="button is-dark" @click="goToUserSearchPage">
-                    ค้นหา
-                  </button>
-                </div>
-              </div>
-            </div> -->
-
-            <!-- <RouterLink v-if="userRole === roles[2].role_id" to="/admin" class="navbar-item" active-class="is-active"
-              exact-active-class="is-active">
-              <span>admin</span>
-            </RouterLink> -->
-
-          </div>
-
-          <!-- login -->
-          <div class="navbar-end">
-            <div class="navbar-item">
-              <div v-if="userRole !== roles[2].role_id" class="buttons">
-                <RouterLink to="/login" class="button is-light">
-                  <span class="icon-text">
-                    <i v-if="!isLoading" class="fas fa-user-alt has-text-dark">
-                      <span class="has-text-dark">เข้าสู่ระบบ</span>
-                    </i>
-                  </span>
-                </RouterLink>
-              </div>
-              <div v-else @click="outOfSystem" class="button is-light">
-                <span class="icon mr-1">
-                  <i class="fas fa-user-alt p-1 has-text-dark"></i>
-                </span>
-                <span class="has-text-dark">ออกจากระบบ</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </nav>
-      <nav v-else>
-        <span>
-          <RouterLink to="/" class="p-5" active-class="is-active" exact-active-class="is-active">
-            หน้าแรก
-          </RouterLink>
-        </span>
-      </nav>
-    </header>
+    <Sidebar class="sidebar" v-if="userRole === roles[3].role_id" />
+    <PeopleBar v-else />
 
     <!-- content -->
     <div>
@@ -183,9 +36,15 @@
 import roles from './role_config';
 import { store } from './store'
 import { useUserStore } from '@/stores/useUserStore';
-import Sidebar from './components/Sidebar.vue';
+
+import Sidebar from './components/SidebarRole.vue';
+import PeopleBar from './components/PeopleBar.vue';
 
 export default {
+  components: {
+    Sidebar,
+    PeopleBar
+  },
   data() {
     return {
       roles,
@@ -195,17 +54,17 @@ export default {
       isDropdownActive: false,
       isDropdownReportActive: false,
       isLoading: true,
-      isLogOut: false
+      isLogOut: false,
     }
   },
   computed: {
     isLinkActive() {
-      return this.$route.path === '/create_people' || this.$route.path === '/create_land'  || this.$route.path === '/create_heir';
+      return this.$route.path === '/create_people' || this.$route.path === '/create_land' || this.$route.path === '/create_heir';
     },
     isLinkDisplayActive() {
       return this.$route.path === '/land_data' || this.$route.path === '/upload_files'
-      || /^\/land_data\/detail\/\d+$/.test(this.$route.path)
-      || /^\/land_data\/upload_files\/\d+$/.test(this.$route.path);
+        || /^\/land_data\/detail\/\d+$/.test(this.$route.path)
+        || /^\/land_data\/upload_files\/\d+$/.test(this.$route.path);
     },
     isLinkReportActive() {
       return this.$route.path === '/table_dashboard' || this.$route.path === '/oh' || this.$route.path === '/dashboard';
@@ -274,7 +133,6 @@ export default {
 </script>
 
 <style scoped>
-
 .navbar-burger {
   cursor: pointer;
 }
@@ -325,24 +183,4 @@ export default {
   z-index: 1000;
   /* Keeps it above other content */
 }
-
-/* Define the skeleton effect animation */
-/* @keyframes skeleton-shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-} */
-
-/* Add skeleton styles */
-/* .is-skeleton {
-  border-radius: 50%;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s infinite linear;
-} */
-
 </style>

@@ -14,6 +14,7 @@
   </template>
   
   <script>
+  import roles from '@/role_config';
   export default {
     computed: {
       user() {

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import BulmaTesting from '../views/BulmaTesting.vue'
-import Form from '@/views/Form.vue'
+import Form from '@/views/AddLand.vue'
 import Simmulate from '@/views/Simmulate.vue'
 import { store } from '@/store'
 import AddPeople from '@/views/AddPeople.vue'
@@ -71,14 +71,18 @@ const router = createRouter({
     {
       path: '/create_people',
       name: 'fillPeople',
-      component: AddPeople
+      component: AddPeople,
+      meta: {
+        // requiredRole: roles[3].role_id,
+        title: 'Admin | add heir'
+      }
     },
     {
       path: '/create_heir',
       name: 'fillHeir',
       component: AddHeir,
       meta: {
-        requiredRole: roles[2].role_id,
+        // requiredRole: roles[3].role_id,
         title: 'Admin | add heir'
       }
     },

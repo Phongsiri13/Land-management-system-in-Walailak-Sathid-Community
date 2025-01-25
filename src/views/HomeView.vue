@@ -1,5 +1,6 @@
 <template>
   <div id="map" style="height: 650px; width: 100%;"></div>
+   <!-- <div style="height: 2000px;">dsadsad</div> -->
 </template>
 
 <script>
@@ -81,4 +82,6 @@ export default {
 #map {
   z-index: -1;
 }
+
+
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="help-center">
+    <div class="content help-center">
       <div class="container">
         <h2 class="title">Hi! How can we help You?</h2>
         <div class="search-bar">
@@ -45,7 +45,6 @@ export default {
   },
   methods: {
     search() {
-      console.log('why')
       // This method could also navigate to a new route if needed
       this.$router.push({ path: '/search', query: { q: this.keyword } });
       this.results = [...this.mockData]
@@ -99,7 +98,6 @@ export default {
 .help-center {
   padding-top: 25px;
   min-height: 100vh;
-  background-color: #0000ff;
 }
 
 .container {
@@ -107,7 +105,7 @@ export default {
   padding: 20px;
   border-radius: 12px;
   text-align: center;
-  max-width: 400px;
+  /* max-width: 400px; */
   width: 100%;
 }
 
@@ -174,5 +172,25 @@ export default {
 
 .option-item span {
   font-size: 14px;
+}
+
+@media (max-width: 1280px) {
+  .content {
+    margin-left: 8%;        
+    width: 92%;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {    
+    margin-left: 10%;    
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {        
+    width: 70%;
+  }
 }
 </style>

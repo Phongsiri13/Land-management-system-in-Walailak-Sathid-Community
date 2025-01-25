@@ -1,287 +1,305 @@
 <template>
-  <div class="formColor">
-    <div class="container is-max-widescreen custom-container">
-      <!-- People's name -->
-      <div class="columns pt-3">
-        <div class="column is-2">
-          <div class="field">
-            <label class="label">คำนำหน้าชื่อ</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="formData.prefix">
-                  <option value="">เลือกคำนำหน้าชื่อ</option>
-                  <option v-for="pfl in prefixList" :key="pfl.value" :value="pfl.value">
-                    {{ pfl.label }}
-                  </option>
-                </select>
+  <div class="primary_content">
+    <div class="mx-5 py-5">
+      <div class="box">
+        <h1 class="title has-text-centered">รายละเอียดของราษฎร</h1>
+
+        <form @submit.prevent="submitCitizen">
+          <div class="columns is-multiline">
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> คำนำหน้าชื่อ</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="formPeopleData.prefix">
+                      <option value="" selected>เลือกคำนำหน้าชื่อ</option>
+                      <option v-for="pfl in prefixList" :key="pfl.value" :value="pfl.value">
+                        {{ pfl.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+            <div class="column is-half">
 
-        <div class="column is-5">
-          <div class="field">
-            <label class="label">ชื่อจริง</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.fname" type="text"
-                placeholder="กรุณากรอกชื่อจริง" />
             </div>
-          </div>
-        </div>
 
-        <div class="column is-5">
-          <div class="field">
-            <label class="label">นามสกุล</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.lname" type="text"
-                placeholder="กรุณากรอกนามสกุล" />
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="formPeopleData.firstName" placeholder="กรุณากรอกชื่อจริง" />
+                </div>
+              </div>
             </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> นามสกุล</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="formPeopleData.lastName" placeholder="กรุณากรอกนามสกุล" />
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> วันเดือนปีเกิด</label>
+                <input class="input" type="date" v-model="formPeopleData.birthDate" />
+                <div class="control">
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label has-text-weight-bold"><strong class="has-text-danger">*</strong> เลือกเพศ</label>
+                <div class="control">
+                  <div class="radio-group">
+                    <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
+                      <input type="radio" v-model="formPeopleData.gender" value="male">
+                      <span class="ml-2">ชาย</span>
+                    </label>
+                    <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
+                      <input type="radio" v-model="formPeopleData.gender" value="female">
+                      <span class="ml-2">หญิง</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> เลขบัตรประชาชน</label>
+                <div class="control">
+                  <input class="input" type="text" v-model="formPeopleData.citizenId"
+                    placeholder="กรุณากรอกเลขบัตรประชาชน" />
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> เบอร์โทรศัพท์</label>
+                <div class="control">
+                  <input class="input" type="tel" v-model="formPeopleData.phone" placeholder="กรุณากรอกเบอร์โทรศัพท์" />
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">บ้านเลขที่</label>
+                <div class="control">
+                  <input class="input" type="text" placeholder="กรุณากรอกบ้านเลขที่"
+                    v-model="formPeopleData.houseNumber" />
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> ตำบล</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="formPeopleData.subdistrict" @change="updateVillageOptions">
+                      <option value="" selected>เลือกตำบล</option>
+                      <option value="หัวตะพาน">หัวตะพาน</option>
+                      <option value="ไทรบุรี">ไทรบุรี</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> หมู่ที่</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="formPeopleData.village">
+                      <option value="" selected>เลือกหมู่</option>
+                      <option v-for="pfl in village" :key="pfl.value" :value="pfl.value">
+                        {{ pfl.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label"><strong class="has-text-danger">*</strong> อาศัยอยู่ในซอยใด</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="formPeopleData.selectedSoi">
+                      <option value="" disabled selected>เลือกซอย</option>
+                      <option v-for="soi in sois" :key="soi.value" :value="soi.value">
+                        {{ soi.label }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-        </div>
+
+          <!-- Submit -->
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button class="button-41 is-light is-rounded is-large clear-btn" type="button"
+                @click="resetForm">ล้างข้อมูล</button>
+            </p>
+            <p class="control">
+              <button class="button-41 is-rounded is-large" type="submit">เพิ่มข้อมูล</button>
+            </p>
+          </div>
+        </form>
       </div>
-
-      <!-- id_card -->
-      <div class="columns">
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">เลขบัตรประชาชน</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.id_card" type="text"
-                placeholder="กรุณากรอกเลขบัตรประชาชน" />
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">วันเดือนปีเกิด</label>
-            <div class="date-picker-container">
-              <input class="input is-normal date-input" type="date" id="date" v-model="formData.selectedDate"
-                @change="convertToBuddhistEra">
-              <!-- <p class="date-display">วันที่เลือก: <span>{{ displayDate }}</span></p> -->
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">เบอร์โทรศัพท์</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.phone" type="text"
-                placeholder="กรุณากรอกเบอร์โทรศัพท์" />
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">เลือกเพศ</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="formData.prefix">
-                  <option value="">เลือกเพศ</option>
-                  <option v-for="pfl in genderList" :key="pfl.value" :value="pfl.value">
-                    {{ pfl.label }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-      </div>
-
-      <!-- address 1 -->
-      <div class="columns">
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">บ้านเลขที่</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.house_number" type="text"
-                placeholder="กรุณากรอกเลขบัตรประชาชน" />
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">หมู่ที่</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.village_number" type="text"
-                placeholder="กรุณากรอกเลขบัตรประชาชน" />
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">ซอย</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.soi" type="text" placeholder="กรุณากรอกซอย" />
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">ถนน</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.road" type="text" placeholder="กรุณากรอกถนน" />
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- address 2 -->
-      <div class="columns">
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">ตำบล</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="formData.district">
-                  <option value="">เลือกตำบล</option>
-                  <option value="หัวตะพาน">หัวตะพาน</option>
-                  <option value="ไทรบุรี">ไทรบุรี</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">อำเภอ</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="formData.amphoe">
-                  <option value="">เลือกอำเภอ</option>
-                  <option value="ท่าศาลา">ท่าศาลา</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">จังหวัด</label>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select v-model="formData.province">
-                  <option value="">เลือกจังหวัด</option>
-                  <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="column is-3">
-          <div class="field">
-            <label class="label">รหัสไปรษณีย์</label>
-            <div class="control">
-              <input class="input is-normal" v-model="formData.zip_code" type="number"
-                placeholder="กรุณากรอกรหัสไปรษณีย์" />
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-
-      <!-- submit -->
-      <button class="button is-dark is-fullwidth" id="submitPeople" @click="creationPeople" :disabled="btnLoad">
-        {{ btnLoad ? 'กำลังตรวจสอบ' : 'เพิ่มราษฎร' }}
-      </button>
-
     </div>
   </div>
 </template>
+
 <script>
-import { store } from '@/store'
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
-
   data() {
     return {
-      formData: {
-        fname: '',
-        lname: '',
+      formPeopleData: {
         prefix: '',
-        id_card: '',
+        firstName: '',
+        lastName: '',
+        birthDate: '',
         phone: '',
-        house_number: '',
-        village_number: '',
-        soi: '',
-        road: '',
-        district: '',
-        amphoe: '',
-        province: '',
-        zip_code: '',
-        selectedDate: '',
+        citizenId: '',
+        gender: '',
+        selectedSoi: '',
+        prefix: '',
+        subdistrict: '',
+        village: '',
+        subdistrict: ''
       },
-      displayDate: '',
-      btnLoad: false,
+      sois: [
+        { value: null, label: 'ไม่พบข้อมูล' },
+      ],
       prefixList: [
         { value: null, label: 'ไม่พบข้อมูล' },
       ],
-      genderList: [
-        { value: 0, label: 'หญิง' },
-        { value: 1, label: 'ชาย' },
-      ]
-    }
-  },
-  computed: {
-
+      village: [], // เพื่อเก็บหมู่ที่ตามตำบลที่เลือก
+      villageOptions: {
+        'หัวตะพาน': [
+          { value: 1, label: 'หมู่ที่ 1 บ้านคลองดิน' },
+          { value: 2, label: 'หมู่ที่ 2 บ้านฉิมพลี' },
+          { value: 3, label: 'หมู่ที่ 3 บ้านคลองขุด' },
+          { value: 4, label: 'หมู่ที่ 4 บ้านทุ่งตก' },
+          { value: 5, label: 'หมู่ที่ 5 บ้านดอนยาง' },
+          { value: 6, label: 'หมู่ที่ 6 บ้านทุ่งชน' },
+          { value: 7, label: 'หมู่ที่ 7 บ้านวัดประดู่' },
+          { value: 8, label: 'หมู่ที่ 8 บ้านสวนหมาก' },
+          { value: 9, label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
+        ],
+        'ไทรบุรี': [
+          { value: 1, label: 'หมู่ที่ 1 บ้านโพธิ์' },
+          { value: 2, label: 'หมู่ที่ 2 บ้านคูเถร' },
+          { value: 3, label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
+          { value: 4, label: 'หมู่ที่ 4 บ้านในหัน' },
+          { value: 5, label: 'หมู่ที่ 5 บ้านไม้มูก' },
+          { value: 6, label: 'หมู่ที่ 6 บ้านปลักจอก' },
+          { value: 7, label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
+          { value: 8, label: 'หมู่ที่ 8 บ้านลุ่มนา' },
+          { value: 9, label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
+          { value: 10, label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
+        ]
+      },
+    };
   },
   methods: {
-    creationPeople() {
-      this.btnLoad = true
-      store.status_path_change = true
-      const form_data = {
-        id_card: this.formData.id_card.toString() || null,
-        date: this.formData.selectedDate || null,
-        prefix: this.formData.prefix || null,
-        first_name: this.formData.fname || null,
-        last_name: this.formData.lname || null,
-        phone: this.formData.phone || null,
-        house_number: this.formData.house_number || null,
-        village_number: this.formData.village_number || null,
-        soi: this.formData.soi || null,
-        road: this.formData.road || null,
-        district: this.formData.district || null,
-        amphoe: this.formData.amphoe || null,
-        province: this.formData.province || null,
-        zip_code: this.formData.zip_code || null
-      };
-
-      console.log(form_data)
-
-      setTimeout(() => {
-        this.btnLoad = false
-        store.status_path_change = false
-      }, 1000)
+    showSuccessAlert() {
+      Swal.fire({
+        title: 'เพิ่มข้อมูลสำเร็จ!',
+        text: 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว',
+        icon: 'success', // ใช้ 'success' เพื่อแสดงไอคอนสีเขียว
+        confirmButtonText: 'ตกลง'
+      });
     },
-    convertToBuddhistEra() {
-      if (this.formData.selectedDate) {
-        const date = new Date(this.formData.selectedDate);
-        const yearBE = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        this.displayDate = `${day}/${month}/${yearBE}`;
+    showErrorAlert() {
+      Swal.fire({
+        title: 'เพิ่มข้อมูลไม่สำเร็จ!',
+        text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
+        icon: 'error', // ใช้ 'error' เพื่อแสดงไอคอนสีแดง
+        confirmButtonText: 'ตกลง'
+      });
+    },
+    updateVillageOptions() {
+      if (this.formPeopleData.subdistrict === 'หัวตะพาน' || this.formPeopleData.subdistrict === 'ไทรบุรี') {
+        this.village = this.villageOptions[this.formPeopleData.subdistrict];
+      } else {
+        this.village = [];
       }
-    }
+    },
+    submitForm() {
+      alert('ข้อมูลถูกส่งเรียบร้อย: ' + JSON.stringify(this.formPeopleData));
+    },
+    async submitCitizen() {
+      // ตรวจสอบข้อมูลที่กรอก
+      if (!this.formPeopleData.firstName || !this.formPeopleData.lastName || !this.formPeopleData.citizenId) {
+        alert("กรุณากรอกข้อมูลที่จำเป็น!");
+        return;
+      }
+
+      console.log("p-data:", JSON.stringify(this.formPeopleData))
+
+      // ส่งข้อมูลไปที่ API
+      try {
+        const response = await axios.post('http://localhost:3000/people', this.formPeopleData);
+        console.log('Response:', response.data);
+        this.showSuccessAlert()
+      } catch (error) {
+        console.error('Error:', error);
+        this.showErrorAlert()
+      }
+    },
+    resetForm() {
+      this.formPeopleData = {
+        prefix: '',
+        firstName: '',
+        lastName: '',
+        birthDate: '',
+        phone: '',
+        citizenId: '',
+        gender: '',
+        selectedSoi: '',
+        prefix: '',
+        subdistrict: '',
+        village: '',
+        subdistrict: ''
+      };
+    },
   },
   async mounted() {
     try {
-      const response = await axios.get(`http://localhost:3000/people/prefix`);
-      const data = response.data; // Handle the response data
-      // console.log(data)
+      const sois = await axios.get('http://localhost:3000/land/sois');
+
+      this.sois = [];
+      for (let i = 0; i < sois.data.length; i++) {
+        let soi = sois.data[i].id_alley
+        this.sois.push({ value: soi, label: `ซอย ${soi}` });
+      }
+    } catch (err) {
+      this.error = 'Error fetching sois: ' + err.message;
+    }
+
+    try {
+      const prefix = await axios.get(`http://localhost:3000/people/prefix`);
+      const data = prefix.data; // Handle the response data
+
       this.prefixList = []
       if (data.length > 0) {
         for (let d of data) {
@@ -291,60 +309,12 @@ export default {
             label: d.prefix_name
           },)
         }
-        // this.prefixList = data
       }
-    } catch (err) {
-      this.error = 'Error fetching data: ' + err.message;
-    } finally {
-
+    } catch (error) {
+      this.error = 'Error fetching sois: ' + err.message;
     }
   }
-}
-
+};
 </script>
-<style scoped>
-.date-picker-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-family: Arial, sans-serif;
-  border-radius: 8px;
-  /* background-color: #f9f9f9; */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-.date-label {
-  font-size: 16px;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.date-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.date-input:focus {
-  border-color: #007bff;
-}
-
-.date-display {
-  margin-top: 15px;
-  font-size: 18px;
-  color: #555;
-}
-
-.date-display span {
-  font-weight: bold;
-  color: #007bff;
-}
-
-#submitPeople {
-  background-color: #4e4b32;
-}
-</style>
+<style scoped></style>

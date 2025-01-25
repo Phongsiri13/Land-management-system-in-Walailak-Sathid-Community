@@ -1,13 +1,15 @@
 <template>
-    <div class="is-fluid">
+    <div class="content py-5 ">
         <!-- Header Section -->
-        <div class="is-primary formColor">
+        <div class="is-primary container formColor">
             <div class="columns is-centered is-mobile">
                 <div class="column is-narrow has-text-centered">
                     <div class="has-background-white card mt-2 p-2">
                         <h2 class="title is-3 has-text-dark">สรุปการใช้ประโยชน์ที่ดิน</h2>
                     </div>
-                    <div class="select is-rounded">
+
+                    <!-- filter sois -->
+                    <div v-if="roles" class="select is-rounded">
                         <select>
                             <option>ซอยทั้งหมด</option>
                             <option>ซอย 0</option>
@@ -98,8 +100,8 @@
     </div>
 </template>
 
-
 <script>
+import roles from '@/role_config';
 import { defineComponent } from 'vue'
 import { Bar, Pie } from 'vue-chartjs'
 import {
@@ -254,14 +256,11 @@ export default defineComponent({
         margin-right: 1rem;
     }
 }
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
 
 .card {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
 .card-content {
@@ -273,15 +272,16 @@ export default defineComponent({
     height: 100%;
 }
 
-.content {
-    display: flex;
-    justify-content: center;
-}
-
 .chart-container {
-    width: 100%;
+    /* width: 100%; */
     height: 400px;
     /* Fixed height to make charts same size */
+    background-color: #fff;
+
+}
+
+#scope-chart{
+    background-color: rebeccapurple;
 }
 
 @media (max-width: 768px) {

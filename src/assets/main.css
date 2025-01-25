@@ -1,15 +1,102 @@
 body {
   font-family: 'Sarabun', sans-serif;
+  /* background-color: #37474F; */
+  box-sizing: border-box;
 }
 
-.formColor{
-  background-color: #b8b7a3;
+.formColor {
+  /* background-color: #b8b7a3; */
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.titleBgColor {
+  background-color: #f0e3d3;
+}
+
+.primary_content {
+  margin-left: 5%; /* Push content to the right by 10% to leave space for the sidebar */
+  width: 95%; /* Router view takes 90% of the width */ 
+  background-color: #0C250E;
+  /* background-color: #FFC107; */
   min-height: 100vh;
 }
 
-.titleBgColor{
-  background-color: #f0e3d3;
+.navigator-color{
+  /* background-color: #0C250E; */
+  background-color: #B71C1C;
 }
+
+.button-41 {
+  background-color: initial;
+  background-image: linear-gradient(-180deg, #00D775, #00BD68);
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter, -apple-system, system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 44px;
+  line-height: 44px;
+  outline: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  pointer-events: auto;
+  position: relative;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 9;
+  border: 0;
+}
+
+.button-41:hover {
+  background: #00bd68;
+}
+
+.button-cancer {
+  background-color: initial;
+  background-image: linear-gradient(-180deg, #00D775, #00BD68);
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Inter, -apple-system, system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+  height: 44px;
+  line-height: 44px;
+  outline: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  pointer-events: auto;
+  position: relative;
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 9;
+  border: 0;
+}
+
+.button-cancer:hover {
+  background: #00bd68;
+}
+
+.clear-btn {
+  background-image: linear-gradient(-180deg, #bb254a, #f0184e) !important;
+}
+
+.clear-btn:hover {
+  background-color: #4e4b32; /* Add a hover background color */
+}
+
 
 h1,
 p,
@@ -17,3 +104,4 @@ span {
   font-family: 'Roboto', 'Sarabun', sans-serif; /* ฟอนต์ภาษาอังกฤษเป็น Roboto, ฟอนต์ภาษาไทยเป็น Sarabun */
   font-weight: 500; /* ใช้ font-weight 300 สำหรับ Thin */
 }
+
