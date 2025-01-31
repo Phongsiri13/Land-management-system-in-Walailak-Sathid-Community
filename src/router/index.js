@@ -22,11 +22,17 @@ import ShowAllFiles from '@/views/uploadFile/ShowAllFiles.vue'
 import MainDash from '@/views/dashboard/MainDash.vue'
 import AddHeir from '@/views/AddHeir.vue'
 import HistoryLand from '@/views/HistoryLand.vue'
+import TestAddPeople from '@/views/TestAddPeople.vue'
 
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/Test-People',
+      name: 'Test-People',
+      component: TestAddPeople
+    },
     {
       path: '/',
       name: 'home',
@@ -186,6 +192,7 @@ const router = createRouter({
     }
   ],
 })
+
 let t1 = 0
 // Global before route guard
 router.beforeEach(async (to, from, next) => {

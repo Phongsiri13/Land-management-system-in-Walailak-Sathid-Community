@@ -1,13 +1,12 @@
 <template>
-    <div class="content py-5 ">
+    <div class="content py-5 themeColor">
         <!-- Header Section -->
-        <div class="is-primary container formColor">
+        <div class="is-primary container has-background-white">
             <div class="columns is-centered is-mobile">
                 <div class="column is-narrow has-text-centered">
                     <div class="has-background-white card mt-2 p-2">
-                        <h2 class="title is-3 has-text-dark">สรุปการใช้ประโยชน์ที่ดิน</h2>
+                        <h2 class="title is-3 has-text-dark">สรุปผลการใช้ประโยชน์ที่ดิน</h2>
                     </div>
-
                     <!-- filter sois -->
                     <div v-if="roles" class="select is-rounded">
                         <select>
@@ -30,11 +29,12 @@
                     </div>
                 </div>
             </div>
+
             <!-- Dashboard Layer 1 -->
-            <div class="px-2 columns is-variable is-4 is-multiline">
+            <div class="px-2 columns is-variable is-4  is-multiline">
                 <!-- Card Section -->
                 <div class="column is-6-tablet is-3-desktop is-mobile is-mx-3">
-                    <div class="card">
+                    <div class="card has-background-white-ter">
                         <div class="card-content">
                             <h4 class="title is-4 has-text-centered has-text-dark">ยางพารา</h4>
                             <h4 class="title is-4 has-text-centered has-text-dark">4</h4>
@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="column is-6-tablet is-3-desktop is-mobile is-mx-3">
-                    <div class="card">
+                    <div class="card has-background-white-ter">
                         <div class="card-content">
                             <h2 class="title is-4 has-text-centered has-text-dark">สวนผลไม้</h2>
                             <h4 class="title is-4 has-text-centered has-text-dark">25</h4>
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="column is-6-tablet is-3-desktop is-mobile is-mx-3">
-                    <div class="card">
+                    <div class="card has-background-white-ter">
                         <div class="card-content">
                             <h2 class="title is-4 has-text-centered has-text-dark">ปศุสัตว์</h2>
                             <h4 class="title is-4 has-text-centered has-text-dark">18</h4>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="column is-6-tablet is-3-desktop is-mobile is-mx-3">
-                    <div class="card">
+                    <div class="card has-background-white-ter">
                         <div class="card-content">
                             <h2 class="title is-4 has-text-centered has-text-dark">อื่นๆ</h2>
                             <h4 class="title is-4 has-text-centered has-text-dark">30</h4>
@@ -273,6 +273,8 @@ export default defineComponent({
 }
 
 .chart-container {
+    display: flex;
+    justify-content: center;
     /* width: 100%; */
     height: 400px;
     /* Fixed height to make charts same size */
@@ -280,7 +282,7 @@ export default defineComponent({
 
 }
 
-#scope-chart{
+#scope-chart {
     background-color: rebeccapurple;
 }
 

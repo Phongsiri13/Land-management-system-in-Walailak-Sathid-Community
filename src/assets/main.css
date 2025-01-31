@@ -5,9 +5,12 @@ body {
 }
 
 .formColor {
-  /* background-color: #b8b7a3; */
-  background-color: #fff;
-  border-radius: 10px;
+  background-color: #0C250E;
+  /* background-color: #f2f2f2; */
+}
+
+.themeColor {
+  background-color: #f2f2f2;
 }
 
 .titleBgColor {

@@ -96,24 +96,18 @@
 
 <script>
 import { store } from '@/store'
-import { fetchPrefix } from '@/services/apiPeople';
-import { fetchRelation } from '@/services/apiHeir';
+import { fetchPrefix } from '@/api/apiPeople';
+import { fetchRelation } from '@/api/apiHeir';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+import { getHeirModel, getHeirPeopleModel } from '@/model/heirModel';
+import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 
 export default {
     data() {
         return {
-            formHeirData: {
-                heir_fname: '',
-                heir_fname: '',
-                prefix: '',
-                relation: '',
-                soi: '',
-            },
-            formPeople: {
-                card_id: '',
-                fullname: ''
-            },
+            formHeirData: getHeirModel,
+            formPeople: getHeirPeopleModel,
             btnLoad: false,
             prefixList: [
                 { value: null, label: 'ไม่พบข้อมูล' },
@@ -123,11 +117,14 @@ export default {
             ],
         }
     },
-    computed: {
-
-    },
     methods: {
-        creationHeir() {
+        SuccessAlert(){
+            showSuccessAlert()
+        },
+        ErrorAlert() {
+            showErrorAlert()
+        },
+        async creationHeir() {
             this.btnLoad = true
             store.status_path_change = true
             const form_data = {
@@ -135,16 +132,24 @@ export default {
                 prefix: this.formHeirData.prefix || null,
                 fname_heir: this.formHeirData.heir_fname || null,
                 lname_heir: this.formHeirData.heir_lname || null,
-                lname_people: this.formPeople.p_last_name,
-                relation: this.relation
+                relation: this.formHeirData.relation,
+                citizen_id: '1900132387564'
             };
 
-            console.log("Heir:",form_data)
+            console.log("Heir:", form_data)
 
-            setTimeout(() => {
+            try {
+                const response = await axios.post('http://localhost:3000/heir', form_data);
+                console.log('Response:', response.data);
+                this.SuccessAlert()
+            } catch (error) {
+                console.error('Error:', error);
+                this.ErrorAlert()
+            } finally {
                 this.btnLoad = false
                 store.status_path_change = false
-            }, 1000)
+            }
+
         },
     },
     async mounted() {

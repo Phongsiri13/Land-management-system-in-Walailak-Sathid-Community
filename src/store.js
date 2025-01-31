@@ -1,7 +1,6 @@
 // store.js
 import { reactive } from 'vue'
 
-
 // state of page
 export const store = reactive({
   state: {

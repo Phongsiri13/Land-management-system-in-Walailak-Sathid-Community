@@ -101,7 +101,8 @@ export default {
                 || /^\/land_data\/upload_files\/\d+$/.test(this.$route.path);
         },
         isLinkReportActive() {
-            return this.$route.path === '/table_dashboard' || this.$route.path === '/oh' || this.$route.path === '/dashboard';
+            return this.$route.path === '/dashboard';
+            // return this.$route.path === '/table_dashboard' || this.$route.path === '/dashboard';
         },
         userRole() {
             // Access the userRole from your store

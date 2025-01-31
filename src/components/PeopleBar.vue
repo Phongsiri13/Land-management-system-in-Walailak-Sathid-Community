@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navigator-color" role="navigation" aria-label="main navigation">
+    <nav class="has-navbar-fixed-top navigator-color" role="navigation" aria-label="main navigation">
         <div class="navbar-menu is-active">
             <!-- Start Section -->
             <div class="navbar-item">
@@ -23,7 +23,8 @@
             <div class="navbar-start" style="display: flex; justify-content: center; flex: 1;">
                 <div class="field has-addons" style="width: 60%; max-width: 500px;">
                     <div class="control is-expanded">
-                        <input class="input" type="text" placeholder="ค้นหา แปลงที่ดิน " v-model="searchQuery" />
+                        <!-- search -->
+                        <input class="input" type="text" placeholder="ค้นหา แปลงที่ดิน เช่น 7632" v-model="searchQuery" />
                     </div>
                     <div class="control">
                         <button class="button is-dark" @click="search">
@@ -41,7 +42,6 @@
                     exact-active-class="is-active">
                     <span class="icon">
                         <i class="fas fa-sign-out-alt" style="color: white;"></i>
-                        <!-- <img src="@/assets/icons/search-white.png" :width="34" :height="34" alt="Search Icon"> -->
                     </span>
                 </RouterLink>
             </div>
@@ -56,11 +56,24 @@ export default {
             searchQuery: "", // For storing the user's input
         };
     },
+    watch: {
+        '$route.query.q'(newQuery) {
+            this.searchQuery = newQuery || '';
+            console.log('new-query:', newQuery)
+            if (newQuery == '' || newQuery == null || newQuery == undefined) {
+
+            }
+        },
+    },
     methods: {
         search() {
+            if(this.searchQuery == ""){
+                alert('กรุณาระบุเลขที่ดิน');
+                return;
+            }
+            console.log('has clicked to search-btn')
             // This method could also navigate to a new route if needed
             this.$router.push({ path: '/search', query: { q: this.searchQuery } });
-            this.results = [...this.mockData]
         },
         performSearch() {
             console.log("Searching for:", this.searchQuery);
