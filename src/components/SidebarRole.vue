@@ -79,6 +79,7 @@
 
 <script>
 import { store } from '../store'
+import { url_citizen } from '@/router/url_list';
 import { useUserStore } from '@/stores/useUserStore';
 
 export default {
@@ -93,7 +94,7 @@ export default {
     },
     computed: {
         isLinkActive() {
-            return this.$route.path === '/create_people' || this.$route.path === '/create_land' || this.$route.path === '/create_heir';
+            return this.$route.path === url_citizen || this.$route.path === '/create_land' || this.$route.path === '/create_heir';
         },
         isLinkDisplayActive() {
             return this.$route.path === '/land_data' || this.$route.path === '/upload_files'

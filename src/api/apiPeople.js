@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const prefix_url = 'http://localhost:3000/people/prefix';
-const people_search_url = 'http://localhost:3000/people/search';
+const prefix_url = 'http://localhost:3000/citizen/prefix';
+const people_search_url = 'http://localhost:3000/citizen/search';
 
 // getPrefix
 export const fetchPrefix = async () => {

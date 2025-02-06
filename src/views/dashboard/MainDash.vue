@@ -8,7 +8,7 @@
                         <h2 class="title is-3 has-text-dark">สรุปผลการใช้ประโยชน์ที่ดิน</h2>
                     </div>
                     <!-- filter sois -->
-                    <div v-if="roles" class="select is-rounded">
+                    <div v-if="userRole === roles[3].role_id" class="select is-rounded">
                         <select>
                             <option>ซอยทั้งหมด</option>
                             <option>ซอย 0</option>
@@ -104,6 +104,7 @@
 import roles from '@/role_config';
 import { defineComponent } from 'vue'
 import { Bar, Pie } from 'vue-chartjs'
+import { useUserStore } from '@/stores/useUserStore';
 import {
     Chart as ChartJS,
     Title,
@@ -121,8 +122,8 @@ export default defineComponent({
     components: { Bar, Pie },
     data() {
         return {
+            roles,
             isActive: false,
-
             chartData2: {
                 labels: ['ยางพารา', 'สวนผลไม้', 'ปศุสัตว์', 'อื่นๆ'],
                 datasets: [
@@ -204,6 +205,13 @@ export default defineComponent({
         selectOption(option) {
             console.log(`Selected: ${option}`)
             this.isActive = false
+        }
+    },
+    computed: {
+        userRole() {
+            // Access the userRole from your store
+            const userStore = useUserStore();
+            return userStore.userRole;
         }
     },
     mounted() {

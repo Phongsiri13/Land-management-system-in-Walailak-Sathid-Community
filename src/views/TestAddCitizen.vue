@@ -85,8 +85,8 @@
 
 <script>
 import * as yup from "yup";
-import { getPeopleModel } from '@/model/peopleModel';
-import { CitizenValidSchema } from "@/model/peopleModel";
+import { getPeopleModel } from '@/model/citizenModel';
+import { CitizenValidSchema } from "@/model/citizenModel";
 
 export default {
   data() {

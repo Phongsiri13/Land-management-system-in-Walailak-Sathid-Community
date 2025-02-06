@@ -3,7 +3,8 @@
         <div class="navbar-menu is-active">
             <!-- Start Section -->
             <div class="navbar-item">
-                <RouterLink to="/" class="navbar-item has-text-white" active-class="is-active"
+                <RouterLink to="/" class="navbar-item" 
+                    active-class="is-active"
                     exact-active-class="is-active">
                     <span class="icon">
                         <i class="fas fa-home" style="color: white;"></i>
@@ -50,6 +51,8 @@
 </template>
 
 <script>
+import { RouterLink } from 'vue-router';
+
 export default {
     data() {
         return {

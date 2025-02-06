@@ -66,6 +66,19 @@
                             </div>
                         </div>
                         <nav class="pagination" role="navigation" aria-label="pagination">
+                            <!-- ปุ่ม Previous -->
+                            <a class="pagination-previous" :class="{ 'is-disabled': currentPage === 1 }"
+                                @click="setPage(currentPage - 1)" :disabled="currentPage === 1">
+                                Previous
+                            </a>
+
+                            <!-- ปุ่ม Next -->
+                            <a class="pagination-next" :class="{ 'is-disabled': currentPage === totalPages }"
+                                @click="setPage(currentPage + 1)" :disabled="currentPage === totalPages">
+                                Next
+                            </a>
+
+                            <!-- รายการหน้าทั้งหมด -->
                             <ul class="pagination-list">
                                 <li v-for="page in totalPages" :key="page">
                                     <a class="pagination-link" :class="{ 'is-current': page === currentPage }"

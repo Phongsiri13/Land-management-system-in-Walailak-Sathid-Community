@@ -1,9 +1,9 @@
 import Swal from "sweetalert2";
 
 export function showSuccessAlert(title, text) {
-    Swal.fire({
-        title: 'เพิ่มข้อมูลสำเร็จ!',
-        text: 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว',
+    return Swal.fire({
+        title: title,
+        text: text,
         icon: 'success', // ใช้ 'success' เพื่อแสดงไอคอนสีเขียว
         confirmButtonText: 'ตกลง'
     });

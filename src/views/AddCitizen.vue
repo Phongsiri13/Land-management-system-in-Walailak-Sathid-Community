@@ -1,7 +1,7 @@
 <template>
   <div class="primary_content">
-    <div class="mx-5 py-5">
-      <div class="box">
+    <div class="mx-5 py-5 is-flex is-justify-content-center">
+      <div class="box column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
         <h1 class="title has-text-centered">รายละเอียดของราษฎร</h1>
 
         <form @submit.prevent="submitCitizen">
@@ -67,11 +67,11 @@
                 <div class="control">
                   <div class="radio-group">
                     <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                      <input type="radio" v-model="formPeopleData.gender" value="male" @change="validateField('gender')">
+                      <input type="radio" v-model="formPeopleData.gender" value="1" @change="validateField('gender')">
                       <span class="ml-2">ชาย</span>
                     </label>
                     <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                      <input type="radio" v-model="formPeopleData.gender" value="female" @change="validateField('gender')">
+                      <input type="radio" v-model="formPeopleData.gender" value="0" @change="validateField('gender')">
                       <span class="ml-2">หญิง</span>
                     </label>
                     <DisplayError v-if="errors.gender" :err_text="errors.gender" />
@@ -84,10 +84,8 @@
               <div class="field">
                 <label class="label"><strong class="has-text-danger">*</strong> เลขบัตรประชาชน</label>
                 <div class="control">
-                  <input class="input" type="text" 
-                  @input="validateField('citizenId')"
-                  :class="{ 'is-danger': errors.citizenId }"
-                    v-model="formPeopleData.citizenId"
+                  <input class="input" type="text" @input="validateField('citizenId')"
+                    :class="{ 'is-danger': errors.citizenId }" v-model="formPeopleData.citizenId"
                     placeholder="กรุณากรอกเลขบัตรประชาชน" />
                 </div>
                 <DisplayError v-if="errors.citizenId" :err_text="errors.citizenId" />
@@ -98,11 +96,8 @@
               <div class="field">
                 <label class="label"><strong class="has-text-danger">*</strong> เบอร์โทรศัพท์</label>
                 <div class="control">
-                  <input class="input" type="tel" 
-                  v-model="formPeopleData.phone"
-                  @input="validateField('phone')" 
-                  :class="{ 'is-danger': errors.phone }"
-                  placeholder="กรุณากรอกเบอร์โทรศัพท์" />
+                  <input class="input" type="tel" v-model="formPeopleData.phone" @input="validateField('phone')"
+                    :class="{ 'is-danger': errors.phone }" placeholder="กรุณากรอกเบอร์โทรศัพท์" />
                   <DisplayError v-if="errors.phone" :err_text="errors.phone" />
                 </div>
               </div>
@@ -123,9 +118,8 @@
                 <label class="label"><strong class="has-text-danger">*</strong> ตำบล</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formPeopleData.subdistrict" 
-                    :class="{ 'is-danger': errors.subdistrict }"
-                    @change="updateVillageOptions">
+                    <select v-model="formPeopleData.subdistrict" :class="{ 'is-danger': errors.subdistrict }"
+                      @change="updateVillageOptions">
                       <option value="" selected>เลือกตำบล</option>
                       <option value="หัวตะพาน">หัวตะพาน</option>
                       <option value="ไทรบุรี">ไทรบุรี</option>
@@ -173,15 +167,26 @@
           </div>
 
           <!-- Submit -->
-          <div class="field is-grouped is-grouped-centered mt-4">
-            <p class="control">
-              <button class="button-41 is-light is-rounded is-large clear-btn" type="button"
-                @click="resetForm">ล้างข้อมูล</button>
-            </p>
-            <p class="control">
-              <button class="button-41 is-rounded is-large" type="submit">เพิ่มข้อมูล</button>
-            </p>
+          <div class="field is-grouped is-grouped-centered py-3 is-flex is-justify-content-center">
+            <!-- Reset Button -->
+            <button type="button" class="button is-warning is-medium is-size-5 is-rounded px-5" @click="resetForm"
+              style="min-width: 150px;">
+              <span class="icon">
+                <i class="fas fa-undo"></i>
+              </span>
+              <span>รีเซ็ต</span>
+            </button>
+
+            <!-- Submit Button -->
+            <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
+              style="min-width: 150px;">
+              <span class="icon">
+                <i class="fas fa-check"></i>
+              </span>
+              <span>ส่งข้อมูล</span>
+            </button>
           </div>
+
         </form>
       </div>
     </div>
@@ -193,8 +198,8 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Form, Field, ErrorMessage, useForm, defineRule, configure } from "vee-validate";
 import * as yup from "yup";
-import { getPeopleModel } from '@/model/peopleModel';
-import { CitizenValidSchema } from '@/model/peopleModel';
+import { getPeopleModel } from '@/model/citizenModel';
+import { CitizenValidSchema } from '@/model/citizenModel';
 import DisplayError from '@/components/form_valid/DisplayError.vue';
 
 export default {
@@ -292,7 +297,7 @@ export default {
       } else {
         this.village = [];
       }
-      if(this.errors['village']){
+      if (this.errors['village']) {
         this.errors['village'] = ""
       }
       this.formPeopleData.village = ""
@@ -322,7 +327,7 @@ export default {
 
       // ส่งข้อมูลไปที่ API
       try {
-        const response = await axios.post('http://localhost:3000/people', this.formPeopleData);
+        const response = await axios.post('http://localhost:3000/citizen', this.formPeopleData);
         console.log('Response:', response.data);
         this.showSuccessAlert();
         this.resetForm();
@@ -335,6 +340,7 @@ export default {
       this.formPeopleData = {
         ...getPeopleModel
       };
+      this.errors = {};
     },
   },
   async mounted() {
@@ -351,7 +357,7 @@ export default {
     }
 
     try {
-      const prefix = await axios.get(`http://localhost:3000/people/prefix`);
+      const prefix = await axios.get(`http://localhost:3000/citizen/prefix`);
       const data = prefix.data; // Handle the response data
 
       this.prefixList = []
@@ -365,13 +371,8 @@ export default {
         }
       }
     } catch (error) {
-      this.error = 'Error fetching sois: ' + err.message;
+      this.error = 'Error fetching sois: ' + error.message;
     }
-  },
-  created() {
-    // This runs when the component is created, but before it is mounted to the DOM
-    console.log('Component created');
-
   }
 };
 </script>

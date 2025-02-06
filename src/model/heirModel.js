@@ -1,9 +1,9 @@
+import * as yup from 'yup'
+
 export const getHeirModel = {
   heir_fname: '',
-  heir_fname: '',
+  heir_lname: '',
   prefix: '',
-  relation: '',
-  soi: ''
 }
 
 export const getHeirPeopleModel = {

@@ -12,8 +12,6 @@ import { createPinia } from 'pinia'
 
 const app = createApp(App)
 
-// app.component()
-
 const pinia = createPinia()
 app.use(pinia);
 app.use(router)

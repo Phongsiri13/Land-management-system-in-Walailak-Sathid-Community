@@ -132,7 +132,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+/* global css */
 .navbar-burger {
   cursor: pointer;
 }
@@ -182,5 +183,11 @@ export default {
   /* Full width of the viewport */
   z-index: 1000;
   /* Keeps it above other content */
+}
+
+@media screen and (max-width: 768px) {
+  .primary_content {
+    margin-left: 5%;
+  }
 }
 </style>
