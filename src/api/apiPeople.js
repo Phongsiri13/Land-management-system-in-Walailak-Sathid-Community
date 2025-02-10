@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const prefix_url = 'http://localhost:3000/citizen/prefix';
-const people_search_url = 'http://localhost:3000/citizen/search';
+const prefix_url = 'http://localhost:3000/citizen/prefix'
+const people_search_url = 'http://localhost:3000/citizen/search'
 
 // getPrefix
 export const fetchPrefix = async () => {
@@ -24,24 +24,49 @@ export const fetchPrefix = async () => {
 
 // Search Like for citizen
 export const fetchPeopleName = async (firstName) => {
-  const citizen = firstName;
-  console.log('citizen:', citizen);
+  const citizen = firstName
+  console.log('citizen:', citizen)
   try {
-    console.log('link:',people_search_url+`?firstname="${citizen}"`);
-    const response = await axios.get(people_search_url+`?firstname="${citizen}"`);
-    console.log('res-citizen:', response.data);
-    const citizenNameList = [];
+    console.log('link:', people_search_url + `?firstname="${citizen}"`)
+    const response = await axios.get(people_search_url + `?firstname="${citizen}"`)
+    console.log('res-citizen:', response.data)
+    const citizenNameList = []
     for (let d of response.data) {
       // console.log(d)
       // citizenNameList.push(d.first_name +' '+ d.last_name)
       citizenNameList.push({
         value: d.ID_CARD,
-        label: d.first_name +' '+ d.last_name
-      });
+        label: d.first_name + ' ' + d.last_name
+      })
     }
-    console.log('sss:',citizenNameList)
-    return citizenNameList;
+    console.log('sss:', citizenNameList)
+    return citizenNameList
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
 }
+
+export const checkFullnameMatchCitizen = async (fname, lname) => {
+  const response = await axios.get(
+    `http://localhost:3000/citizen/qf?firstname=${fname}&lastname=${lname}`
+  )
+  console.log('send:', response.data)
+  if (response.data.status) {
+    return response.data
+  } else {
+    return response.data
+  }
+}
+
+export const fetchPeopleID = async (ID_CARD) => {
+  const citizen = ID_CARD
+  try {
+    const response = await axios.get(`http://localhost:3000/citizen/${citizen}`)
+    console.log('res-citizen:', response.data)
+    const citizenNameList = response.data
+    return citizenNameList
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+

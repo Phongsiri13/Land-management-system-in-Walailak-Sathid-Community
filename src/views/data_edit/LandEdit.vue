@@ -2,8 +2,8 @@
   <div class="primary_content">
     <div class="py-5 is-flex is-justify-content-center">
       <div class="box column is-three-quarters-tablet is-three-quarters-desktop is-four-fifths-mobile">
-        <h1 class="title has-text-centered py-2">รายละเอียดที่ดิน</h1>
-        <form @submit.prevent="creationLand" class="px-3">
+        <h1 class="title has-text-centered py-2 has-text-link">แก้ไขรายละเอียดที่ดิน</h1>
+        <form @submit.prevent="updateLand" class="px-3">
           <!-- ซอย -->
           <div class="columns">
             <div class="column">
@@ -49,22 +49,8 @@
                 <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง-นามสกุล</label>
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="formLand.full_name" type="text"
-                    placeholder="กรุณากรอกชื่อจริง - นามสกุล" @input="searchNames" @change="checkSelectedName" />
+                    placeholder="กรุณากรอกชื่อจริง - นามสกุล" />
                   <DisplayError v-if="errors.full_name" :err_text="errors.full_name" />
-                </div>
-                <!-- แสดงข้อความข้อผิดพลาด -->
-                <div v-if="formLand.full_name && filteredNames.length == 0 && !isNameSelected" class="error-message">
-                  ไม่มีชื่อที่ตรงกับการค้นหา
-                </div>
-                <!-- แสดงรายการแนะนำ -->
-                <div v-if="filteredNames.length > 0" class="suggestions mt-1">
-                  <ul>
-                    <li v-for="name in filteredNames" :key="name.label" @click="selectName(name.label, name.value)">
-                      <span class="icon">
-                        <i class="fas fa-search"></i>
-                      </span> {{ name.label }}
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
@@ -78,8 +64,8 @@
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="formLand.tf_number" type="text"
                     @input="validateField('tf_number')" :class="{ 'is-danger': errors.tf_number }"
-                    placeholder="กรุณากรอกแปลงเลขที่" />
-                  <DisplayError v-if="errors.tf_number" :err_text="errors.tf_number" />
+                    placeholder="กรุณากรอกแปลงเลขที่" disabled />
+                  <!-- <DisplayError v-if="errors.tf_number" :err_text="errors.tf_number" /> -->
                 </div>
               </div>
             </div>
@@ -90,7 +76,7 @@
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.spk_area }"
                     @input="validateField('spk_area')" v-model="formLand.spk_area" type="text"
-                    placeholder="กรุณากรอกกระวาง ส.ป.ก" />
+                    placeholder="กรุณากรอกกระวาง ส.ป.ก" disabled/>
                   <DisplayError v-if="errors.spk_area" :err_text="errors.spk_area" />
                 </div>
               </div>
@@ -102,7 +88,7 @@
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.number }"
                     @input="validateField('number')" v-model="formLand.number" type="text"
-                    placeholder="กรุณากรอกเลขที่" />
+                    placeholder="กรุณากรอกเลขที่" disabled />
                   <DisplayError v-if="errors.number" :err_text="errors.number" />
                 </div>
               </div>
@@ -114,7 +100,7 @@
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.volume }"
                     @input="validateField('volume')" v-model="formLand.volume" type="text"
-                    placeholder="กรุณากรอกเล่มที่" />
+                    placeholder="กรุณากรอกเล่มที่" disabled/>
                   <DisplayError v-if="errors.volume" :err_text="errors.volume" />
                 </div>
               </div>
@@ -254,13 +240,6 @@
           <!-- -------------------------------------------- End โฉนด ------------------------------------------ -->
           <!-- submit to create land -->
           <div class="field is-grouped is-grouped-centered mt-4">
-            <!-- Reset Button -->
-            <button type="button" class="button is-warning is-medium is-size-5 is-rounded px-5" @click="resetForm">
-              <span class="icon">
-                <i class="fas fa-undo"></i>
-              </span>
-              <span>รีเซ็ต</span>
-            </button>
 
             <!-- Submit Button -->
             <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
@@ -280,15 +259,15 @@
 <script>
 import { store } from '@/store';
 import * as yup from "yup";
-import { getRai, updateVillageOptions } from '@/utils/addressFunc';
+import { getRai } from '@/utils/addressFunc';
 import axios from 'axios';
-import { fetchSois, fetchLandStatus} from '@/api/apiLand';
-import { fetchPeopleName } from '@/api/apiPeople';
+import { fetchSois, fetchLandStatus, fetchLandOne } from '@/api/apiLand';
+import { fetchPeopleID, fetchPeopleName } from '@/api/apiPeople';
 import Swal from 'sweetalert2';
 import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea } from '@/utils/landFunc';
-import { showErrorAlert, showSuccessAlert} from '@/utils/alertFunc';
+import { showErrorAlert, showWarningAlert, showSuccessAlert } from '@/utils/alertFunc';
 
 export default {
   components: {
@@ -296,9 +275,9 @@ export default {
   },
   data() {
     return {
-      formLand: {
-        ...getLandModel
-      },
+      ID_LAND: "",
+      formLand: {},
+      oldFormLand: {},
       errors: {}, // Stores validation errors
       rais: getRai(),
       sois: [
@@ -310,54 +289,106 @@ export default {
       prefixListLand: [
         { value: null, label: 'ไม่พบข้อมูล' },
       ],
+      activedList: [
+        { value: null, label: 'ไม่พบข้อมูล' },
+      ],
       village: [],
       isNameSelected: false, // ใช้เพื่อตรวจสอบว่าเลือกชื่อจากแนะนำหรือยัง
       filteredNames: [], // รายชื่อที่กรองแล้ว
       prefix_name: null,
-      btnLoad: false
+      btnLoad: false,
+      villageOptions: {
+        'หัวตะพาน': [
+          { value: 1, label: 'หมู่ที่ 1 บ้านคลองดิน' },
+          { value: 2, label: 'หมู่ที่ 2 บ้านฉิมพลี' },
+          { value: 3, label: 'หมู่ที่ 3 บ้านคลองขุด' },
+          { value: 4, label: 'หมู่ที่ 4 บ้านทุ่งตก' },
+          { value: 5, label: 'หมู่ที่ 5 บ้านดอนยาง' },
+          { value: 6, label: 'หมู่ที่ 6 บ้านทุ่งชน' },
+          { value: 7, label: 'หมู่ที่ 7 บ้านวัดประดู่' },
+          { value: 8, label: 'หมู่ที่ 8 บ้านสวนหมาก' },
+          { value: 9, label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
+        ],
+        'ไทรบุรี': [
+          { value: 1, label: 'หมู่ที่ 1 บ้านโพธิ์' },
+          { value: 2, label: 'หมู่ที่ 2 บ้านคูเถร' },
+          { value: 3, label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
+          { value: 4, label: 'หมู่ที่ 4 บ้านในหัน' },
+          { value: 5, label: 'หมู่ที่ 5 บ้านไม้มูก' },
+          { value: 6, label: 'หมู่ที่ 6 บ้านปลักจอก' },
+          { value: 7, label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
+          { value: 8, label: 'หมู่ที่ 8 บ้านลุ่มนา' },
+          { value: 9, label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
+          { value: 10, label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
+        ]
+      }
     }
   },
   methods: {
-    checkSelectedName() {
-      if (this.formLand.full_name.length < 3) {
-        this.filteredNames = this.namesList.filter(name =>
-          name.toLowerCase().includes(this.formLand.full_name.toLowerCase())
-        );
-        this.isNameSelected = false
-        this.filteredNames = []
-      }
-    },
-    async searchNames() {
-      if (this.formLand.full_name.length > 3) {
-        this.filteredNames = await fetchPeopleName(this.formLand.full_name)
+    async updateVillageOptions(district) {
+      // Update the village list based on subdistrict
+      if (district === 'หัวตะพาน' || district === 'ไทรบุรี') {
+        this.village = this.villageOptions[district];
+
+        // If the current village is not in the new list, reset the village selection
+        const isValidVillage = this.village.some(v => String(v.value) === String(this.formLand.village));
+
+        if (!isValidVillage) {
+          this.formLand.village = "";  // Reset if the current village is not valid for this subdistrict
+        }
       } else {
-        this.filteredNames = [];
+        this.village = [];  // Clear village options if no valid subdistrict
+        this.formLand.village = "";  // Reset village selection
       }
-    },
-    // เลือกชื่อที่แนะนำ
-    selectName(name, id_card) {
-      if (this.errors.full_name) {
-        this.errors.full_name = name;
+
+      // Reset error for village
+      if (this.errors['village']) {
+        this.errors['village'] = "";
       }
-      this.formLand.full_name = name;
-      this.formLand.id_card = id_card;
-      this.filteredNames = []; // ล้างแนะนำเมื่อเลือกชื่อ
-      this.isNameSelected = true;
+
+      // Trigger validation for subdistrict
+      await this.validateField("district");
     },
-    updateVillage() {
-      console.log('village:', this.formLand.district)
-      this.village = updateVillageOptions(this.formLand.district)
-      // console.log('result-village:', this.village)
-      this.formLand.village = ""
+    showSuccessAlert() {
+      Swal.fire({
+        title: 'เพิ่มข้อมูลสำเร็จ!',
+        text: 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว',
+        icon: 'success', // ใช้ 'success' เพื่อแสดงไอคอนสีเขียว
+        confirmButtonText: 'ตกลง'
+      });
     },
-    async creationLand() {
+    showErrorAlert() {
+      Swal.fire({
+        title: 'เพิ่มข้อมูลไม่สำเร็จ!',
+        text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
+        icon: 'error', // ใช้ 'error' เพื่อแสดงไอคอนสีแดง
+        confirmButtonText: 'ตกลง'
+      });
+    },
+    async updateLand() {
+      console.log('ds')
       // ตรวจสอบข้อมูลที่กรอก
       const isValid = await this.validateForm();
       if (!isValid) {
-        showErrorAlert();
+        this.showErrorAlert();
         return;
       };
-      console.log(":::", this.formLand.ngan)
+      // Compare form data with old data
+      const hasChanges = this.compareData(this.formLand, this.oldFormLand);
+
+      if (!hasChanges) {
+        await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
+        return; // No changes to submit
+      }
+
+      const resCitizenID = await fetchPeopleID(this.formLand.id_card)
+      console.log("res-d:",resCitizenID);
+
+      if(!resCitizenID[0]){
+        await showWarningAlert('ไม่มีราษฎรผู้นี้ในระบบ!', 'กรุณาเพิ่มราษฎรผู้นี้ก่อน');
+      }
+
+      // Check rai amount of land
       const cal_result = calculateLandArea(
         this.formLand.rai,
         this.formLand.ngan,
@@ -370,7 +401,6 @@ export default {
       } else {
         console.log("พื้นที่ที่คำนวณได้:", cal_result);
       }
-      // return;
 
       this.btnLoad = true
       store.status_path_change = true
@@ -378,10 +408,6 @@ export default {
         soi: this.formLand.selectedSoi,
         land_status: this.formLand.selectedStatus,
         id_card: this.formLand.id_card,
-        // fullname: this.formLand.full_name,
-        tf_number: this.formLand.tf_number,
-        spk_area: this.formLand.spk_area,
-        volume: this.formLand.volume,
         address: this.formLand.address_house,
         village: this.formLand.village,
         district: this.formLand.district,
@@ -391,27 +417,19 @@ export default {
         rai: cal_result.rai,
         ngan: cal_result.ngan,
         square_wa: cal_result.squareWa,
-        number: this.formLand.number
       };
 
       console.log('Form submitted:', form_data);
       // this.resetForm();
       try {
-        const response = await axios.post('http://localhost:3000/land', form_data);
+        const response = await axios.put(`http://localhost:3000/land/${this.ID_LAND}`, form_data);
         console.log('Response:', response.data);
-
-        if(response.data.statusCode == 200) {
-          await showSuccessAlert('การเพิ่มข้อมูลที่ดิน', response.data.message)
-          return 
-        }
-        if (response.data.statusCode == 409) {
-          await showErrorAlert("การเพิ่มข้อมูลที่ดิน", response.data.message)
-          return;
-        }
+        // this.resetForm()
+        this.showSuccessAlert()
       } catch (error) {
         console.error('Error:', error);
-        await showErrorAlert('การเพิ่มข้อมูลที่ดิน')
-      } finally {
+        this.showErrorAlert()
+      }finally{
         this.btnLoad = false
         store.status_path_change = false
       }
@@ -458,6 +476,14 @@ export default {
     },
     getValidationSchema() {
       return yup.object().shape({ ...LandValidSchema });
+    },
+    compareData(newData, oldData) {
+      for (const key in newData) {
+        if (newData[key] !== oldData[key]) {
+          return true; // If any field is different, return true (indicating a change)
+        }
+      }
+      return false; // No changes detected
     }
   },
   watch: {
@@ -482,12 +508,47 @@ export default {
       if (newValue > 89.999999) {
         this.formLand.lat = 89.999999;
       }
+    },
+    'formLand.district': async function (newSubdistrict) {
+      // Update the village options when subdistrict changes
+      await this.updateVillageOptions(newSubdistrict);
     }
   },
-  async mounted() {
+  async created() {
     try {
+      const landID = this.$route.params.id;
       this.sois = await fetchSois()
       this.land_status = await fetchLandStatus()
+      console.log('landID:', landID)
+      const resLand = await fetchLandOne(landID)
+      this.ID_LAND = resLand[0].id_land;
+      const originalData = {
+        full_name: '', // Full name needs to be provided separately if available
+        id_card: resLand[0].id_card,
+        selectedSoi: resLand[0].current_soi,
+        selectedStatus: resLand[0].current_land_status,
+        tf_number: resLand[0].tf_number,
+        spk_area: resLand[0].spk_area,
+        number: resLand[0].number,
+        volume: resLand[0].volume,
+        address_house: resLand[0].l_house_number,
+        group_number: resLand[0].l_village_number,
+        soi: resLand[0].current_soi, // Assuming 'soi' is equivalent to 'current_soi'
+        rai: resLand[0].rai,
+        ngan: resLand[0].ngan,
+        square_wa: resLand[0].square_wa,
+        district: resLand[0].l_district,
+        village: resLand[0].l_village_number, // If 'village' needs to be the village number
+        long: resLand[0].long,
+        lat: resLand[0].lat,
+        notation: resLand[0].notation,
+      };
+      this.formLand = { ...originalData };
+      this.oldFormLand = { ...originalData };
+      console.log(this.formLand.id_card)
+      const resCitizenID = await fetchPeopleID(this.formLand.id_card)
+      this.formLand['full_name'] = resCitizenID[0].first_name + ' ' + resCitizenID[0].last_name;
+      this.oldFormLand['full_name'] = resCitizenID[0].first_name + ' ' + resCitizenID[0].last_name;
     } catch (err) {
       this.error = 'Error fetching sois: ' + err.message;
     }

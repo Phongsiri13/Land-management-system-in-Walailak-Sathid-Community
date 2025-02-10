@@ -13,14 +13,14 @@
             <div class="modal-background" @click="closeEditModal"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">แก้ไขชื่อประเภทไฟล์</p>
+                    <p class="modal-card-title">แก้ความสัมพันธ์</p>
                     <button class="delete" aria-label="close" @click="closeEditModal"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">ชื่อประเภทไฟล์</label>
+                        <label class="label">ชื่อความสัมพันธ์</label>
                         <div class="control">
-                            <input class="input" type="text" v-model="updateDcLandType.label" />
+                            <input class="input" type="text" v-model="updateRelation.label" />
                         </div>
                     </div>
                 </section>
@@ -56,14 +56,14 @@
             <div class="modal-background" @click="closeCreateModal"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">เพิ่มประเภทเอกสารของที่ดินใหม่</p>
+                    <p class="modal-card-title">เพิ่มความสัมพันธ์</p>
                     <button class="delete" aria-label="close" @click="closeCreateModal"></button>
                 </header>
                 <section class="modal-card-body">
                     <div class="field">
-                        <label class="label">ชื่อประเภทไฟล์</label>
+                        <label class="label">ชื่อความสัมพันธ์</label>
                         <div class="control">
-                            <input class="input" type="text" v-model="new_dc_land_type" />
+                            <input class="input" type="text" v-model="new_Relation" />
                         </div>
                     </div>
                 </section>
@@ -80,12 +80,12 @@
                 <tr>
                     <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
                     <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
-                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อประโยชน์การใช้ที่ดิน</th>
+                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อความสัมพันธ์</th>
                     <th class="has-text-centered has-text-white" style="width: 20%;">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- <tr v-for="(item, index) in dcLandTypeFiles" :key="item.value" class="has-text-centered">
+                <tr v-for="(item, index) in relationFiles" :key="item.value" class="has-text-centered">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.value }}</td>
                     <td>{{ item.label }}</td>
@@ -103,7 +103,7 @@
                             <span>ลบ</span>
                         </button>
                     </td>
-                </tr> -->
+                </tr>
             </tbody>
 
         </table>
@@ -111,42 +111,42 @@
 </template>
 
 <script>
-import { fetchDocumentLandType } from '@/api/apiLand';
+import { fetchRelation } from '@/api/apiLand';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
-import { getOneDocumentLandType } from '@/api/apiManageInformation';
+import { getOneRelation } from '@/api/apiManageInformation';
 
 export default {
     data() {
         return {
-            dcLandTypeFiles: [],
+            relationFiles: [],
             isEditModalOpen: false,
             isConfirmModalOpen: false,
             isCreateModalOpen: false,
-            updateDcLandType: { value: null, label: '' },
+            updateRelation: { value: null, label: '' },
             loadingCreate: false,
             loadingEdit: false,
             loadingRemove: false,
-            new_dc_land_type: '',
+            new_Relation: '',
             deleteItem: null
         };
     },
     methods: {
         async saveNewDCLandType() {
             const createData = {
-                dc_type_name: this.new_dc_land_type
+                label: this.new_Relation
             }
             // Close the modal after saving
             this.loadingCreate = true;
             try {
-                const response = await axios.post('http://localhost:3000/manage_land_document_type/create', createData);
-                await showSuccessAlert('เพิ่มข้อมูลประเภทไฟล์ที่ดิน', response.data.message);
+                const response = await axios.post('http://localhost:3000/manage_relation/create', createData);
+                await showSuccessAlert('เพิ่มข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
-                    this.dcLandTypeFiles = [];
-                    this.dcLandTypeFiles = await fetchDocumentLandType();
+                    this.relationFiles = [];
+                    this.relationFiles = await fetchRelation();
                 }
             } catch (error) {
-                await showErrorAlert('เพิ่มข้อมูลประเภทไฟล์ที่ดิน', 'ไม่สำเร็จ');
+                await showErrorAlert('เพิ่มข้อมูลความสัมพันธ์', 'ไม่สำเร็จ');
             } finally {
                 this.loadingCreate = false;
                 this.closeCreateModal();
@@ -156,14 +156,14 @@ export default {
             this.loadingRemove = true;
 
             try {
-                const response = await axios.delete(`http://localhost:3000/manage_land_document_type/${item}`);
-                await showSuccessAlert('ลบข้อมูลประเภทไฟล์ที่ดิน', response.data.message);
+                const response = await axios.delete(`http://localhost:3000/manage_relation/${item}`);
+                await showSuccessAlert('ลบข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
-                    this.dcLandTypeFiles = [];
-                    this.dcLandTypeFiles = await fetchDocumentLandType();
+                    this.relationFiles = [];
+                    this.relationFiles = await fetchRelation();
                 }
             } catch (error) {
-                await showErrorAlert('ลบข้อมูลประเภทไฟล์ที่ดิน', response.data.message);
+                await showErrorAlert('ลบข้อมูลความสัมพันธ์', response.data.message);
             } finally {
                 this.loadingRemove = false;
                 this.closeConfirmModal(); // Close the modal after deletion
@@ -171,21 +171,22 @@ export default {
         },
         async saveEdit() {
             this.loadingEdit = true;
-            console.log('edit-v:', this.updateDcLandType.label)
+            console.log('edit-v:', this.updateRelation.label)
+            console.log('edit-v:', this.updateRelation.value)
             try {
-                const response = await axios.put(`http://localhost:3000/manage_land_document_type/${this.updateDcLandType.value}`, {
-                    dc_type_name: this.updateDcLandType.label
+                const response = await axios.put(`http://localhost:3000/manage_relation/${this.updateRelation.value}`, {
+                    label: this.updateRelation.label
                 });
                 await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
                 if (response.data.success) {
-                    this.dcLandTypeFiles = [];
-                    this.dcLandTypeFiles = await fetchDocumentLandType();
+                    this.relationFiles = [];
+                    this.relationFiles = await fetchRelation();
                 }
                 console.log('Response:', response.data);
             } catch (error) {
                 await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
             } finally {
-                this.updateDcLandType = { value: null, label: '' };
+                this.updateRelation = { value: null, label: '' };
                 this.isEditModalOpen = false;
                 this.loadingEdit = false;
                 this.closeEditModal(); // close model
@@ -204,12 +205,12 @@ export default {
         async openEditModal(item) {
             console.log('item:', item)
             try {
-                const response = await getOneDocumentLandType(item);
+                const response = await getOneRelation(item);
                 if (response.data) {
                     console.log('res:', response.data);
-                    this.updateDcLandType = {
-                        value: response.data[0].ID_dc_type,
-                        label: response.data[0].dc_type_name
+                    this.updateRelation = {
+                        value: response.data[0].id,
+                        label: response.data[0].label
                     };
                 }
             } catch (error) {
@@ -219,7 +220,7 @@ export default {
         },
         closeEditModal() {
             this.isEditModalOpen = false;
-            this.updateDcLandType = { value: null, label: '' };
+            this.updateRelation = { value: null, label: '' };
         },
         closeConfirmModal() {
             this.isConfirmModalOpen = false; // Close confirmation modal
@@ -228,7 +229,7 @@ export default {
     },
     async mounted() {
         try {
-            this.dcLandTypeFiles = await fetchDocumentLandType();
+            this.relationFiles = await fetchRelation();
         } catch (error) {
 
         }

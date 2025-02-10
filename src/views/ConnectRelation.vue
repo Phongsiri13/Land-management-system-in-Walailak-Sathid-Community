@@ -2,8 +2,8 @@
     <div class="primary_content">
         <div class="is-flex is-justify-content-center py-5">
             <div class="box column is-three-quarters-tablet is-three-fifths-desktop is-four-fifths-mobile">
-                <h1 class="title has-text-centered is-size-2 has-text-weight-bold">
-                    รายละเอียดของทายาท
+                <h1 class="title has-text-centered is-size-2 has-text-weight-bold py-3">
+                    ระบุความสัมพันธ์ระหว่างราษฎรกับทายาท
                 </h1>
                 <!-- Input -->
                 <form @submit.prevent="submitHeirRelation">
@@ -42,6 +42,22 @@
                         <transition-group name="fade" tag="div">
                             <div v-for="(heir, index) in formHeirData.heirs" :key="index"
                                 class="columns is-vcentered pt-1">
+                                <!-- ชื่อจริง-นามสกุล ของทายาท -->
+                                <div class="column is-7">
+                                    <div class="field">
+                                        <label class="label is-size-5 has-text-weight-semibold">
+                                            <strong class="has-text-danger">*</strong>
+                                            ชื่อจริง - นามสกุล (ทายาท {{ index + 1 }})
+                                        </label>
+                                        <div class="control has-icons-left">
+                                            <input class="input is-medium is-size-5" v-model="heir.fullname" type="text"
+                                                :placeholder="`กรุณากรอกชื่อจริงทายาท ${index + 1}`" required />
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- ชื่อจริงทายาท -->
                                 <div class="column is-3">
                                     <div class="field">
@@ -57,22 +73,6 @@
                                                     </option>
                                                 </select>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- ชื่อจริง-นามสกุล ของทายาท -->
-                                <div class="column is-7">
-                                    <div class="field">
-                                        <label class="label is-size-5 has-text-weight-semibold">
-                                            <strong class="has-text-danger">*</strong>
-                                            ชื่อจริง - นามสกุล (ทายาท {{ index + 1 }})
-                                        </label>
-                                        <div class="control has-icons-left">
-                                            <input class="input is-medium is-size-5" v-model="heir.fullname" type="text"
-                                                :placeholder="`กรุณากรอกชื่อจริงทายาท ${index + 1}`" required />
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-user"></i>
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -126,19 +126,20 @@
 
 <script>
 import { store } from '@/store'
-import { fetchRelation } from '@/api/apiHeir';
+import { fullCheckMatchHeir, fetchRelation } from '@/api/apiHeir';
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 import { personModel, heirListValidSchema } from '@/model/connectModel';
-import { splitFullName } from '@/utils/citizenFunc';
+import { checkFullnameMatchCitizen } from '@/api/apiPeople';
 
 export default {
     data() {
         return {
+            errors: {},
             formPeople: { ...personModel },
             // formHeirData: getHeirModel,
             formHeirData: {
-                heirs: [{ fullname: '', relationSlected: '' }]
+                heirs: [{ fullname: '', fname: '', lname: '', relationSlected: '' }]
             },
             btnLoad: false,
             relationList: [
@@ -178,57 +179,105 @@ export default {
             this.btnLoad = true
             store.status_path_change = true
 
-            console.log("Heirs:", this.formHeirData.heirs);
-            console.log("Citizen:", this.formPeople.fullname);
-            console.log("Citizen-l:", this.formPeople.fullname.length);
-
-            const { citizen_fname, citizen_lname } = splitFullName(this.formPeople.fullname);
-            console.log(citizen_fname, citizen_lname)
-
-            // for (const value of this.formHeirData.heirs) {
-            //     console.log(value.fullname);
-            //     console.log(value.fullname.trim().length || "");
-            // }
-            setTimeout(() => {
-                store.status_path_change = false;
-            }, 2000);
-
+            let Citizen = []
+            // Search citizen match
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/qf/${citizen_fname || ''}/${citizen_lname || ''}`);
-                console.log('Response:', response.data);
-                showSuccessAlert()
-                this.resetForm();
-            } catch (error) {
-                if (error.response) {
-                    // Check if the status code is 404
-                    if (error.response.status === 404) {
-                        console.warn('No records found.');
-                        await showErrorAlert('ขออภัย','ไม่พบข้อมูลที่ค้นหา');
-                    } else {
-                        console.error('Error:', error.response.status);
-                        await showErrorAlert(`เกิดข้อผิดพลาด: ${error.response.status}`);
-                    }
+                // Call function to check if the citizen matches
+                const matchCitizen = await checkFullnameMatchCitizen(this.formPeople.firstname, this.formPeople.lastname);
+
+                // If citizen is not found, handle the case
+                if (!matchCitizen.status) {
+                    await showErrorAlert("ไม่พบราษฎรคนนี้ในระบบ");
+                } else {
+                    Citizen = matchCitizen.data
                 }
-                console.error('Error:', error);
-            } finally {
-                store.status_path_change = false;
+            } catch (error) {
+                // Check if the error indicates a bad request or client-side issue
+                if (error.response && error.response.status === 400) {
+                    // Handle the 400 status (bad request)
+                    console.error("Bad request error:", error);
+                    await showErrorAlert("ข้อมูลไม่ถูกต้อง กรุณาตรวจสอบข้อมูลและลองใหม่");
+                } else {
+                    // Handle other unexpected errors
+                    console.error("Error:", error);
+                    await showErrorAlert("เกิดข้อผิดพลาดในการค้นหาราษฎร");
+                }
             }
 
-            return;
-            const form_data = {
-                // relation_select: this.
-                prefix_id: this.formHeirData.prefix || null,
-                first_name: this.formHeirData.heir_fname || null,
-                last_name: this.formHeirData.heir_lname || null,
-            };
+            console.log('hihi:',Citizen)
 
-            console.log("Heir:", form_data)
-            console.log("Heir-length:", form_data.last_name.length)
+            // search match heirs
+            for (let index = 0; index < this.formHeirData.heirs.length; index++) {
+                let heir = this.formHeirData.heirs[index];
+
+                // Call formatFullName for each heir to split fullname into firstname and lastname
+                this.formatFullNameHeir(index);
+            }
 
             try {
-                const response = await axios.post('http://localhost:3000/heir', form_data);
+                // Call function to check if the citizen matches
+                const matchCitizen = await checkFullnameMatchCitizen(this.formPeople.firstname, this.formPeople.lastname);
+
+                // If citizen is not found, handle the case
+                if (!matchCitizen) {
+                    await showErrorAlert("ไม่พบราษฎรคนนี้ในระบบ");
+                    return
+                }
+
+            } catch (error) {
+                // Check if the error indicates a bad request or client-side issue
+                if (error.response && error.response.status === 400) {
+                    // Handle the 400 status (bad request)
+                    console.error("Bad request error:", error);
+                    await showErrorAlert("ข้อมูลไม่ถูกต้อง กรุณาตรวจสอบข้อมูลและลองใหม่");
+                } else {
+                    // Handle other unexpected errors
+                    console.error("Error:", error);
+                    await showErrorAlert("เกิดข้อผิดพลาดในการค้นหาราษฎร");
+                }
+                return
+            }
+
+            setTimeout(() => {
+                store.status_path_change = false;
+            }, 500);
+            let dataFrom = []
+            try {
+                // Call function to check if the citizen matches
+                const resHeirs = await fullCheckMatchHeir(this.formHeirData);
+
+                // console.log('resHeirs.notFound:',resHeirs)
+                // If citizen is not found, handle the case
+                if (!resHeirs.success) {
+                    await showErrorAlert("ไม่พบข้อมูลทายาทดังต่อไปนี้", resHeirs.notFound.map(heir => `${heir.fname} ${heir.lname}`).join(","));
+                    return
+                } else {
+                    dataFrom = resHeirs.heirs
+                }
+
+            } catch (error) {
+                // Check if the error indicates a bad request or client-side issue
+                if (error.response && error.response.status === 400) {
+                    // Handle the 400 status (bad request)
+                    console.error("Bad request error:", error);
+                    await showErrorAlert("ข้อมูลไม่ถูกต้อง กรุณาตรวจสอบข้อมูลและลองใหม่");
+                } else {
+                    // Handle other unexpected errors
+                    console.error("Error:", error);
+                    await showErrorAlert("เกิดข้อผิดพลาดในการค้นหาราษฎร");
+                }
+                return
+            }
+
+            console.log('fff:', dataFrom)
+
+            try {
+                const response = await axios.post('http://localhost:3000/heir/all', {
+                    heirsRelation: dataFrom,
+                    citizenIDCARD: Citizen[0].ID_CARD
+                });
                 console.log('Response:', response.data);
-                await showSuccessAlert()
+                await showSuccessAlert("เชื่อมความสัมพันธ์", response.data.message)
                 this.resetForm();
             } catch (error) {
                 console.error('Error:', error);
@@ -273,6 +322,47 @@ export default {
         },
         getValidationSchema() {
             return yup.object().shape({ ...LandValidSchema });
+        },
+        formatFullName(fullname) {
+            // Remove leading/trailing spaces and ensure only one space between names
+            let formattedFullName = fullname.trim().replace(/\s+/g, ' ');
+
+            // Check if fullname ends with a space and remove it
+            if (formattedFullName.endsWith(' ')) {
+                formattedFullName = formattedFullName.trimEnd();
+            }
+
+            // Split the formatted full name into parts
+            const { firstname, lastname } = this.splitFullName(formattedFullName);
+            this.formPeople.firstname = firstname;
+            this.formPeople.lastname = lastname;
+        },
+        // Method to split fullname into firstname and lastname, allowing multiple words for lastname
+        splitFullName(fullname) {
+            const nameParts = fullname.split(" ");
+            const firstname = nameParts[0] || '';
+            const lastname = nameParts.slice(1).join(" ") || '';  // Join remaining parts as lastname
+            return { firstname, lastname };
+        },
+        formatFullNameHeir(index) {
+            let fullname = this.formHeirData.heirs[index].fullname.trim();
+
+            // Remove any extra spaces between names and ensure only one space
+            fullname = fullname.replace(/\s+/g, ' ');
+
+            // Split the full name into first and last names
+            const nameParts = fullname.split(" ");
+            const firstname = nameParts[0] || '';  // First part is the first name
+            const lastname = nameParts.slice(1).join(" ") || '';  // Join remaining parts as the last name
+
+            // Update the heir's first name and last name
+            this.formHeirData.heirs[index].fname = firstname;
+            this.formHeirData.heirs[index].lname = lastname;
+        }
+    },
+    watch: {
+        'formPeople.fullname'(newValue) {
+            this.formatFullName(newValue);
         }
     },
     async mounted() {

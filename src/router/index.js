@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import BulmaTesting from '../views/BulmaTesting.vue'
 import Form from '@/views/AddLand.vue'
 import Simmulate from '@/views/Simmulate.vue'
 import { store } from '@/store'
@@ -8,7 +7,6 @@ import AddCitizen from '@/views/AddCitizen.vue'
 import Search from '@/views/Search.vue'
 import NotFound from '@/views/NotFound.vue'
 import DisplayPeople from '@/views/data_list/DisplayPeople.vue'
-import TestFromValid from '@/views/TestFromValid.vue'
 import Login from '@/views/Login.vue'
 
 import { useUserStore } from '@/stores/useUserStore'
@@ -17,14 +15,13 @@ import AdminPage from '@/views/AdminPage.vue'
 import roles from '@/role_config'
 import TableDash from '@/views/dashboard/TableDash.vue'
 import PersonDetail from '@/views/data_list/PersonDetail.vue'
+import CitizenDetail from '@/views/data_list/CitizenDetail.vue'
 import LandTitleFile from '@/views/uploadFile/LandTitleFile.vue'
 import ShowAllFiles from '@/views/uploadFile/ShowAllFiles.vue'
 import MainDash from '@/views/dashboard/MainDash.vue'
 import AddHeir from '@/views/AddHeir.vue'
 import HistoryLand from '@/views/HistoryLand.vue'
-import TestAddCitizen from '@/views/TestAddCitizen.vue'
 import ConnectRelation from '@/views/ConnectRelation.vue'
-import TestRole from '@/views/TestRole.vue'
 import CitizenEdit from '@/views/data_edit/CitizenEdit.vue'
 import ManageDefaultData from '@/views/ManageDefaultData.vue'
 
@@ -37,43 +34,22 @@ import ManageFileType from '@/components/manage_default_data/ManageFileType.vue'
 import ManageStatus from '@/components/manage_default_data/ManageStatus.vue'
 import ManageRelation from '@/components/manage_default_data/ManageRelation.vue'
 import ManageRole from '@/components/manage_default_data/ManageRole.vue'
-import ManageLandUsage from '@/components/manage_default_data/ManageLandUsage.vue'
+
+import LandEdit from '@/views/data_edit/LandEdit.vue'
+import HeirEdit from '@/views/data_edit/HeirEdit.vue'
 
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/Test-People',
-      name: 'Test-People',
-      component: TestAddCitizen
-    },
-    {
-      path: '/Test-Role',
-      name: 'TestRole',
-      component: TestRole
-    },
-    {
       path: '/',
       name: 'home',
       component: HomeView
     },
     {
-      path: '/test/bulma',
-      name: 'bulmatest',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/BulmaTesting.vue')
-      component: BulmaTesting
-    },
-    {
       path: '/dashboard',
       name: 'dashboard',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/BulmaTesting.vue')
       component: MainDash,
       meta: {
         title: 'Dashboard'
@@ -178,9 +154,36 @@ const router = createRouter({
       }
     },
     {
+      path: '/citizen_view/:id', // Child route for detail view
+      name: 'CitizenDetail',
+      component: CitizenDetail,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
+      path: '/land_view/:id', // Child route for detail view
+      name: 'LandEdit',
+      component: LandEdit,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
       path: '/complete_view/edit/:id', // Edit details
       name: 'CitizenEdit',
       component: CitizenEdit, // Create this component
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | Edit'
+      }
+    },
+    {
+      path: '/heir/edit/:id', // Edit details
+      name: 'HeirEdit',
+      component: HeirEdit, // Create this component
       meta: {
         requiredRole: roles[3].role_id,
         title: 'Admin | Edit'
@@ -224,11 +227,6 @@ const router = createRouter({
           path: 'manage_relation', // Child route for managing file types
           name: 'ManageRelation',
           component: ManageRelation
-        },
-        {
-          path: 'manage_land_usage', // Child route for managing file types
-          name: 'ManageLandUsage',
-          component: ManageLandUsage
         }
       ]
     },
@@ -239,11 +237,6 @@ const router = createRouter({
       meta: {
         title: 'User | Search'
       }
-    },
-    {
-      path: '/test_valid',
-      name: 'Valid',
-      component: TestFromValid
     },
     {
       path: '/table_dashboard',

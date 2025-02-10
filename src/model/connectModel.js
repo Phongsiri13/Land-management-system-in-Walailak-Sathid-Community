@@ -5,8 +5,6 @@ export const personModel = {
   fullname: ''
 }
 
-export const personHeirModel = { fullname: '', relationSlected: '' }
-
 export const personValidSchema = {
   fullname: yup
     .string()

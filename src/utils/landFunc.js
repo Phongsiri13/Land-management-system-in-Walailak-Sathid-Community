@@ -17,6 +17,10 @@ export function calculateLandArea(raiV, nganV, squareWaV) {
   let rai = raiV ? parseFloat(raiV) : 0 // Parse as float, handle decimals if needed
   let ngan = parseFloatFormInput(nganV)
   let squareWa = parseFloatFormInput(squareWaV)
+  let totalRai = rai + nganV / 4 + squareWa / 400
+  if (totalRai > 5) {
+    return false; // If it exceeds 5 rai, return false
+  }
 
   console.log('rai:', rai)
   console.log('ngan:', ngan)

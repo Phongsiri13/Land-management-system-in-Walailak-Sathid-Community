@@ -17,3 +17,11 @@ export function showErrorAlert(title, text) {
         confirmButtonText: 'ตกลง'
     });
 };
+
+export function showWarningAlert(title, text) {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: "warning",
+      });
+};

@@ -12,12 +12,9 @@
                                 <li :class="{ 'is-active': $route.path.includes('manage_status') }">
                                     <router-link to="/manage_default_Information/manage_status">สถานะ</router-link>
                                 </li>
-                                <li :class="{ 'is-active': $route.path.includes('manage_file_type') }">
+                                <!-- <li :class="{ 'is-active': $route.path.includes('manage_file_type') }">
                                     <router-link to="/manage_default_Information/manage_file_type">ไฟล์ที่ดิน</router-link>
-                                </li>
-                                <li :class="{ 'is-active': $route.path.includes('manage_land_usage') }">
-                                    <router-link to="/manage_default_Information/manage_land_usage">ประโยชน์การใช้ที่ดิน</router-link>
-                                </li>
+                                </li> -->
                                 <li :class="{ 'is-active': $route.path.includes('manage_relation') }">
                                     <router-link to="/manage_default_Information/manage_relation">ความสัมพันธ์</router-link>
                                 </li>

@@ -13,12 +13,16 @@
                                         คำนำหน้าชื่อ</label>
                                     <div class="control">
                                         <div class="select is-fullwidth">
-                                            <select v-model="formHeirData.prefix" class="is-size-5">
+                                            <select v-model="formHeirData.prefix" @change="validateField('prefix')"
+                                                class="is-size-5">
                                                 <option value="">เลือกคำนำหน้า</option>
                                                 <option v-for="pfl in prefixList" :key="pfl.value" :value="pfl.value">
                                                     {{ pfl.label }}
                                                 </option>
                                             </select>
+                                        </div>
+                                        <div class="mt-3">
+                                            <DisplayError v-if="errors.prefix" :err_text="errors.prefix" />
                                         </div>
                                     </div>
                                 </div>
@@ -31,9 +35,11 @@
                                     <label class="label is-size-5"><strong class="has-text-danger">*</strong>
                                         ชื่อจริง</label>
                                     <div class="control">
-                                        <input class="input is-normal is-size-5" v-model="formHeirData.heir_fname"
-                                            type="text" placeholder="กรุณากรอกชื่อจริงทายาท" />
+                                        <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
+                                            v-model="formHeirData.heir_fname" type="text"
+                                            placeholder="กรุณากรอกชื่อจริงทายาท" />
                                     </div>
+                                    <DisplayError v-if="errors.heir_fname" :err_text="errors.heir_fname" />
                                 </div>
                             </div>
                         </div>
@@ -44,9 +50,11 @@
                                     <label class="label is-size-5"><strong class="has-text-danger">*</strong>
                                         นามสกุล</label>
                                     <div class="control">
-                                        <input class="input is-normal is-size-5" v-model="formHeirData.heir_lname"
-                                            type="text" placeholder="กรุณากรอกนามสกุลทายาท" />
+                                        <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
+                                            v-model="formHeirData.heir_lname" type="text"
+                                            placeholder="กรุณากรอกนามสกุลทายาท" />
                                     </div>
+                                    <DisplayError v-if="errors.heir_lname" :err_text="errors.heir_lname" />
                                 </div>
                             </div>
                         </div>
@@ -82,14 +90,21 @@
 <script>
 import { store } from '@/store'
 import { fetchPrefix } from '@/api/apiPeople';
-import { fetchRelation } from '@/api/apiHeir';
 import axios from 'axios';
 import { getHeirModel } from '@/model/heirModel';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
+import DisplayError from '@/components/form_valid/DisplayError.vue';
+import { HeirValidSchema } from '@/model/heirModel';
+import * as yup from "yup";
+import { checkFullnameMatchHeir } from '@/api/apiHeir';
 
 export default {
+    components: {
+        DisplayError
+    },
     data() {
         return {
+            errors: {},
             formHeirData: { ...getHeirModel },
             btnLoad: false,
             prefixList: [
@@ -98,18 +113,47 @@ export default {
         }
     },
     methods: {
-        async SuccessAlert() {
-            await showSuccessAlert()
-        },
         async ErrorAlert() {
             await showErrorAlert()
         },
+        // Validate individual fields
+        async validateField(field) {
+            try {
+                const schema = this.getValidationSchema();
+                await schema.validateAt(field, this.formHeirData);
+                this.errors[field] = ""; // Clear error if valid
+            } catch (err) {
+                this.errors[field] = err.message; // Set error message
+            }
+        },
+        // Validate the whole form
+        async validateForm() {
+            try {
+                const schema = this.getValidationSchema();
+                await schema.validate(this.formHeirData, { abortEarly: false });
+                this.errors = {}; // Clear all errors
+                return true;
+            } catch (err) {
+                this.errors = err.inner.reduce((acc, curr) => {
+                    acc[curr.path] = curr.message;
+                    return acc;
+                }, {});
+                return false;
+            }
+        },
+        // schema
+        getValidationSchema() {
+            return yup.object().shape({ ...HeirValidSchema });
+        },
         resetForm() {
             console.log('reset')
-            this.formHeirData = {...getHeirModel}
+            this.formHeirData = { ...getHeirModel }
             this.errors = {};
         },
         async submitHeir() {
+            // ตรวจสอบข้อมูลที่กรอก
+            const isValid = await this.validateForm();
+            if (!isValid) return;
             this.btnLoad = true
             store.status_path_change = true
 
@@ -122,21 +166,29 @@ export default {
                 last_name: this.formHeirData.heir_lname || null,
             };
 
+            const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
+            if(matchName){
+                await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
+                return
+            }
+
             console.log("Heir:", form_data)
             console.log("Heir-length:", form_data.last_name.length)
 
             try {
                 const response = await axios.post('http://localhost:3000/heir', form_data);
                 console.log('Response:', response.data);
-                await this.SuccessAlert()
+                await showSuccessAlert('การเพิ่มข้อมูลทายาท', response.data.message)
                 this.resetForm();
             } catch (error) {
                 console.error('Error:', error);
-                this.ErrorAlert();
+                showErrorAlert('การเพิ่มข้อมูลทายาท', response.data.message);
             } finally {
                 this.btnLoad = false;
                 store.status_path_change = false;
             }
+            this.btnLoad = false;
+            store.status_path_change = false;
         },
     },
     async mounted() {

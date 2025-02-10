@@ -4,6 +4,7 @@
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
+                        <!-- Search -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
                                 <div class="field">
@@ -24,8 +25,8 @@
                                     <button class="button" @click="fetchCitizenData">ค้นหา</button>
                                 </div>
                             </div>
-                            <div class="is-flex align-self">
-                                <span class="px-1">แสดง </span>
+                            <div class="is-flex is-align-items-center is-justify-content-center">
+                                <span class="px-2">แสดง</span>
                                 <div class="field">
                                     <div class="control">
                                         <div class="select is-fullwidth">
@@ -37,13 +38,15 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="px-1"> ตาราง</span>
+                                <span class="px-2">ตาราง</span>
                             </div>
+
                         </div>
+                        <!-- Content -->
                         <div class="table-container">
                             <table v-if="citizen_values.length"
                                 class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                <thead>
+                                <thead class="table-header">
                                     <tr>
                                         <th>ลำดับ</th>
                                         <th>ID-CARD</th>
@@ -65,20 +68,9 @@
                                 ไม่พบข้อมูล
                             </div>
                         </div>
+
+                        <!-- Control Page -->
                         <nav class="pagination" role="navigation" aria-label="pagination">
-                            <!-- ปุ่ม Previous -->
-                            <a class="pagination-previous" :class="{ 'is-disabled': currentPage === 1 }"
-                                @click="setPage(currentPage - 1)" :disabled="currentPage === 1">
-                                Previous
-                            </a>
-
-                            <!-- ปุ่ม Next -->
-                            <a class="pagination-next" :class="{ 'is-disabled': currentPage === totalPages }"
-                                @click="setPage(currentPage + 1)" :disabled="currentPage === totalPages">
-                                Next
-                            </a>
-
-                            <!-- รายการหน้าทั้งหมด -->
                             <ul class="pagination-list">
                                 <li v-for="page in totalPages" :key="page">
                                     <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
@@ -140,7 +132,7 @@ export default {
             this.$router.push({ params: { limit: this.selectedLimit, page: 1 } });
         },
         goToDetail(id) {
-            this.$router.push({ name: 'PersonDetail', params: { id } });
+            this.$router.push({ name: 'CitizenDetail', params: { id } });
         }
     }
 };

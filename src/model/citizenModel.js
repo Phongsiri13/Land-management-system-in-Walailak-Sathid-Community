@@ -12,7 +12,8 @@ export const getPeopleModel = {
   selectedSoi: '',
   prefix: '',
   subdistrict: '',
-  village: ''
+  village: '',
+  houseNumber: ''
 }
 
 export const CitizenValidSchema = {

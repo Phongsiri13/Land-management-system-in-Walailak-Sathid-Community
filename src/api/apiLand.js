@@ -31,6 +31,28 @@ export const fetchLandStatus = async () => {
   }
 }
 
+export const fetchOneLandStatus = async (landID) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/manage_status_info/${landID}`)
+    console.log('res-land:', response.data)
+    const status_land = response.data
+    return status_land
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+
+export const fetchLandOne = async (landID) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/land/${landID}`)
+    console.log('res-land:', response.data)
+    const status_land = response.data
+    return status_land
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+
 export const fetchDocumentLandType = async () => {
   try {
     const response = await axios.get('http://localhost:3000/manage_land_document_type')
@@ -39,6 +61,21 @@ export const fetchDocumentLandType = async () => {
       documentLandType.push({ value: ls.ID_dc_type, label: `${ls.dc_type_name}` })
     }
     return documentLandType
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+
+export const fetchRelation = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/manage_relation')
+    // console.log('res-land:', response.data)
+    const status_land = []
+    for (let ls of response.data) {
+      status_land.push({ value: ls.id, label: `${ls.label}` })
+    }
+    // throw new Error("ค่าที่ส่งมาไม่ถูกต้อง");
+    return status_land
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }

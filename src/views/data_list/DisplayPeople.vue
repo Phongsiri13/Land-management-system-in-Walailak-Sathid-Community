@@ -84,9 +84,6 @@
                                 <li>
                                     <a class="pagination-link is-current" aria-label="Page 1" aria-current="page">1</a>
                                 </li>
-                                <li>
-                                    <a class="pagination-link" aria-label="Page 1" aria-current="page">2</a>
-                                </li>
                             </ul>
                         </nav>
                     </div>
@@ -197,9 +194,6 @@ export default {
             this.$router.push({ name: 'PersonDetail', params: { id: id_land } });
         }
     },
-    async created() {
-
-    }
 }
 </script>
 
