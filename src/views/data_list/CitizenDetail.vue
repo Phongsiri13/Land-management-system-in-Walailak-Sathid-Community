@@ -5,16 +5,27 @@
                 <div class="py-2 is-flex 
                 is-justify-content-space-between">
                     <h2 class="title has-text-primary px-3 is-size-3">ข้อมูลราษฎร</h2>
-                    <h2 class="has-text-weight-semibold is-size-7">
+                    <h2 class="has-text-weight-semibold is-size-6">
                         วันที่สร้าง: {{ ToThaiDate(new Date(formPeopleData.created)) || '-' }}
                     </h2>
                 </div>
-                <!-- Edit -->
-                <button class="button is-warning is-medium is-rounded px-5 my-3"
-                @click="goToEdit(formPeopleData[0]?.ID_CARD)" >
-                    <span class="icon"><i class="fas fa-pencil-alt"></i></span>
-                    <span>แก้ไข</span>
-                </button>
+
+                <div class="is-flex is-justify-content-flex-end">
+                    <!-- Edit -->
+                    <button class="button is-warning btn-menu" @click="goToEdit(formPeopleData[0]?.ID_CARD)">
+                        <span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                        <span>แก้ไข</span>
+                    </button>
+
+                    <!-- add file -->
+                    <button class="button is-primary mx-2 btn-menu"
+                        @click="goToCitizenFile(formPeopleData[0]?.ID_CARD)">
+                        <span class="icon"><i class="fas fa-file"></i></span>
+                        <span>เพิ่มไฟล์</span>
+                    </button>
+                </div>
+
+                <hr>
 
                 <div class="columns is-multiline px-3">
                     <div class="column is-half">
@@ -73,21 +84,41 @@
                     </div>
                 </div>
 
+                <!-- heir -->
+                <!-- ข้อมูลทายาท -->
+                <hr>
+                <h2>ทายาทนี้</h2>
+                <div v-if="formHeirData.length > 0">
+                    <div v-for="(heir, index) in formHeirData" :key="heir.heir_id" class="box">
+                        <p class="has-text-weight-bold">ทายาทคนที่: {{ ++index }}</p>
+                        <p class="has-text-weight-bold s-4">ความสัมพันธ์: {{ formPeopleData.firstName || '-' }}
+                            {{ formPeopleData.lastName || '-' }}
+                            เป็น{{ heir.label }} ของทายาทผู้นี้</p>
+                        <p class="title is-4">{{ heir.heir_first_name }} {{ heir.heir_last_name }}</p>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="notification is-info">
+                        <h2 class="title is-4 has-text-centered">ทายาทผู้ในยังไม่มีใครเป็นราษฎร</h2>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 import { convertToThaiDate } from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
+import { showErrorAlert } from '@/utils/alertFunc';
 
 export default {
     data() {
         return {
-            formPeopleData: []
+            formPeopleData: [],
+            formHeirData: []
         }
     },
     methods: {
@@ -96,13 +127,16 @@ export default {
         },
         goToEdit(id) {
             this.$router.push({ name: 'CitizenEdit', params: { id } });
+        },
+        goToCitizenFile(id) {
+            this.$router.push({ name: 'CitizenEdit', params: { id } });
         }
     },
     async created() {
-        const personId = this.$route.params.id;
-        this.prefixList = await fetchPrefix();
-        console.log('prefixList:', this.prefixList);
         try {
+            const personId = this.$route.params.id;
+            this.prefixList = await fetchPrefix();
+            console.log('prefixList:', this.prefixList);
             const response = await axios.get(`http://localhost:3000/citizen/${personId}`);
             console.log('le:', response.data.length)
             if (response.data.length <= 0) {
@@ -129,7 +163,15 @@ export default {
                 created: originalData.created_at || '-'
             };
 
-            // if(response.data.length > 0){}
+            // getHeirs
+            const resHeir = await axios.get(`http://localhost:3000/heir/related_citizen/${personId}`);
+            console.log('le:', resHeir.data)
+            if (resHeir.data.length <= 0) {
+                await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
+                return;
+            }
+            this.formHeirData = resHeir.data;
+
         } catch (error) {
             console.error('Error fetching person data:', error);
         }
@@ -137,4 +179,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.btn-menu {
+    border-radius: 10px;
+    min-width: 120px;
+}
+</style>

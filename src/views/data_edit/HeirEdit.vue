@@ -2,7 +2,7 @@
   <div class="primary_content">
     <div class="is-flex is-justify-content-center is-align-items-center py-5">
       <div class="box column is-three-quarters-tablet is-half-desktop is-four-fifths-mobile">
-        <h1 class="title has-text-centered is-size-2">รายละเอียดของทายาท</h1>
+        <h1 class="title has-text-centered is-size-3 has-text-link">แก้ไขรายละเอียดของทายาท</h1>
         <form @submit.prevent="submitUpdateHeir">
           <div class="container px-5">
             <!-- People's name -->
@@ -95,6 +95,7 @@ export default {
       errors: {},
       formHeirData: {},
       oldFormHeirData: {},
+      HEIR_ID: '',
       btnLoad: false,
       prefixList: [
         { value: null, label: 'ไม่พบข้อมูล' },
@@ -147,6 +148,8 @@ export default {
 
       if (!hasChanges) {
         await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
+        this.btnLoad = false;
+        store.status_path_change = false;
         return; // No changes to submit
       }
       // return;
@@ -157,21 +160,35 @@ export default {
         last_name: this.formHeirData.heir_lname || null,
       };
 
-      const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
-      if (matchName) {
-        await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
-        return
+      try {
+        const response = await axios.get(`http://localhost:3000/heir/fullname?fname=${encodeURIComponent(form_data.first_name)}&lname=${encodeURIComponent(form_data.last_name)}`);
+        console.log('send:', response.data)
+        if (response.data) {
+          await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
+          this.btnLoad = false;
+          store.status_path_change = false;
+          return
+        }
+      } catch (error) {
+        throw new Error('ไม่สามารถค้นหาข้อมูลได้')
       }
+      // const matchName = await checkFullnameMatchHeir(this.formHeirData.heir_fname, this.formHeirData.heir_lname)
+
 
       console.log("Heir:", form_data)
       console.log("Heir-length:", form_data.last_name.length)
       try {
-        const response = await axios.put('http://localhost:3000/heir', form_data);
+        const response = await axios.put(`http://localhost:3000/heir/${this.HEIR_ID}`, form_data);
         console.log('Response:', response.data);
-        await showSuccessAlert('การเพิ่มข้อมูลทายาท', response.data.message)
+        const TITLE = 'การอัพเดทข้อมูลทายาท!'
+        if (response.data.status) {
+          await showSuccessAlert(TITLE, response.data.message)
+        } else {
+          showErrorAlert(TITLE, response.data.message);
+        }
       } catch (error) {
         console.error('Error:', error);
-        showErrorAlert('การเพิ่มข้อมูลทายาท', response.data.message);
+        showErrorAlert(TITLE, response.data.message);
       } finally {
         this.btnLoad = false;
         store.status_path_change = false;
@@ -188,6 +205,7 @@ export default {
   },
   async created() {
     const heirID = decodeURIComponent(this.$route.params.id);
+    this.HEIR_ID = heirID
     this.formHeirData = { ...getHeirModel }
     this.prefixList = await fetchPrefix()
     try {

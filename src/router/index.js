@@ -16,7 +16,8 @@ import roles from '@/role_config'
 import TableDash from '@/views/dashboard/TableDash.vue'
 import PersonDetail from '@/views/data_list/PersonDetail.vue'
 import CitizenDetail from '@/views/data_list/CitizenDetail.vue'
-import LandTitleFile from '@/views/uploadFile/LandTitleFile.vue'
+import HeirDetail from '@/views/data_list/HeirDetail.vue'
+import LandLiveDocument from '@/views/uploadFile/LandLiveDocument.vue'
 import ShowAllFiles from '@/views/uploadFile/ShowAllFiles.vue'
 import MainDash from '@/views/dashboard/MainDash.vue'
 import AddHeir from '@/views/AddHeir.vue'
@@ -24,6 +25,7 @@ import HistoryLand from '@/views/HistoryLand.vue'
 import ConnectRelation from '@/views/ConnectRelation.vue'
 import CitizenEdit from '@/views/data_edit/CitizenEdit.vue'
 import ManageDefaultData from '@/views/ManageDefaultData.vue'
+import HeirDisplay from '@/views/data_list/HeirDisplay.vue'
 
 // URL
 import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from './url_list'
@@ -64,11 +66,6 @@ const router = createRouter({
       path: '/show_files',
       name: 'showfileAall',
       component: ShowAllFiles
-    },
-    {
-      path: '/upload_files',
-      name: 'simmulateFilldata',
-      component: Simmulate
     },
     {
       path: url_citizen,
@@ -123,7 +120,6 @@ const router = createRouter({
         title: 'Admin | '
       }
     },
-    // CitizenDisplay
     {
       path: '/citizen_data/:limit(10|20|50)/:page',
       name: 'CitizenDisplay',
@@ -145,9 +141,33 @@ const router = createRouter({
       // }
     },
     {
+      path: '/heir_data',
+      redirect: '/heir_data/50/1',
+      component: HeirDisplay,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
+      path: '/heir_data/:limit(50)/:page',
+      name: 'HeirDisplay',
+      component: HeirDisplay,
+      props: true
+    },
+    {
       path: '/complete_view/:id', // Child route for detail view
       name: 'PersonDetail',
       component: PersonDetail,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
+      path: '/heir_view/:id', // Child route for detail view
+      name: 'HeirDetail',
+      component: HeirDetail,
       meta: {
         requiredRole: roles[3].role_id,
         title: 'Admin | '
@@ -190,9 +210,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/land_data/upload_files/:id', // Child route for detail view
-      name: 'LandTitle',
-      component: LandTitleFile,
+      path: '/land_data/upload_live_files/:id', // Child route for detail view
+      name: 'LandLiveDocument',
+      component: LandLiveDocument,
       meta: {
         requiredRole: roles[3].role_id,
         title: 'Admin | '

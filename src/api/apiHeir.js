@@ -33,9 +33,9 @@ export const fetchOneHeir = async (heir_id) => {
 
 export const checkFullnameMatchHeir = async (fname, lname) => {
   try {
-    const response = await axios.get(`http://localhost:3000/heir/fullname?fname=${fname}&lname=${lname}`);
+    const response = await axios.get(`http://localhost:3000/heir/fullname?fname=${encodeURIComponent(fname)}&lname=${encodeURIComponent(lname)}`);
     console.log('send:', response.data)
-    if (response.data.status) {
+    if (response.data) {
       return true;
     } else {
       return false;

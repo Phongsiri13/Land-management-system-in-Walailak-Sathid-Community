@@ -167,7 +167,7 @@ export default {
             };
 
             const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
-            if(matchName){
+            if (matchName) {
                 await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
                 return
             }
