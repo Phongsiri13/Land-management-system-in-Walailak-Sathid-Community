@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td>{{ index }}</td>
-        <td>{{ ct.ID_CARD }}</td>
+        <td>{{ ct.CARD_ID }}</td>
         <td>{{ ct.soi }}</td>
         <td>{{ ct.first_name + ' ' + ct.last_name }}</td>
         <td>{{ formatPhoneNumber(ct.phone_number) || '-' }}</td>
@@ -14,7 +14,7 @@
                     <span class="icon">
                         <i class="fas fa-eye"></i>
                     </span>
-                    <!-- <span>ดู</span> -->
+                    
                 </button>
             </div>
         </td>

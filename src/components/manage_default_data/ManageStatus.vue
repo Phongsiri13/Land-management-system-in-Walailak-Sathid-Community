@@ -37,11 +37,11 @@
             <div class="modal-background" @click="closeConfirmModal"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">ยืนยันการลบ</p>
+                    <p class="modal-card-title">ยืนยันการเปลี่ยนสิทธิ์</p>
                     <button class="delete" aria-label="close" @click="closeConfirmModal"></button>
                 </header>
                 <section class="modal-card-body">
-                    <p>คุณแน่ใจหรือไม่ว่าจะลบสถานะที่ดินนี้?</p>
+                    <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button is-danger" :class="{ 'is-loading': loadingRemove }"
@@ -75,17 +75,29 @@
             </div>
         </div>
 
+        <button class="button is-hovered btn-active-using" :class="{
+            'is-success': statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(true)">ใช้งาน</button>
+        <button class="button btn-active-using" :class="{
+            'is-danger': !statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(false)">
+            ไม่ได้ใช้งาน
+        </button>
+
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
                     <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
                     <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
                     <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อสถานะที่ดิน</th>
-                    <th class="has-text-centered has-text-white" style="width: 20%;">Action</th>
+                    <th class="has-text-centered has-text-white" style="width: 20%;"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in statusFiles" :key="item.value" class="has-text-centered">
+                <tr v-if="statusActive == true" v-for="(item, index) in statusFiles" :key="item.value"
+                    class="has-text-centered">
                     <td>{{ index + 1 }}</td>
                     <td>{{ item.value }}</td>
                     <td>{{ item.label }}</td>
@@ -100,17 +112,41 @@
                             <span class="icon">
                                 <i class="fas fa-trash"></i>
                             </span>
-                            <span>ลบ</span>
+                            <span>เปลี่ยน</span>
                         </button>
                     </td>
                 </tr>
+                <tr v-if="statusActive == false" v-for="(item, index) in statusFiles" :key="item.value"
+                    class="has-text-centered">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.value }}</td>
+                    <td>{{ item.label }}</td>
+                    <td>
+                        <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
+                            <span class="icon">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                            <span>แก้ไข</span>
+                        </button>
+                        <button class="button mx-2 is-rounded is-normal is-success" @click="prepareRemove(item.value)">
+                            <span class="icon">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            <span>ใช้งาน</span>
+                        </button>
+                    </td>
+                </tr>
+                <tr v-if="statusFiles.length === 0">
+                    <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
+                </tr>
+
             </tbody>
 
         </table>
     </div>
 </template>
 <script>
-import { fetchLandStatus } from '@/api/apiLand';
+import { fetchLandStatus, fetchLandStatusActive } from '@/api/apiLand';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { getOneStatus } from '@/api/apiManageInformation';
@@ -118,6 +154,7 @@ import { getOneStatus } from '@/api/apiManageInformation';
 export default {
     data() {
         return {
+            statusActive: true, // 1 false = 0
             statusFiles: [],
             isEditModalOpen: false,
             isConfirmModalOpen: false,
@@ -132,8 +169,31 @@ export default {
         };
     },
     methods: {
+        async activePage(act) {
+            // Ensure statusActive is defined in your component's data
+            this.statusActive = act;
+            const active = this.statusActive ? '1' : '0';
+            console.log('active:', active);
+
+            try {
+                // Await the asynchronous function call
+                const ko = await fetchLandStatusActive(active);
+                console.log('ko:', ko)
+                this.statusFiles = [...ko]
+            } catch (error) {
+                // Ensure showErrorAlert is an asynchronous function returning a Promise
+                if (typeof showErrorAlert === 'function') {
+                    await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
+                } else {
+                    console.error('showErrorAlert is not a function or not asynchronous');
+                }
+            } finally {
+                // Optional: Any cleanup operations can be performed here
+            }
+        },
         async saveNewStatus() {
             console.log('save status')
+            const active = this.statusActive ? '1' : '0';
 
             const createData = {
                 newNameStatus: this.newNameStatus
@@ -145,8 +205,11 @@ export default {
                 console.log('Response:', response.data);
                 await showSuccessAlert('เพิ่มข้อมูลสถานะ', response.data.message);
                 if (response.data.success) {
-                    this.statusFiles = [];
-                    this.statusFiles = await fetchLandStatus();
+                    if (active == '1') {
+                        this.statusFiles = await fetchLandStatusActive('1')
+                    } else {
+                        this.statusFiles = await fetchLandStatusActive('0')
+                    }
                 }
             } catch (error) {
                 await showErrorAlert('เพิ่มข้อมูลสถานะ', 'ไม่สำเร็จ');
@@ -158,14 +221,21 @@ export default {
         async confirmRemove(item) {
             console.log("Removing item:", item);
             this.loadingRemove = true;
+            const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.delete(`http://localhost:3000/manage_status_info/${item}`);
+                const response = await axios.put(`http://localhost:3000/manage_status_info/active/${item}`, {
+                    id: active
+                });
                 console.log('Response:', response.data);
-                await showSuccessAlert('ลบข้อมูลสถานะ', response.data.message);
+                await showSuccessAlert('เปลี่ยนข้อมูลสถานะ', response.data.message);
+                this.statusFiles = [];
                 if (response.data.success) {
-                    this.statusFiles = [];
-                    this.statusFiles = await fetchLandStatus();
+                    if (this.statusActive) {
+                        this.statusFiles = await fetchLandStatusActive('1')
+                    } else {
+                        this.statusFiles = await fetchLandStatusActive('0')
+                    }
                 }
             } catch (error) {
                 await showErrorAlert('เพิ่มข้อมูลสถานะ', 'ไม่สำเร็จ');
@@ -177,6 +247,7 @@ export default {
         async saveEdit() {
             console.log('edit com:', this.editData)
             console.log('edit-v:', this.newStatus.label)
+            const active = this.statusActive == true ? '0' : '1';
             this.loadingEdit = true;
             setTimeout(() => {
                 this.loadingEdit = false;
@@ -186,11 +257,14 @@ export default {
                     land_status_name: this.newStatus.label
                 });
                 await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
+                this.statusFiles = [];
                 if (response.data.success) {
-                    this.statusFiles = [];
-                    this.statusFiles = await fetchLandStatus();
+                    if (this.statusActive) {
+                        this.statusFiles = await fetchLandStatusActive('1')
+                    } else {
+                        this.statusFiles = await fetchLandStatusActive('0')
+                    }
                 }
-                console.log('Response:', response.data);
             } catch (error) {
                 await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
             } finally {
@@ -241,7 +315,7 @@ export default {
     },
     async mounted() {
         try {
-            this.statusFiles = await fetchLandStatus();
+            this.statusFiles = await fetchLandStatusActive('1');
             console.log("statusFile:", this.statusFiles)
         } catch (error) {
 
@@ -252,5 +326,9 @@ export default {
 <style scoped>
 .table-header {
     background-color: #454B1B;
+}
+
+.btn-active-using {
+    min-width: 100px;
 }
 </style>

@@ -1,143 +1,173 @@
 <template>
-    <div class="formColor">
-        <div class="container is-fullhd custom-container">
+    <div class="primary_content">
+        <div class="py-5 is-flex is-justify-content-center">
             <!-- content people's data -->
-            <div class="full-screen-card mx-5 py-5">
+            <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <div class="content">
-                            <!-- f1 -->
-                            <div class="is-flex is-justify-content-space-between my-2">
-                                <div class="field has-addons full-screen-card">
-                                    <div class="field">
-                                        <div class="control" id="mySelect">
-                                            <div class="select is-fullwidth">
-                                                <select>
-                                                    <option selected>รหัสของราษฎร</option>
-                                                    <option>แปลงเลขที่</option>
-                                                    <option>สถานะ</option>
-                                                </select>
-                                            </div>
+                        <h1 class="is-size-4 has-text-centered">ประวัติการแก้ไขที่ดิน</h1>
+                        <!-- f1 -->
+                        <div class="is-flex is-justify-content-space-between my-2">
+                            <div class="field has-addons full-screen-card">
+                                <div class="field">
+                                    <div class="control" id="mySelect">
+                                        <div class="select is-fullwidth">
+                                            <select>
+                                                <option selected>ชื่อ</option>
+                                                <option>แปลงเลขที่</option>
+                                                <option>สถานะ</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="control">
-                                        <input class="input" type="text" placeholder="ค้นหา...">
-                                    </div>
-                                    <div class="control">
-                                        <button class="button ">
-                                            ค้นหา
-                                        </button>
-                                    </div>
-                                </div>                               
-                            </div>
-                            <!-- f2 -->
-                            <div class="table-container">
-                                <!-- load first data -->
-                                <div class="">
-                                    <hr class="navbar-divider" />
-                                    <!-- <p v-if="server_failed">โหลดข้อมูลล้มเหลว</p>
-                                    <p v-else="server_failed">กำลังโหลดข้อมูล...</p> -->
-                                    <table class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                        <thead class="table-header">
-                                            <tr class="is-warning">
-                                                <th>ลำดับ</th>
-                                                <th>รหัสแก้ไข</th>
-                                                <th>รหัสของราษฎร</th>
-                                                <th>เวลาที่แก้ไข</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>PP0001</td>
-                                                <td>2025-01-01 04:40:56</td>
-                                                <td>
-                                                    <div class="button-group">
-                                                        <button class="button is-normal is-primary"
-                                                            @click="goToDetail(land.id_land)">
-                                                            <span class="icon">
-                                                                <i class="fas fa-eye"></i>
-                                                            </span>
-                                                            <span>ดู</span>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>2</td>
-                                                <td>PP0010</td>
-                                                <td>2023-11-27 04:40:10</td>
-                                                <td>
-                                                    <div class="button-group">
-                                                        <button class="button is-normal is-primary"
-                                                            @click="goToDetail(land.id_land)">
-                                                            <span class="icon">
-                                                                <i class="fas fa-eye"></i>
-                                                            </span>
-                                                            <span>ดู</span>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
-
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="ค้นหา...">
+                                </div>
+                                <div class="control">
+                                    <button class="button ">
+                                        ค้นหา
+                                    </button>
+                                </div>
                             </div>
-                            <!-- f3 -->
-                            <!-- <nav class="pagination" role="navigation" aria-label="pagination">
-                                <a href="#" class="pagination-previous">Previous</a>
-                                <a href="#" class="pagination-next">Next page</a>
-                                <ul class="pagination-list">
-                                    <li>
-                                        <a href="#" class="pagination-link" aria-label="Goto page 1">1</a>
-                                    </li>
-                                    <li>
-                                        <span class="pagination-ellipsis">&hellip;</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="pagination-link" aria-label="Goto page 45">45</a>
-                                    </li>
-                                    <li>
-                                        <a class="pagination-link is-current" aria-label="Page 46"
-                                            aria-current="page">46</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="pagination-link" aria-label="Goto page 47">47</a>
-                                    </li>
-                                    <li>
-                                        <span class="pagination-ellipsis">&hellip;</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="pagination-link" aria-label="Goto page 86">86</a>
-                                    </li>
-                                </ul>
-                            </nav> -->
-                            <nav class="pagination" role="navigation" aria-label="pagination">
-                                <ul class="pagination-list">
-                                    <li>
-                                        <a class="pagination-link is-current" aria-label="Page 1"
-                                            aria-current="page">1</a>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <!-- จำนวนแสดงผล -->
+                            <div class="is-flex align-self">
+                                <div style="display: flex; justify-content: center; align-items: center;">
+                                    <span class="px-1">แสดง 50 ตาราง</span>
+                                </div>
+                            </div>
                         </div>
+                        <!-- f2 -->
+                        <div class="table-container">
+                            <table v-if="land_values.length != 0"
+                                class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th>ลำดับ</th>
+                                        <th>แปลงเลขที่</th>
+                                        <th>ซอยที่ดิน</th>
+                                        <th>ชื่อจริง - นามสกุล</th>
+                                        <th>เบอร์โทรศัพท์</th>
+                                        <th>สถานะ</th>
+                                        <th>สถานะการใช้ที่ดิน</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <LandDataRow v-for="(land, index) in land_values" :key="land.id_land" :land="land"
+                                        :index="index + 1" @view-detail="goToDetail(land.id_land)" />
+                                </tbody>
+                                <!-- <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td> -->
+                            </table>
+                            <!-- load first data -->
+                            <div v-else>
+                                <hr class="navbar-divider" />
+                                ไม่พบข้อมูล
+                            </div>
+                        </div>
+                        <!-- pages -->
+                        <nav class="pagination" role="navigation" aria-label="pagination">
+                            <ul class="pagination-list">
+                                <li>
+                                    <a class="pagination-link is-current" aria-label="Page 1" aria-current="page">1</a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
 <script>
+
 import axios from 'axios';
+import LandDataRow from '@/components/display_table/LandDataRow.vue';
 
 export default {
+    components: { LandDataRow },
+    props: {
+        limit: {
+            type: String, // Vue Router params จะเป็น String เสมอ
+            required: true
+        },
+        page: {
+            type: String,
+            default: "1"
+        }
+    },
+    data() {
+        return {
+            searchResult: [],
+            land_values: [],
+            server_failed: false,
+            landDataList: [],
+            selectedLimit: 50
+        }
+    },
+    async mounted() {
+        try {
+            await this.fetchCompleteLandData()
+        } catch (error) {
 
+        }
+    },
+    watch: {
+        // อัปเดตค่า `selectedLimit` เมื่อ URL เปลี่ยน
+        limit(newLimit) {
+            this.selectedLimit = newLimit;
+        }
+    },
+    methods: {
+        updateLimit() {
+            // อัปเดต URL ให้ตรงกับค่าที่ผู้ใช้เลือก
+            this.$router.push(`/history_land/${this.selectedLimit}/${this.page}`);
+        },
+        async fetchCompleteLandData() {
+            try {
+                const page = this.page;
+                // Send GET request to the endpoint /land/complete_land
+                const response = await axios.get(`http://localhost:3000/land/history_land/${this.selectedLimit}/${page}`);
+
+                // Handle the response data
+                if (response.data) {
+                    const landList = response.data.data;
+                    if (response.data.data.length > 0) {
+                        this.land_values = [...landList]
+                        console.log(this.land_values)
+                        console.log(this.land_values.length)
+                    }
+                } else {
+                    this.land_values = []
+                }
+            }
+            catch (error) {
+                this.server_failed = true
+                // Handle errors
+                if (error.response) {
+                    // The request was made and the server responded with a status code outside the range of 2xx
+                    console.error('Response error:', error.response.data);
+                    console.error('Status:', error.response.status);
+                    console.error('Headers:', error.response.headers);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.error('Request error:', error.request);
+                } else {
+                    // Something else went wrong while setting up the request
+                    console.error('General error:', error.message);
+                }
+            }
+        },
+        goToDetail(id_land) {
+            console.log('id:', id_land)
+            console.log('id:', encodeURIComponent(id_land))
+            // this.$router.push({ path: `/complete_view/${id_land}` });
+            this.$router.push({ name: 'PersonDetail', params: { id: id_land } });
+        }
+    },
 }
 </script>
+
 <style scoped>
 .header-size-1 {
     width: auto;
@@ -145,7 +175,11 @@ export default {
 }
 
 .table-header {
-    background-color: #3273dc;
+    background-color: rgba(21, 26, 90, 0.664);
+}
+
+.table-header>tr>th {
+    color: #fff;
 }
 
 #mySelect select {
@@ -184,7 +218,7 @@ td.hoverable-row:hover .copy-icon {
 
 .pagination-link.is-current {
     border-color: none;
-    background-color: #ffdd57;
+    background-color: rgba(21, 26, 90, 0.664);
     /* Bulma's warning color */
     color: white;
     /* Make the text color white for contrast */

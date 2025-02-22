@@ -31,6 +31,52 @@
                         </footer>
                     </div>
                 </div>
+
+                <div v-if="isEditingLandUse" class="modal is-active">
+                    <div class="modal-background" @click="closeLandUseModal"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">แก้ไขการใช้ประโยชน์ที่ดิน</p>
+                            <button class="delete" aria-label="close" @click="closeLandUseModal"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <div class="checkboxes">
+                                <label class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="submitLandUse.rubber_tree"
+                                        class="larger-checkbox" />
+                                    <span>สวนยางพารา</span>
+                                </label>
+
+                                <label class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="submitLandUse.fruit_orchard"
+                                        class="larger-checkbox" />
+                                    <span>สวนผลไม้</span>
+                                </label>
+
+                                <label class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="submitLandUse.livestock_farming"
+                                        class="larger-checkbox" />
+                                    <span>ปศุสัตว์</span>
+                                </label>
+
+                                <label class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="submitLandUse.other" class="larger-checkbox" />
+                                    <span>อื่นๆ</span>
+                                </label>
+
+                                <!-- ถ้าเลือก 'อื่นๆ' ให้แสดง Textbox -->
+                                <input :disabled="!submitLandUse.other" type="text" v-model="submitLandUse.details"
+                                    class="input other-textbox" placeholder="ระบุประเภทอื่นๆ..." />
+                            </div>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
+                                @click="saveLandUse">บันทึก</button>
+                            <button class="button" @click="closeLandUseModal">ยกเลิก</button>
+                        </footer>
+                    </div>
+                </div>
+
                 <!-- Header Section -->
                 <div v-if="!error_fetch" class="box">
                     <!-- title -->
@@ -207,7 +253,7 @@
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
                                 <!-- ปุ่มสำหรับเปิด/ปิดการแก้ไข -->
-                                <button v-if="isLandUseVisible" @click="toggleEdit()"
+                                <button v-if="isLandUseVisible" @click="toggleEdit"
                                     class="button is-normal is-warning mx-1">
                                     <span class="icon">
                                         <i :class="isEditingLandUse ? 'fas fa-times' : 'fas fa-edit'"></i>
@@ -221,34 +267,31 @@
                         <div v-if="isLandUseVisible">
                             <div class="checkboxes">
                                 <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.rubber_tree" :disabled="!isEditingLandUse"
-                                        class="larger-checkbox" @input="updateLandUse('rubber_tree')" />
+                                    <input type="checkbox" v-model="landUse.rubber_tree" disabled
+                                        class="larger-checkbox" />
                                     <span>สวนยางพารา</span>
                                 </label>
 
                                 <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.fruit_orchard" :disabled="!isEditingLandUse"
-                                        class="larger-checkbox" @input="updateLandUse('fruit_orchard')" />
+                                    <input type="checkbox" v-model="landUse.fruit_orchard" disabled
+                                        class="larger-checkbox" />
                                     <span>สวนผลไม้</span>
                                 </label>
 
                                 <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.livestock_farming"
-                                        :disabled="!isEditingLandUse" class="larger-checkbox"
-                                        @input="updateLandUse('livestock_farming')" />
+                                    <input type="checkbox" v-model="landUse.livestock_farming" disabled
+                                        class="larger-checkbox" />
                                     <span>ปศุสัตว์</span>
                                 </label>
 
                                 <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.other" :disabled="!isEditingLandUse"
-                                        class="larger-checkbox" @input="updateLandUse('other')" />
+                                    <input type="checkbox" v-model="landUse.other" disabled class="larger-checkbox" />
                                     <span>อื่นๆ</span>
                                 </label>
 
                                 <!-- ถ้าเลือก 'อื่นๆ' ให้แสดง Textbox -->
-                                <input v-if="landUse.other" :disabled="!isEditingLandUse" type="text"
-                                    v-model="landUse.details" class="input other-textbox"
-                                    placeholder="ระบุประเภทอื่นๆ..." @input="updateLandUse('details')" />
+                                <input disabled type="text" v-model="landUse.details" class="input other-textbox"
+                                    placeholder="ระบุประเภทอื่นๆ..." />
                             </div>
                         </div>
                     </transition>
@@ -392,7 +435,8 @@
                                             class="column is-inline-block is-flex is-justify-content-center is-align-items-center">
                                             <div class="is-flex is-justify-content-flex-end">
                                                 <!-- Edit heir -->
-                                                <button class="button is-normal is-warning mx-1 my-1" @click="goToHeirEdit(heir.heir_id)">
+                                                <button class="button is-normal is-warning mx-1 my-1"
+                                                    @click="goToHeirEdit(heir.heir_id)">
                                                     <span class="icon">
                                                         <i class="fas fa-edit"></i>
                                                     </span>
@@ -414,7 +458,6 @@
                         </div>
                     </transition>
 
-
                     <!-- Document selection -->
                     <hr class="style1">
                     <p class="block box-style pl-3 py-2 ps-3 section-title has-text-light has-background-black-ter">
@@ -425,19 +468,18 @@
                         <div class="is-tablet">
                             <div class="columns">
                                 <!-- Button 2 -->
-                                <div class="column is-one-third">
-                                    <RouterLink to="/" class="has-text-black">
-                                        <button class="button is-success is-fullwidth">
-                                            <span class="icon is-small">
-                                                <i class="fas fa-portrait"></i>
-                                            </span>
-                                            <span>ราษฎร</span>
-                                        </button>
-                                    </RouterLink>
+                                <div class="column is-one-third" v-if="CITIZEN_ID">
+                                    <button class="button is-success is-fullwidth" 
+                                    @click="goToUploadCitizenFiles(CITIZEN_ID)">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-portrait"></i>
+                                        </span>
+                                        <span>เอกสารราษฎร</span>
+                                    </button>
                                 </div>
                                 <!-- Button 1 -->
                                 <div class="column is-one-third">
-                                    <button @click="goToDetail(land_information[0].id_land)"
+                                    <button @click="goToUploadFiles(land_information[0].id_land)"
                                         class="button is-primary is-fullwidth">
                                         <span class="icon is-small">
                                             <i class="fas fa-folder-minus"></i>
@@ -447,14 +489,13 @@
                                 </div>
                                 <!-- Button 3 -->
                                 <div class="column is-one-third">
-                                    <RouterLink to="/" class="has-text-black">
-                                        <button class="button is-warning is-fullwidth">
-                                            <span class="icon is-small">
-                                                <i class="fas fa-images"></i>
-                                            </span>
-                                            <span>ภาพที่อยู่อาศัย</span>
-                                        </button>
-                                    </RouterLink>
+                                    <button @click="goToUploadLiveFile(land_information[0].id_land)"
+                                        class="button is-warning is-fullwidth">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-images"></i>
+                                        </span>
+                                        <span>ภาพที่อยู่อาศัย</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -483,6 +524,7 @@ export default {
             isLocationVisible: true,
             isHeirVisible: true,
             isLandUseVisible: true,
+            submitLandUse: [],
             landUse: [],
             land_information: [],
             person_information: [],
@@ -496,14 +538,18 @@ export default {
             selectedPermission: null, // Holds the selected permission value (1 or 0)
             isEditModalOpen: false,  // Modal visibility
             loadingEdit: false, // Loading state for save action
-            landStatusName: ''
+            landStatusName: '',
+            LAND_ID: '',
+            CITIZEN_ID: null
         };
     },
     async mounted() {
         try {
             const landId = decodeURIComponent(this.$route.params.id);
+            this.LAND_ID = landId;
             const response_land = await axios.get(`http://localhost:3000/land/${landId}`);
             console.log('land-data:', response_land.data)
+            this.CITIZEN_ID = response_land.data[0].id_card || null;
             const getStatusName = await fetchOneLandStatus(response_land.data[0].current_land_status);
             console.log('getStatusName:', getStatusName.data[0].land_status_name);
             this.landStatusName = getStatusName.data[0].land_status_name
@@ -536,6 +582,8 @@ export default {
             this.landUse.fruit_orchard = this.landUse.fruit_orchard === '1';
             this.landUse.livestock_farming = this.landUse.livestock_farming === '1';
             this.landUse.other = this.landUse.other === '1';
+            this.submitLandUse = { ...this.landUse };
+            console.log('submit:', this.submitLandUse)
 
         } catch (error) {
             // Handle errors
@@ -608,6 +656,37 @@ export default {
                 // Refresh the page after the alert
             }
         },
+        async saveLandUse() {
+            // Simulating a save action
+            // console.log(`Selected Landuse: `, this.submitLandUse);
+            console.log(`Selected Landuse: `, this.LAND_ID);
+            try {
+                const resLandUse = await axios.put(`http://localhost:3000/land/land_use/${this.LAND_ID}`,
+                    {
+                        data: this.submitLandUse
+                    }
+                )
+
+                if (resLandUse.data) {
+                    console.log('-----------------')
+                    await showSuccessAlert('การเปลี่ยนแปลงการใช้งาน', resLandUse.data.message);
+                    const res_land_use = await axios.get(`http://localhost:3000/land/land_use/${this.LAND_ID}`);
+                    this.landUse = res_land_use.data[0]
+                    this.landUse.rubber_tree = this.landUse.rubber_tree === '1';
+                    this.landUse.fruit_orchard = this.landUse.fruit_orchard === '1';
+                    this.landUse.livestock_farming = this.landUse.livestock_farming === '1';
+                    this.landUse.other = this.landUse.other === '1';
+                    this.submitLandUse = { ...this.landUse };
+                } else {
+                    await showErrorAlert('การเปลี่ยนแปลงการใช้งาน', resLandUse.data.message);
+                }
+            } catch (error) {
+                console.log(`Error: ------`);
+                await showErrorAlert('การเปลี่ยนแปลงการใช้งาน', 'ไม่สามารถเปลี่ยนแปลงได้ ณ ขณะนี้ กรุณาลองใหม่');
+            } finally {
+                // this.hidePermissionModal();
+            }
+        },
         getLandFieldName(field) {
             switch (field) {
                 case "rubber_tree":
@@ -623,16 +702,6 @@ export default {
                 default:
                     return field;
             }
-        },
-        async updateLandUse(field) {
-            this.isEditingLandUse = false
-            // Show a notification when checkbox is toggled
-            const fieldName = this.getLandFieldName(field);
-            const status = this.landUse[field] ? "selected" : "deselected";
-            this.notificationMessage = `${fieldName} has been ${status}.`;
-
-            // You can also perform additional actions such as updating the database here
-            console.log(`${fieldName} updated to:`, this.landUse[field]);
         },
         ToThaiDate(date) {
             return convertToThaiDate(date)
@@ -652,8 +721,17 @@ export default {
         goToDetail(id) {
             this.$router.push({ name: 'LandTitle', params: { id } });
         },
-        goToHeirEdit(heir_id){
-            console.log('heir_id:',heir_id)
+        goToUploadLiveFile(id) {
+            this.$router.push({ name: 'LandLiveDocument', params: { id } });
+        },
+        goToUploadFiles(id) {
+            this.$router.push({ name: 'LandFile', params: { id } });
+        },
+        goToUploadCitizenFiles(id) {
+            this.$router.push({ name: 'CitizenFiles', params: { id } });
+        },
+        goToHeirEdit(heir_id) {
+            console.log('heir_id:', heir_id)
             const routeData = this.$router.resolve({ name: 'HeirEdit', params: { id: heir_id } });
             window.open(routeData.href, '_blank');
         },
@@ -672,6 +750,10 @@ export default {
                 this.isEditingLandUse = false
             }
         },
+        closeLandUseModal() {
+            this.isEditingLandUse = false; // ปิดโมดอล
+            this.submitLandUse = { ...this.landUse };
+        }
     },
 };
 </script>

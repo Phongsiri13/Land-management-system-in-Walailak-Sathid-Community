@@ -61,3 +61,17 @@ export const fullCheckMatchHeir = async (heirsNameList) => {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
 }
+
+export const fetchRelationActive = async (active) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/manage_relation/active/${active}`);
+    console.log('res-land:', response.data)
+    const status_land = []
+    for (let ls of response.data.data) {
+      status_land.push({ value: ls.id, label: `${ls.label}` })
+    }
+    return status_land
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}

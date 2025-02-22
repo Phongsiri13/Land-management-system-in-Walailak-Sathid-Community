@@ -57,3 +57,12 @@ export function calculateLandArea(raiV, nganV, squareWaV) {
   // Return calculated values
   return { rai, ngan, squareWa }
 }
+
+export function calTotalLandArea(raiV, nganV, squareWaV) {
+  // ตรวจสอบค่าให้เป็นตัวเลข และแทนที่ "" หรือค่า null ด้วย 0
+  let rai = raiV ? parseFloat(raiV) : 0 // Parse as float, handle decimals if needed
+  let ngan = parseFloatFormInput(nganV)
+  let squareWa = parseFloatFormInput(squareWaV)
+  let totalRai = rai + nganV / 4 + squareWa / 400
+  return totalRai
+}

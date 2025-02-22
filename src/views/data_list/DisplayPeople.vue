@@ -63,7 +63,7 @@
                                         <th>เบอร์โทรศัพท์</th>
                                         <th>สถานะ</th>
                                         <th>สถานะการใช้ที่ดิน</th>
-                                        <th>Action</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>

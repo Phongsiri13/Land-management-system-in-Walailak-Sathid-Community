@@ -282,9 +282,8 @@ import { store } from '@/store';
 import * as yup from "yup";
 import { getRai, updateVillageOptions } from '@/utils/addressFunc';
 import axios from 'axios';
-import { fetchSois, fetchLandStatus} from '@/api/apiLand';
+import { fetchSois, fetchLandStatusActive} from '@/api/apiLand';
 import { fetchPeopleName } from '@/api/apiPeople';
-import Swal from 'sweetalert2';
 import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea } from '@/utils/landFunc';
@@ -354,7 +353,6 @@ export default {
       // ตรวจสอบข้อมูลที่กรอก
       const isValid = await this.validateForm();
       if (!isValid) {
-        showErrorAlert();
         return;
       };
       console.log(":::", this.formLand.ngan)
@@ -395,13 +393,13 @@ export default {
       };
 
       console.log('Form submitted:', form_data);
-      // this.resetForm();
       try {
         const response = await axios.post('http://localhost:3000/land', form_data);
         console.log('Response:', response.data);
 
         if(response.data.statusCode == 200) {
           await showSuccessAlert('การเพิ่มข้อมูลที่ดิน', response.data.message)
+          this.resetForm();
           return 
         }
         if (response.data.statusCode == 409) {
@@ -441,7 +439,7 @@ export default {
       } catch (err) {
         this.errors = err.inner.reduce((acc, curr) => {
           acc[curr.path] = curr.message;
-          console.log('check-error:', curr.message)
+          // console.log('check-error:', curr.message)
           return acc;
         }, {});
         return false;
@@ -487,7 +485,7 @@ export default {
   async mounted() {
     try {
       this.sois = await fetchSois()
-      this.land_status = await fetchLandStatus()
+      this.land_status = await fetchLandStatusActive('1')
     } catch (err) {
       this.error = 'Error fetching sois: ' + err.message;
     }

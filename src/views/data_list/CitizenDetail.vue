@@ -29,7 +29,7 @@
 
                 <div class="columns is-multiline px-3">
                     <div class="column is-half">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">ชื่อ:</span>
                             <span class="ml-3 is-size-5">{{ formPeopleData.prefix || '-' }}{{ formPeopleData.firstName
                                 || '-' }}
@@ -39,14 +39,14 @@
                     </div>
 
                     <div class="column is-half">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">เลขบัตรประชาชน:</span>
                             <span class="ml-3 is-size-5">{{ formPeopleData.citizenId || '-' }}</span>
                         </div>
                     </div>
 
                     <div class="column is-half">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">วันเกิด:</span>
                             <span class="ml-3 is-size-5">{{
                                 ToThaiDate(new Date(formPeopleData.birthDate)) || '-' }}</span>
@@ -54,14 +54,14 @@
                     </div>
 
                     <div class="column is-half">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">เบอร์โทร:</span>
                             <span class="ml-3 is-size-5">{{ formPeopleData.phone || '-' }}</span>
                         </div>
                     </div>
 
                     <div class="column is-half">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">เพศ:</span>
                             <span class="ml-3 is-size-5">{{ formPeopleData.gender || '-' }}</span>
                         </div>
@@ -75,7 +75,7 @@
                     </div>
 
                     <div class="column is-full">
-                        <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
+                        <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">ที่อยู่:</span>
                             <span class="ml-3 is-size-5">{{ 'บ้านเลขที่ ' + formPeopleData.house_number || '-' }}
                                 {{ 'หมู่ที่ ' + formPeopleData.village || '-' }}
@@ -87,7 +87,7 @@
                 <!-- heir -->
                 <!-- ข้อมูลทายาท -->
                 <hr>
-                <h2>ทายาทนี้</h2>
+                <h2 class="has-text-dark my-3 px-3 is-size-4">ทายาทที่มีความสัมพันธ์กับราษฎรผู้นี้</h2>
                 <div v-if="formHeirData.length > 0">
                     <div v-for="(heir, index) in formHeirData" :key="heir.heir_id" class="box">
                         <p class="has-text-weight-bold">ทายาทคนที่: {{ ++index }}</p>
@@ -99,7 +99,7 @@
                 </div>
                 <div v-else>
                     <div class="notification is-info">
-                        <h2 class="title is-4 has-text-centered">ทายาทผู้ในยังไม่มีใครเป็นราษฎร</h2>
+                        <h2 class="title is-4 has-text-centered">ราษฎรคนนี้ยังไม่มีใครเป็นทายาท</h2>
                     </div>
                 </div>
 
@@ -129,7 +129,7 @@ export default {
             this.$router.push({ name: 'CitizenEdit', params: { id } });
         },
         goToCitizenFile(id) {
-            this.$router.push({ name: 'CitizenEdit', params: { id } });
+            this.$router.push({ name: 'CitizenFiles', params: { id } });
         }
     },
     async created() {
@@ -165,11 +165,7 @@ export default {
 
             // getHeirs
             const resHeir = await axios.get(`http://localhost:3000/heir/related_citizen/${personId}`);
-            console.log('le:', resHeir.data)
-            if (resHeir.data.length <= 0) {
-                await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
-                return;
-            }
+            // console.log('le:', resHeir.data)
             this.formHeirData = resHeir.data;
 
         } catch (error) {

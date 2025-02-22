@@ -4,6 +4,7 @@
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
+                        <h1 class="is-size-3 has-text-centered">รายการข้อมูลราษฎร</h1>
                         <!-- Search -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
@@ -13,7 +14,7 @@
                                             <select v-model="searchFilter">
                                                 <option value="name">ชื่อ</option>
                                                 <option value="plotNumber">แปลงเลขที่</option>
-                                                <option value="status">สถานะ</option>
+                                                <option value="soi">ซอย</option>
                                             </select>
                                         </div>
                                     </div>
@@ -54,7 +55,7 @@
                                         <th>ชื่อจริง - นามสกุล</th>
                                         <th>เบอร์โทรศัพท์</th>
                                         <th>ที่อยู่</th>
-                                        <th>Action</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>

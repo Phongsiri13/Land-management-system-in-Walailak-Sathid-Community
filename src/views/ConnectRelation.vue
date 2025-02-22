@@ -126,7 +126,7 @@
 
 <script>
 import { store } from '@/store'
-import { fullCheckMatchHeir, fetchRelation } from '@/api/apiHeir';
+import { fullCheckMatchHeir, fetchRelation, fetchRelationActive } from '@/api/apiHeir';
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 import { personModel, heirListValidSchema } from '@/model/connectModel';
@@ -188,6 +188,7 @@ export default {
                 // If citizen is not found, handle the case
                 if (!matchCitizen.status) {
                     await showErrorAlert("ไม่พบราษฎรคนนี้ในระบบ");
+                    return
                 } else {
                     Citizen = matchCitizen.data
                 }
@@ -366,7 +367,7 @@ export default {
         }
     },
     async mounted() {
-        this.relationList = await fetchRelation();
+        this.relationList = await fetchRelationActive('1');
     }
 }
 </script>

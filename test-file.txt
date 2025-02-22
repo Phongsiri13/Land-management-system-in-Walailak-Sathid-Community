@@ -59,9 +59,14 @@
               <!-- ปุ่มลบ -->
               <button class="delete" @click="openDeleteModal(file)"></button>
               <!-- ปุ่มดาวน์โหลด -->
-              <button class="button is-link is-inverted" @click="downloadLink(file.path_file)">
+              <button class="button is-link is-inverted" @click="openDownload(file)">
                 <i class="fas fa-download"></i>
               </button>
+              <!-- check a file -->
+              <!-- <button class="button is-link is-inverted" @click="getFilesNow()">
+                <i class="fas fa-download"></i>
+              </button> -->
+              <!-- getFilesNow -->
             </div>
           </div>
           <div v-else>
@@ -218,13 +223,7 @@ export default {
       }
     },
     downloadLink(file) {
-      // return `https://example.com/download/${file.id}`;
-      const filePath = file; // ชื่อไฟล์ที่ต้องการดาวน์โหลด
-      console.log('file:',filePath)
-      const downloadUrl = `http://localhost:3000/upload_file/download_live/${filePath}`;
-
-      // เปิดลิงก์ดาวน์โหลดในแท็บใหม่
-      window.open(downloadUrl, '_blank');
+      return `https://example.com/download/${file.id}`;
     },
     openDeleteModal(file) {
       this.fileToDelete = file;

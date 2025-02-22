@@ -37,11 +37,11 @@
             <div class="modal-background" @click="closeConfirmModal"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">ยืนยันการลบ</p>
+                    <p class="modal-card-title">ยืนยันการเปลี่ยน</p>
                     <button class="delete" aria-label="close" @click="closeConfirmModal"></button>
                 </header>
                 <section class="modal-card-body">
-                    <p>คุณแน่ใจหรือไม่ว่าจะลบสถานะที่ดินนี้?</p>
+                    <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button is-danger" :class="{ 'is-loading': loadingRemove }"
@@ -75,6 +75,17 @@
             </div>
         </div>
 
+        <button class="button is-hovered btn-active-using" :class="{
+            'is-success': statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(true)">ใช้งาน</button>
+        <button class="button btn-active-using" :class="{
+            'is-danger': !statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(false)">
+            ไม่ได้ใช้งาน
+        </button>
+
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
@@ -100,9 +111,12 @@
                             <span class="icon">
                                 <i class="fas fa-trash"></i>
                             </span>
-                            <span>ลบ</span>
+                            <span>เปลี่ยน</span>
                         </button>
                     </td>
+                </tr>
+                <tr v-if="relationFiles.length === 0">
+                    <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
                 </tr>
             </tbody>
 
@@ -111,14 +125,15 @@
 </template>
 
 <script>
-import { fetchRelation } from '@/api/apiLand';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { getOneRelation } from '@/api/apiManageInformation';
+import { fetchRelationActive } from '@/api/apiHeir';
 
 export default {
     data() {
         return {
+            statusActive: true, // 1 false = 0
             relationFiles: [],
             isEditModalOpen: false,
             isConfirmModalOpen: false,
@@ -154,16 +169,19 @@ export default {
         },
         async confirmRemove(item) {
             this.loadingRemove = true;
+            const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.delete(`http://localhost:3000/manage_relation/${item}`);
-                await showSuccessAlert('ลบข้อมูลความสัมพันธ์', response.data.message);
+                const response = await axios.put(`http://localhost:3000/manage_relation/active/${item}`, 
+                    {id: active}
+                );
+                await showSuccessAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
                     this.relationFiles = [];
-                    this.relationFiles = await fetchRelation();
+                    this.relationFiles = await fetchRelationActive(active)
                 }
             } catch (error) {
-                await showErrorAlert('ลบข้อมูลความสัมพันธ์', response.data.message);
+                await showErrorAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
             } finally {
                 this.loadingRemove = false;
                 this.closeConfirmModal(); // Close the modal after deletion
@@ -173,14 +191,19 @@ export default {
             this.loadingEdit = true;
             console.log('edit-v:', this.updateRelation.label)
             console.log('edit-v:', this.updateRelation.value)
+            const active = this.statusActive == true ? '0' : '1';
             try {
                 const response = await axios.put(`http://localhost:3000/manage_relation/${this.updateRelation.value}`, {
                     label: this.updateRelation.label
                 });
                 await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
+                this.relationFiles = []
                 if (response.data.success) {
-                    this.relationFiles = [];
-                    this.relationFiles = await fetchRelation();
+                    if (this.statusActive) {
+                        this.relationFiles = await fetchRelationActive('1')
+                    } else {
+                        this.relationFiles = await fetchRelationActive('0')
+                    }
                 }
                 console.log('Response:', response.data);
             } catch (error) {
@@ -226,10 +249,33 @@ export default {
             this.isConfirmModalOpen = false; // Close confirmation modal
             this.deleteItem = null; // Reset the item to null
         },
+        async activePage(act) {
+            // Ensure statusActive is defined in your component's data
+            this.statusActive = act;
+            const active = this.statusActive ? '1' : '0';
+            console.log('active:', active);
+
+            try {
+                // Await the asynchronous function call
+                const ko = await fetchRelationActive(active);
+                console.log('ko:', ko[0])
+                this.relationFiles = []
+                this.relationFiles = [...ko]
+            } catch (error) {
+                // Ensure showErrorAlert is an asynchronous function returning a Promise
+                if (typeof showErrorAlert === 'function') {
+                    await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
+                } else {
+                    console.error('showErrorAlert is not a function or not asynchronous');
+                }
+            } finally {
+                // Optional: Any cleanup operations can be performed here
+            }
+        }
     },
     async mounted() {
         try {
-            this.relationFiles = await fetchRelation();
+            this.relationFiles = await fetchRelationActive('1');
         } catch (error) {
 
         }
@@ -239,6 +285,10 @@ export default {
 
 <style scoped>
 .table-header {
-    background-color: 	#C04000;
+    background-color: #C04000;
+}
+
+.btn-active-using{
+    min-width: 100px;
 }
 </style>

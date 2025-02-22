@@ -12,14 +12,12 @@
 
                 <div class="is-flex is-justify-content-flex-end">
                     <!-- Edit -->
-                    <button class="button is-warning px-5 my-3 btn-menu" @click="goToEdit(formPeopleData[0]?.ID_CARD)">
+                    <button class="button is-warning px-5 my-3 btn-menu" @click="goToEdit(formHeirData[0]?.ID_CARD)">
                         <span class="icon"><i class="fas fa-pencil-alt"></i></span>
                         <span>แก้ไข</span>
                     </button>
-
                 </div>
 
-                <h2>ทายาทคนนี้</h2>
                 <div class="columns is-multiline px-3">
                     <div class="column is-full">
                         <div class="box has-background-success py-3 px-4 is-flex is-align-items-center">
@@ -33,7 +31,7 @@
                 </div>
 
                 <hr>
-                <h2>ราษฎรนี้</h2>
+                <h2 class="has-text-dark my-3 px-3 is-size-4">ราษฎรที่มีความสัมพันธ์กับทายาทผู้นี้</h2>
                 <div v-if="peopleList.length > 0">
                     <div v-for="(person, index) in peopleList" :key="index" class="box">
                         <p class="has-text-weight-bold">ราษฎรคนที่: {{ ++index }}</p>
@@ -121,4 +119,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+    .button{
+        border-radius: 5px;
+    }
+</style>

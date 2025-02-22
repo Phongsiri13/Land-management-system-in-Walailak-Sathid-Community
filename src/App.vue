@@ -153,13 +153,14 @@ export default {
 }
 
 .navbar-link.is-active {
-  background-color: #f0e3d3;
+  background-color: #333;
   /* Change to your desired highlight color */
   color: #333 !important;
 }
 
 .navbar-item.is-active {
-  background-color: #f0e3d3;
+  background-color: #333;
+  border-radius: 5px;
   /* Change this to your desired active background color */
   color: #333 !important;
   /* Change text color for better contrast */

@@ -1,6 +1,6 @@
 <template>
   <div class="themeColor py-4">
-    <div v-if="results.length > 0" class="card"
+    <div v-if="results.length > 0" class="card column is-three-quarters-tablet is-one-third-desktop is-four-fifths-mobile"
       style="background-color: #4b3f18; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
       <header class="card-header" style="background-color: #a0752d; border-radius: 8px;">
         <p class="card-header-title has-text-centered"
@@ -9,13 +9,11 @@
         </p>
       </header>
       <div class="card-content">
-        <div class="content">
-          <SearchDetail v-for="(item, index) in results" :key="index" :label="item.label" :value="item.value"
-            backgroundColor="#5a4518" textColor="white" />
-          <footer class="card-footer" v-if="results.length > 0 && (results[0].lat && results[0].long)">
-            <a href="#" class="card-footer-item has-text-link" style="color: #a0752d;">ที่ตั้งตำแหน่ง</a>
-          </footer>
-        </div>
+        <SearchDetail v-for="(item, index) in results" :key="index" :label="item.label" :value="item.value"
+          backgroundColor="#5a4518" textColor="white" />
+        <footer class="card-footer" v-if="results.length > 0 && (results[0].lat && results[0].long)">
+          <a href="#" class="card-footer-item has-text-link" style="color: #a0752d;">ที่ตั้งตำแหน่ง</a>
+        </footer>
       </div>
     </div>
     <div class="not-found-container" v-else>
@@ -30,6 +28,8 @@
 <script>
 import axios from 'axios';
 import SearchDetail from '@/components/SearchDetail.vue';
+import { formatPhoneNumber } from '@/utils/commonFunc';
+import { calTotalLandArea } from '@/utils/landFunc';
 
 export default {
   components: {
@@ -38,7 +38,8 @@ export default {
   data() {
     return {
       keyword: '',
-      results: [] // Initialize as an empty array
+      results: [], // Initialize as an empty array
+      total_rai: 0
     };
   },
   methods: {
@@ -56,9 +57,11 @@ export default {
         this.results = [
           { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
           { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
-          { value: response.data.results[0].phone_number, label: "เบอร์โทรศัพท์" },
+          { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
           { value: response.data.results[0].l_district, label: "ตำบล" },
-          { value: response.data.results[0].total_rai, label: "ไร่" },
+          { value: calTotalLandArea(      response.data.results[0].rai,
+        response.data.results[0].ngan,
+        response.data.results[0].square_wa), label: "ไร่" },
         ]
         // ถ้าไม่พบข้อมูลใน API, สามารถใช้ mock data แทน
         if (this.results.length === 0) {
@@ -70,6 +73,9 @@ export default {
         this.results = [];
       }
     },
+    phoneFormat(phone_number) {
+      return formatPhoneNumber(phone_number)
+    }
   },
   beforeRouteEnter(to, from, next) {
     // Set title when the route is first entered
@@ -148,7 +154,7 @@ export default {
   background: #4C3902;
   display: flex;
   width: 100%;
-  max-width: 1198px;
+  max-width: 580px;
   gap: 20px;
   justify-content: space-between;
   padding: 14px 32px;

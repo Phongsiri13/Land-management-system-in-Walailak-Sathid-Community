@@ -1,7 +1,9 @@
 <template>
-  <div class="formColor py-5 homePage">
+  <div class="titleBgColor py-5 homePage">
     <div class="container">
-      <div id="map" style="height: 650px; width: 100%;"></div>
+      <div class="card">
+        <div id="map" style="height: 650px; width: 100%;"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -21,20 +23,20 @@ export default {
       this.map.setView(this.center); // Reset the map to the defined center
     },
     showContextMenu(e) {
-        const { lat, lng } = e.latlng;
+      const { lat, lng } = e.latlng;
 
-        // Create Popup For Right click to coppy lat long
-        L.popup()
-          .setLatLng(e.latlng)
-          .setContent(
-            `<div>
+      // Create Popup For Right click to coppy lat long
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(
+          `<div>
               <p>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</p>
               <button onclick="navigator.clipboard.writeText('${lat}, ${lng}')">Copy Lat/Lng</button>
             </div>`
-          )
-          .openOn(this.map);
-        },
-      },
+        )
+        .openOn(this.map);
+    },
+  },
   mounted() {
     // Initialize the map
     this.map = L.map('map').setView(this.center, 14);
@@ -71,7 +73,7 @@ export default {
       [8.656484241554272, 99.85831975936891],
       [8.65646302831698, 99.8581910133362],
       [8.656293322375648, 99.8494577407837]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -87,7 +89,7 @@ export default {
       [8.653334062723362, 99.85908150672914],
       [8.653217388927063, 99.84852433204652],
       [8.654935672090192, 99.84870672225954]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -106,7 +108,7 @@ export default {
       [8.650252706183798, 99.85415160655977],
       [8.650311139061921, 99.84883546829225],
       [8.651276355920878, 99.84856724739076]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -127,7 +129,7 @@ export default {
       [8.647192729227973, 99.84873890876771],
       [8.648285236291317, 99.84865307807922],
       [8.649536842430841, 99.8490607738495]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -142,7 +144,7 @@ export default {
       [8.64550623152199, 99.86024022102357], // จุดที่สอง
       [8.644095507517529, 99.86020803451538],
       [8.644190970210724, 99.84867453575134]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -156,7 +158,7 @@ export default {
       [8.64119979433416, 99.84797716140747],
       [8.642462031020726, 99.84812736511232], // จุดที่สอง
       [8.64322573519907, 99.84849214553834]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -171,7 +173,7 @@ export default {
       [8.638187380459673, 99.84726905822754], // จุดที่สอง
       [8.638171469759127, 99.84721004962923],
       [8.638972307519897, 99.84743535518646]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -186,7 +188,7 @@ export default {
       [8.634984012548355, 99.8475694656372], // จุดที่สอง
       [8.63594926865659, 99.8471510410309],
       [8.63712666562079, 99.84742999076845]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -202,7 +204,7 @@ export default {
       [8.631748795496776, 99.85092222690582],
       [8.63198215634337, 99.84887838363649],
       [8.632576165119977, 99.84736025333406]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -221,7 +223,7 @@ export default {
       [8.629372749573314, 99.85236525535585],
       [8.628990883655046, 99.84833121299744],
       [8.631812439378336, 99.84733879566194]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -238,7 +240,7 @@ export default {
       [8.626073839592422, 99.84972596168518],
       [8.627420986377954, 99.84944164752962],
       [8.627723298185348, 99.84933972358704]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -264,7 +266,7 @@ export default {
       [8.623517429726332, 99.84913587570192],
       [8.62477972555689, 99.84926998615266],
       [8.625623021681657, 99.84946310520174]
-       // จุดที่สาม
+      // จุดที่สาม
     ], {
       color: 'blue',
       fillColor: '#3388ff',
@@ -290,7 +292,7 @@ export default {
       smoothFactor: 1, // ใช้ smoothFactor เพื่อทำให้เส้นโค้งนุ่มนวลขึ้น
     }).addTo(this.map).bindPopup("สี่เหลี่ยมโค้งมน");
 
- 
+
     // Right click to coppy lat long
     this.map.on('contextmenu', this.showContextMenu);
 
@@ -300,7 +302,7 @@ export default {
 
 <style>
 /* Ensure the map container has a height */
-.homePage{
+.homePage {
   min-height: 100vh;
 }
 </style>

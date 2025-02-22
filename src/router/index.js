@@ -26,6 +26,9 @@ import ConnectRelation from '@/views/ConnectRelation.vue'
 import CitizenEdit from '@/views/data_edit/CitizenEdit.vue'
 import ManageDefaultData from '@/views/ManageDefaultData.vue'
 import HeirDisplay from '@/views/data_list/HeirDisplay.vue'
+import LandFile from '@/views/uploadFile/LandFile.vue'
+import CitizenFiles from '@/views/uploadFile/CitizenFiles.vue'
+import CitizenDash from '@/views/dashboard/CitizenDash.vue'
 
 // URL
 import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from './url_list'
@@ -39,6 +42,7 @@ import ManageRole from '@/components/manage_default_data/ManageRole.vue'
 
 import LandEdit from '@/views/data_edit/LandEdit.vue'
 import HeirEdit from '@/views/data_edit/HeirEdit.vue'
+import HistoryCitizen from '@/views/HistoryCitizen.vue'
 
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
@@ -96,13 +100,18 @@ const router = createRouter({
       component: Search
     },
     {
-      path: '/history_land',
-      name: 'HistoryLand',
-      component: HistoryLand,
+      path: '/history_citizen',
+      redirect: '/history_citizen/50/1',
       meta: {
         requiredRole: roles[3].role_id,
-        title: 'Admin | ประวัติการแก้ไขที่ดิน'
+        title: 'Admin | '
       }
+    },
+    {
+      path: '/history_citizen/:limit(10|20|50)/:page',
+      name: 'HistoryCitizen',
+      component: HistoryCitizen,
+      props: true
     },
     {
       path: '/land_data',
@@ -131,14 +140,29 @@ const router = createRouter({
       name: 'DisplayPeople',
       component: DisplayPeople,
       props: true
-      // beforeEnter: (to, from, next) => {
-      //   const validAmounts = ['10', '20', '50'] // เฉพาะค่าที่อนุญาต
-      //   if (!validAmounts.includes(to.params.amount)) {
-      //     next('/land_data') // ถ้าไม่ใช่ 10, 20, 50 ให้กลับไปที่ /land_data
-      //   } else {
-      //     next() // ผ่าน
-      //   }
-      // }
+    },
+    {
+      path: '/history_land',
+      name: 'HistoryLand',
+      component: HistoryLand,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | ประวัติการแก้ไขที่ดิน'
+      }
+    },
+    {
+      path: '/history_land',
+      redirect: '/history_land/50/1',
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
+      path: '/history_land/:limit(50)/:page',
+      name: 'HistoryLand',
+      component: HistoryLand,
+      props: true
     },
     {
       path: '/heir_data',
@@ -219,6 +243,24 @@ const router = createRouter({
       }
     },
     {
+      path: '/land_data/upload_files/:id', // Child route for detail view
+      name: 'LandFile',
+      component: LandFile,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
+      path: '/citizen/files/:id', // Child route for detail view
+      name: 'CitizenFiles',
+      component: CitizenFiles,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | '
+      }
+    },
+    {
       path: '/manage_default_Information', // Parent route
       name: 'ManageDefaultData', // You can keep this name if needed, but it's not necessary for child routing
       component: ManageDefaultData,
@@ -262,6 +304,15 @@ const router = createRouter({
       path: '/table_dashboard',
       name: 'TableDashboard',
       component: TableDash,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Admin | Home'
+      }
+    },
+    {
+      path: '/citizen_dashboard',
+      name: 'CitizenDash',
+      component: CitizenDash,
       meta: {
         requiredRole: roles[3].role_id,
         title: 'Admin | Home'

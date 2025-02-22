@@ -1,9 +1,11 @@
 <template>
-  <div class="field">
-    <label class="label has-text-light">{{ label }}</label>
-    <div class="control">
-      <div class="box cont" :style="{ backgroundColor: backgroundColor, color: textColor }">
-        {{ value }}
+  <div>
+    <div class="field">
+      <label class="label has-text-light">{{ label }}</label>
+      <div class="control">
+        <div class="box cont" :style="{ backgroundColor: backgroundColor, color: textColor }">
+          <span class="value-text">{{ value }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -35,19 +37,31 @@ export default {
 
 <style scoped>
 .field {
-  margin-bottom: 10px;
+  margin-bottom: 1.5rem;
 }
 
 .label {
   font-size: 1.2rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 0.5rem;
 }
 
 .cont {
   font-size: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.box {
-  padding: 10px;
-  border-radius: 5px;
+.cont:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(116, 11, 11, 0.15);
+}
+
+.value-text {
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 </style>

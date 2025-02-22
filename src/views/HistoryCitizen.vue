@@ -1,9 +1,11 @@
 <template>
     <div class="primary_content">
         <div class="py-5 is-flex is-justify-content-center">
-            <div class="column is-three-quarters-tablet is-four-fifths-desktop is-full-mobile">
+            <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
+
                     <div class="card-content">
+                        <h1 class="is-size-4 has-text-centered">ประวัติการแก้ไขราษฎร</h1>
                         <!-- Search -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
@@ -26,49 +28,58 @@
                                 </div>
                             </div>
                             <div class="is-flex is-align-items-center is-justify-content-center">
-                                <span class="px-2">แสดง 50 ตาราง</span>
+                                <span class="px-2">แสดง</span>
+                                <div class="field">
+                                    <div class="control">
+                                        <div class="select is-fullwidth">
+                                            <select v-model="selectedLimit" @change="updateLimit">
+                                                <option value="50" selected>50</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="px-2">ตาราง</span>
                             </div>
+
                         </div>
                         <!-- Content -->
                         <div class="table-container">
-                            <ResponsiveContainer>
-                                <table v-if="heir_values.length"
-                                    class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                    <thead class="table-header">
-                                        <tr>
-                                            <th>ลำดับ</th>
-                                            <!-- <th>รหัส</th> -->
-                                            <th>ชื่อจริง - นามสกุล</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <HeirDataRow v-for="(heir, index) in heir_values" :key="heir.heir_id"
-                                            :heirs="heir" :index="(currentPage - 1) * selectedLimit + index + 1"
-                                            @view-detail="goToDetail(heir.heir_id)" />
-                                    </tbody>
-                                </table>
-                                <div v-else>
-                                    <hr class="navbar-divider" />
-                                    ไม่พบข้อมูล
-                                </div>
-                            </ResponsiveContainer>
+                            <table v-if="citizen_values.length"
+                                class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th>ลำดับ</th>
+                                        <th>ID-CARD</th>
+                                        <th>ซอยที่อยู่</th>
+                                        <th>ชื่อจริง - นามสกุล</th>
+                                        <th>เบอร์โทรศัพท์</th>
+                                        <th>ที่อยู่</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <HistoryCitizenDataRow v-for="(citizen, index) in citizen_values" :key="citizen.ID_CARD"
+                                        :ct="citizen" :index="(currentPage - 1) * selectedLimit + index + 1"
+                                        @view-detail="goToDetail(citizen.ID_CARD)" />
+                                </tbody>
+                            </table>
+                            <div v-else>
+                                <hr class="navbar-divider" />
+                                ไม่พบข้อมูล
+                            </div>
                         </div>
 
                         <!-- Control Page -->
-                        <ResponsiveContainer>
-                            <nav class="pagination" role="navigation" aria-label="pagination">
-                                <ul class="pagination-list">
-                                    <li v-for="page in totalPages" :key="page">
-                                        <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
-                                            @click="setPage(page)">
-                                            {{ page }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </ResponsiveContainer>
-
+                        <nav class="pagination" role="navigation" aria-label="pagination">
+                            <ul class="pagination-list">
+                                <li v-for="page in totalPages" :key="page">
+                                    <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
+                                        @click="setPage(page)">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -77,18 +88,17 @@
 </template>
 
 <script>
+import HistoryCitizenDataRow from '@/components/display_table/HistoryCitizenDataRow.vue';
 import axios from 'axios';
-import HeirDataRow from '@/components/display_table/HeirDataRow.vue';
-import ResponsiveContainer from '@/components/layout/ResponsiveContainer.vue';
 
 export default {
-    components: { HeirDataRow , ResponsiveContainer},
+    components: { HistoryCitizenDataRow },
     data() {
         return {
-            heir_values: [],
+            citizen_values: [],
             searchQuery: '',
             searchFilter: 'name',
-            selectedLimit: 50,
+            selectedLimit: Number(this.$route.params.limit) || 10,
             currentPage: Number(this.$route.params.page) || 1,
             totalPages: 1
         };
@@ -96,7 +106,7 @@ export default {
     watch: {
         '$route.params': {
             handler() {
-                this.selectedLimit = 50;
+                this.selectedLimit = Number(this.$route.params.limit) || 10;
                 this.currentPage = Number(this.$route.params.page) || 1;
                 this.fetchCitizenData();
             },
@@ -106,8 +116,8 @@ export default {
     methods: {
         async fetchCitizenData() {
             try {
-                const response = await axios.get(`http://localhost:3000/heir/${this.selectedLimit}/${this.currentPage}`);
-                this.heir_values = response.data.data.results || [];
+                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`);
+                this.citizen_values = response.data.data.results || [];
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -122,13 +132,11 @@ export default {
             this.$router.push({ params: { limit: this.selectedLimit, page: 1 } });
         },
         goToDetail(id) {
-            this.$router.push({ name: 'HeirDetail', params: { id } });
+            this.$router.push({ name: 'CitizenDetail', params: { id } });
         }
     }
 };
 </script>
-
-
 
 <style scoped>
 .header-size-1 {
@@ -137,7 +145,7 @@ export default {
 }
 
 .table-header {
-    background-color: rgba(4, 83, 10, 0.664);
+    background-color: rgba(21, 26, 90, 0.664);
 }
 
 .table-header>tr>th {
@@ -180,7 +188,7 @@ td.hoverable-row:hover .copy-icon {
 
 .pagination-link.is-current {
     border-color: none;
-    background-color: rgba(4, 83, 10, 0.664);
+    background-color: rgba(21, 26, 90, 0.664);
     /* Bulma's warning color */
     color: white;
     /* Make the text color white for contrast */

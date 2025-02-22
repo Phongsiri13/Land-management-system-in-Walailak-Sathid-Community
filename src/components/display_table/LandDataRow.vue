@@ -24,7 +24,7 @@
                     <span class="icon">
                         <i class="fas fa-eye"></i>
                     </span>
-                    <span>ดู</span>
+                    
                 </button>
             </div>
         </td>
