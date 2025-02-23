@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- loading when move to another path -->
     <!-- and loading when changing path -->
     <div>
       <progress class="progress is-danger fixed-progress" max="100" v-if="store.status_path_change == true">
@@ -10,7 +9,8 @@
 
     <!-- Navigator -->
     <Sidebar class="sidebar" v-if="userRole === roles[3].role_id" />
-    <PeopleBar v-else />
+    <!-- <PeopleBar v-else /> -->
+    <PeopleBar v-if="!isLoginPage && userRole === roles[0].role_id" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
 
     <!-- content -->
     <div>
@@ -58,6 +58,10 @@ export default {
     }
   },
   computed: {
+    // ตรวจสอบว่าเป็นหน้า /login หรือไม่
+    isLoginPage() {
+      return this.$route.path === '/login';
+    },
     isLinkActive() {
       return this.$route.path === '/create_people' || this.$route.path === '/create_land' || this.$route.path === '/create_heir';
     },

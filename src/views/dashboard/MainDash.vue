@@ -7,6 +7,13 @@
                     <div class="has-background-white mt-2 py-3 px-5">
                         <h2 class="title is-2 has-text-link">สรุปผลการใช้ประโยชน์ที่ดิน</h2>
                     </div>
+                    <!-- ปุ่มส่งออกเป็น PDF -->
+                    <div class="has-text-centered my-2">
+                        <button @click="exportToPDF" class="button is-primary">
+                            <i class="fas fa-download"></i>
+                            <span>ส่งออกเป็น PDF</span>
+                        </button>
+                    </div>
                     <!-- filter sois -->
                     <div v-if="userRole === roles[3].role_id" class="select is-rounded">
                         <select v-model="selectedSoi" @change="selectOption">
@@ -58,7 +65,7 @@
                             <div class="card-content">
                                 <h2 class="title is-4 has-text-centered has-text-dark">อื่นๆ</h2>
                                 <h4 class="title is-4 has-text-centered has-text-dark">{{ summariesLandUse.total_other
-                                    }}
+                                }}
                                 </h4>
                             </div>
                         </div>
@@ -108,6 +115,8 @@
 </template>
 
 <script>
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import roles from '@/role_config';
 import { defineComponent } from 'vue'
 import { Bar, Pie } from 'vue-chartjs'
@@ -229,6 +238,47 @@ export default defineComponent({
         }
     },
     methods: {
+        async exportToPDF() {
+            // เลือกเฉพาะส่วนที่ต้องการส่งออก (ยกเว้นปุ่ม)
+            const element = document.querySelector('.dashboard-box');
+            if (!element) return;
+
+            try {
+                // ซ่อนปุ่ม "ส่งออกเป็น PDF" ชั่วคราว
+                const exportButton = document.querySelector('.has-text-centered.mt-4');
+                if (exportButton) {
+                    exportButton.style.display = 'none';
+                }
+
+                // จับภาพหน้าจอของส่วนที่ต้องการ
+                const canvas = await html2canvas(element, {
+                    scale: 2, // เพิ่มความละเอียดของภาพ
+                    useCORS: true, // อนุญาตให้ใช้ CORS สำหรับการโหลดรูปภาพ
+                });
+
+                // แสดงปุ่ม "ส่งออกเป็น PDF" กลับมา
+                if (exportButton) {
+                    exportButton.style.display = 'block';
+                }
+
+                // สร้าง PDF
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; // ความกว้างของ A4 ในหน่วย mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save('dashboard.pdf');
+            } catch (error) {
+                console.error('Error exporting to PDF:', error);
+
+                // แสดงปุ่ม "ส่งออกเป็น PDF" กลับมาในกรณีเกิดข้อผิดพลาด
+                const exportButton = document.querySelector('.has-text-centered.mt-4');
+                if (exportButton) {
+                    exportButton.style.display = 'block';
+                }
+            }
+        },
         async redoLoad() {
             console.log('reload')
             this.reload = true;
@@ -305,7 +355,6 @@ export default defineComponent({
         });
     }
 });
-
 </script>
 
 <style scoped>

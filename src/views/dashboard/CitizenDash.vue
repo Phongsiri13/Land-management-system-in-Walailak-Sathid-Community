@@ -5,6 +5,22 @@
         </p>
         <div class="container my-3">
             <div class="column is-three-quarters-tablet is-full-desktop is-four-fifths-mobile">
+                <!-- ปุ่มส่งออกข้อมูล -->
+                <div class="buttons">
+                    <!-- ปุ่มส่งออกเป็น Excel -->
+                    <button class="button is-primary" @click="exportToExcel" title="ส่งออกเป็น Excel">
+                        <span class="icon">
+                            <i class="fas fa-file-excel"></i> <!-- ไอคอน Excel จาก Font Awesome -->
+                        </span>
+                    </button>
+
+                    <!-- ปุ่มส่งออกเป็น CSV -->
+                    <button class="button is-info" @click="exportToCSV" title="ส่งออกเป็น CSV">
+                        <span class="icon">
+                            <i class="fas fa-file-csv"></i> <!-- ไอคอน CSV จาก Font Awesome -->
+                        </span>
+                    </button>
+                </div>
                 <div class="columns">
                     <div class="column is-1 card my-2" style="max-height: 500px; overflow: auto;">
                         <label class="checkbox">
@@ -66,6 +82,8 @@
 
 <script>
 import { fetchCitizenTableDashboard } from '@/api/apiLand';
+import { createObjectCsvWriter } from 'csv-writer';
+import * as XLSX from 'xlsx';
 
 export default {
     data() {
@@ -83,9 +101,77 @@ export default {
         };
     },
     methods: {
-        formatRai(value) {
-            // แปลงเป็นทศนิยม 2 ตำแหน่งและไม่ปัดเศษ
-            return parseFloat(value.toFixed(2));
+        exportToCSV() {
+            const headers = ['ซอย', 'ราษฎร', 'หัวตะพาน', 'ไทรบุรี', 'ชาย', 'หญิง'];
+            const data = this.rows
+                .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
+                .map(row => [
+                    row.soi,
+                    row.total_citizen,
+                    row.huataphan,
+                    row.taiburi,
+                    row.male,
+                    row.female,
+                ]);
+
+            // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
+            const totals = [
+                'ผลลัพธ์',
+                this.totalCitizen,
+                this.totalHuataphan,
+                this.totalTaiburi,
+                this.totalMale,
+                this.totalFemale,
+            ];
+            data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
+
+            // สร้างเนื้อหา CSV
+            const csvContent = [
+                headers.join(','), // เพิ่มหัวข้อ
+                ...data.map(row => row.join(',')) // เพิ่มข้อมูล
+            ].join('\n');
+
+            // เพิ่ม BOM (Byte Order Mark) เพื่อรองรับ UTF-8
+            const BOM = '\uFEFF'; // BOM สำหรับ UTF-8
+            const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            // สร้างไฟล์ CSV และให้ผู้ใช้ดาวน์โหลด
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'ข้อมูลราษฎร.csv';
+            link.click();
+        },
+        exportToExcel() {
+            // สร้างข้อมูลสำหรับ Excel จากแถวที่เลือก
+            const data = this.rows
+                .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
+                .map(row => ({
+                    ซอย: row.soi,
+                    ราษฎร: row.total_citizen,
+                    หัวตะพาน: row.huataphan,
+                    ไทรบุรี: row.taiburi,
+                    ชาย: row.male,
+                    หญิง: row.female
+                }));
+
+            // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
+            const totals = {
+                ซอย: 'ผลลัพธ์',
+                ราษฎร: this.totalCitizen,
+                หัวตะพาน: this.totalHuataphan,
+                ไทรบุรี: this.totalTaiburi,
+                ชาย: this.totalMale,
+                หญิง: this.totalFemale,
+            };
+            data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
+
+            // สร้าง worksheet จากข้อมูล
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'ข้อมูลราษฎร');
+
+            // สร้างไฟล์ Excel และให้ผู้ใช้ดาวน์โหลด
+            XLSX.writeFile(workbook, 'ข้อมูลราษฎร.xlsx');
         },
         toggleAllVisibility() {
             if (this.isAllVisible) {

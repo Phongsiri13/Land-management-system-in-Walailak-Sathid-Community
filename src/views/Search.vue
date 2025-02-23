@@ -19,7 +19,8 @@
     <div class="not-found-container" v-else>
       <div class="not-found-content">
         <h1 class="not-found-title">ขออภัย!</h1>
-        <p class="not-found-message">ไม่พบแปลงที่ดินนี้ "<span class="search-query">{{ keyword }}</span>"</p>
+        <p class="not-found-message" v-if="errorStatus">ระบบขัดข้องชั่วคราว</p>
+        <p class="not-found-message" v-else>ไม่พบแปลงที่ดินนี้ "<span class="search-query">{{ keyword }}</span>"</p>
       </div>
     </div>
   </div>
@@ -39,7 +40,8 @@ export default {
     return {
       keyword: '',
       results: [], // Initialize as an empty array
-      total_rai: 0
+      total_rai: 0,
+      errorStatus: false
     };
   },
   methods: {
@@ -53,7 +55,6 @@ export default {
         console.log('res-data:', response.data.results[0])
         console.log('res-length:', response.data.results.length)
         // เก็บผลลัพธ์ที่ได้รับจาก API ลงใน results
-        // this.results = response.data.results; // ปรับตามรูปแบบของข้อมูล API
         this.results = [
           { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
           { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
@@ -70,6 +71,7 @@ export default {
       } catch (error) {
         console.error('Error fetching data:', error);
         // ในกรณีที่เกิดข้อผิดพลาด สามารถใช้ mock data แทน
+        this.errorStatus = true;
         this.results = [];
       }
     },
