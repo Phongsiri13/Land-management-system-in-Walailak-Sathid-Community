@@ -40,7 +40,7 @@
                 <img src="@/assets/icons/home-white.png" :width="34" :height="34" alt="Home Icon">
                 <span v-if="isExpanded" class="ml-2 has-text-white">หน้าแรก</span>
             </RouterLink>
-            <RouterLink to="/search" class="navbar-item has-text-white" active-class="is-active"
+            <RouterLink to="/login" class="navbar-item has-text-white" active-class="is-active"
                 exact-active-class="is-active">
                 <img src="@/assets/icons/search-white.png" :width="34" :height="34" alt="Search Icon">
                 <span v-if="isExpanded" class="has-text-white">ค้นหา</span>

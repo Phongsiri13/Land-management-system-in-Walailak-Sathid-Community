@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', {
     }
   },
   getters: {
-    isUser: (state) => state.userRole === 'User',
+    isUser: (state) => state.userRole === null,
     isAdmin: (state) => state.userRole === 'Admin',
     isOfficer: (state) => state.userRole === 'Officer'
   }

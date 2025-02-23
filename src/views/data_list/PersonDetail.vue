@@ -83,7 +83,7 @@
                     <div class="columns is-vcentered" style="font-size: 22px;">
                         <div class="column is-10">
                             <!-- <h2 class="title is-4">รหัสที่ดิน • {{ $route.params.id }}</h2> -->
-                            <p>ซอยที่ดินปัจจุบัน : <strong>{{ landSoi || '---' }}</strong></p>
+                            <p>ซอยที่ดินปัจจุบัน : <strong>{{ landSoi !== null && landSoi !== undefined ? landSoi : '---' }}</strong></p>
                             <p>ผู้ได้รับสิทธิ์ : <strong>{{ person_name || '---' }}</strong></p>
                             <p>วันที่บันทึกที่ดิน : <strong>{{ ToThaiDate(new Date(create_land_at)) || '---' }}</strong>
                             </p>
@@ -172,7 +172,7 @@
                                         </div>
                                         <div class="column">
                                             <p><strong>ซอย</strong></p>
-                                            <p>{{ land_information[0]?.current_soi || '-' }}</p>
+                                            <p><strong>{{ land_information[0]?.current_soi !== null && land_information[0]?.current_soi !== undefined ? land_information[0]?.current_soi : '---' }}</strong></p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ตำบล</strong></p>
@@ -374,7 +374,8 @@
                                         </div>
                                         <div class="column">
                                             <p><strong>ซอย</strong></p>
-                                            <p>{{ person_information[0]?.soi || '-' }}</p>
+                                            <p><strong>{{ person_information[0]?.soi !== null && person_information[0]?.soi !== undefined ? 
+                                            person_information[0]?.soi : '---' }}</strong></p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ตำบล</strong></p>
@@ -548,8 +549,10 @@ export default {
             const landId = decodeURIComponent(this.$route.params.id);
             this.LAND_ID = landId;
             const response_land = await axios.get(`http://localhost:3000/land/${landId}`);
-            console.log('land-data:', response_land.data)
+            console.log('land-data:', response_land.data[0])
             this.CITIZEN_ID = response_land.data[0].id_card || null;
+            this.landSoi = response_land.data[0].current_soi;
+            // console.log('land-soi:', this.landSoi)
             const getStatusName = await fetchOneLandStatus(response_land.data[0].current_land_status);
             console.log('getStatusName:', getStatusName.data[0].land_status_name);
             this.landStatusName = getStatusName.data[0].land_status_name
@@ -558,7 +561,7 @@ export default {
             if (response_land.data) {
                 const ld = response_land.data
                 this.land_information = ld
-                this.landSoi = ld[0].current_soi || '-'
+                
                 this.landActive = ld[0].active
                 if (ld[0].id_card) {
                     const resCitizen = await axios.get(`http://localhost:3000/citizen/${ld[0].id_card}`);

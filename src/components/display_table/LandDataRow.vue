@@ -6,8 +6,20 @@
         <td>{{ land.fullname }}</td>
         <td>{{ formatPhoneNumber(land.phone_number) || '-' }}</td>
         <td>
-            <span class="icon">
+            <span class="icon" v-if="land.current_land_status === 'LS01'">
                 <i class="fas fa-circle has-text-success"></i>
+            </span>
+            <span class="icon" v-else-if="land.current_land_status === 'LS02'">
+                <i class="fas fa-circle has-text-link"></i>
+            </span>
+            <span class="icon" v-else-if="land.current_land_status === 'LS03'">
+                <i class="fas fa-circle has-text-grey"></i>
+            </span>
+            <span class="icon" v-else-if="land.current_land_status === 'LS04'">
+                <i class="fas fa-circle has-text-danger"></i>
+            </span>
+            <span class="icon" v-else>
+                <i class="fas fa-circle has-text-white-bis"></i>
             </span>
             {{ land.land_status_name }}
         </td>
@@ -24,7 +36,6 @@
                     <span class="icon">
                         <i class="fas fa-eye"></i>
                     </span>
-                    
                 </button>
             </div>
         </td>

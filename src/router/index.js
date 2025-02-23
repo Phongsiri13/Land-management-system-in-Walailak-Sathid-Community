@@ -350,6 +350,15 @@ router.beforeEach(async (to, from, next) => {
   store.status_path_change = true
   const userStore = useUserStore()
   console.log('router guard is working')
+  // ตรวจสอบว่า path ที่ร้องขอคือ /login หรือไม่
+  if (to.path === '/login') {
+    console.log('Requesting /login', userStore.isUser)
+    await userStore.out_of_system();
+    // if (userStore.isUser === false) {
+    //   next('/') // redirect ไปที่หน้า '/'
+    //   return // หยุดการทำงานของฟังก์ชันต่อ
+    // }
+  }
 
   t1++
   // To check there are role or not?

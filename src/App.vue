@@ -10,7 +10,7 @@
     <!-- Navigator -->
     <Sidebar class="sidebar" v-if="userRole === roles[3].role_id" />
     <!-- <PeopleBar v-else /> -->
-    <PeopleBar v-if="!isLoginPage && userRole === roles[0].role_id" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
+    <PeopleBar v-if="!isLoginPage && userRole === null" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
 
     <!-- content -->
     <div>

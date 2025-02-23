@@ -95,6 +95,7 @@ export default {
                 this.userStore.setUserRole(response.data.role); // กำหนดค่า userRole เป็น "Admin"
                 console.log("state:", this.userStore.userRole)
                 alert('Logged in successfully!');
+                this.goHome();
             } catch (error) {
                 console.error('Failed to fetch role', error);
                 useUserStore.userRole = null;

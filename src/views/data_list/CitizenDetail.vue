@@ -83,6 +83,18 @@
                         </div>
                     </div>
                 </div>
+                <hr>
+                <!-- ข้อมูลที่ถือครองที่ดิน  -->
+                <h2 class="has-text-dark my-3 px-3 is-size-4">ถือครองที่ดิน</h2>
+                <div v-if="formPeopleLandHold.length > 0">
+                    <div v-for="(ct, index) in formPeopleLandHold" :key="index" class="box">
+                        <span  @click="goToLandView(ct.id_land)" 
+                        class="view-land-data has-text-weight-bold is-size-6 p-1 mr-3"><i class="fas fa-eye has-text-link"></i></span>
+                        <span class="has-text-weight-bold is-size-6">ที่ดินที่: {{ ++index }}</span>
+                        <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.number }}</span>
+                        <span class="has-text-weight-bold is-size-6"> จำนวนไร่: {{ ct.total_area_in_rai }}</span>
+                    </div>
+                </div>
 
                 <!-- heir -->
                 <!-- ข้อมูลทายาท -->
@@ -99,10 +111,9 @@
                 </div>
                 <div v-else>
                     <div class="notification is-info">
-                        <h2 class="title is-4 has-text-centered">ราษฎรคนนี้ยังไม่มีใครเป็นทายาท</h2>
+                        <h2 class="title is-size-5 has-text-centered">ราษฎรคนนี้ยังไม่มีใครเป็นทายาท</h2>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -118,6 +129,7 @@ export default {
     data() {
         return {
             formPeopleData: [],
+            formPeopleLandHold: [],
             formHeirData: []
         }
     },
@@ -130,7 +142,10 @@ export default {
         },
         goToCitizenFile(id) {
             this.$router.push({ name: 'CitizenFiles', params: { id } });
-        }
+        },
+        goToLandView(id) {
+            this.$router.push({ name: 'PersonDetail', params: { id } });
+        },
     },
     async created() {
         try {
@@ -168,6 +183,11 @@ export default {
             // console.log('le:', resHeir.data)
             this.formHeirData = resHeir.data;
 
+            // holding lands
+            const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${personId}`);
+            console.log('res-hold:', resLandHold.data.data)
+            this.formPeopleLandHold = resLandHold.data.data
+
         } catch (error) {
             console.error('Error fetching person data:', error);
         }
@@ -179,5 +199,14 @@ export default {
 .btn-menu {
     border-radius: 10px;
     min-width: 120px;
+}
+
+.view-land-data{
+    cursor: pointer;
+}
+
+.view-land-data:hover{
+    background-color: #333;
+    border-radius: 5px;
 }
 </style>
