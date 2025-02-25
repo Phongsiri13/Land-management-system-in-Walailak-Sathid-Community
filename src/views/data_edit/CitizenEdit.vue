@@ -220,32 +220,31 @@ export default {
             prefixList: [
                 { value: null, label: 'ไม่พบข้อมูล' },
             ],
-            village: [],
             sois: [{ value: null, label: 'ไม่พบข้อมูล' }],
             village: [], // เพื่อเก็บหมู่ที่ตามตำบลที่เลือก
             villageOptions: {
                 'หัวตะพาน': [
-                    { value: 1, label: 'หมู่ที่ 1 บ้านคลองดิน' },
-                    { value: 2, label: 'หมู่ที่ 2 บ้านฉิมพลี' },
-                    { value: 3, label: 'หมู่ที่ 3 บ้านคลองขุด' },
-                    { value: 4, label: 'หมู่ที่ 4 บ้านทุ่งตก' },
-                    { value: 5, label: 'หมู่ที่ 5 บ้านดอนยาง' },
-                    { value: 6, label: 'หมู่ที่ 6 บ้านทุ่งชน' },
-                    { value: 7, label: 'หมู่ที่ 7 บ้านวัดประดู่' },
-                    { value: 8, label: 'หมู่ที่ 8 บ้านสวนหมาก' },
-                    { value: 9, label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
+                    { value: '1', label: 'หมู่ที่ 1 บ้านคลองดิน' },
+                    { value: '2', label: 'หมู่ที่ 2 บ้านฉิมพลี' },
+                    { value: '3', label: 'หมู่ที่ 3 บ้านคลองขุด' },
+                    { value: '4', label: 'หมู่ที่ 4 บ้านทุ่งตก' },
+                    { value: '5', label: 'หมู่ที่ 5 บ้านดอนยาง' },
+                    { value: '6', label: 'หมู่ที่ 6 บ้านทุ่งชน' },
+                    { value: '7', label: 'หมู่ที่ 7 บ้านวัดประดู่' },
+                    { value: '8', label: 'หมู่ที่ 8 บ้านสวนหมาก' },
+                    { value: '9', label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
                 ],
                 'ไทรบุรี': [
-                    { value: 1, label: 'หมู่ที่ 1 บ้านโพธิ์' },
-                    { value: 2, label: 'หมู่ที่ 2 บ้านคูเถร' },
-                    { value: 3, label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
-                    { value: 4, label: 'หมู่ที่ 4 บ้านในหัน' },
-                    { value: 5, label: 'หมู่ที่ 5 บ้านไม้มูก' },
-                    { value: 6, label: 'หมู่ที่ 6 บ้านปลักจอก' },
-                    { value: 7, label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
-                    { value: 8, label: 'หมู่ที่ 8 บ้านลุ่มนา' },
-                    { value: 9, label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
-                    { value: 10, label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
+                    { value: '1', label: 'หมู่ที่ 1 บ้านโพธิ์' },
+                    { value: '2', label: 'หมู่ที่ 2 บ้านคูเถร' },
+                    { value: '3', label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
+                    { value: '4', label: 'หมู่ที่ 4 บ้านในหัน' },
+                    { value: '5', label: 'หมู่ที่ 5 บ้านไม้มูก' },
+                    { value: '6', label: 'หมู่ที่ 6 บ้านปลักจอก' },
+                    { value: '7', label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
+                    { value: '8', label: 'หมู่ที่ 8 บ้านลุ่มนา' },
+                    { value: '9', label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
+                    { value: '10', label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
                 ]
             },
         };
@@ -272,7 +271,7 @@ export default {
             try {
                 const schema = this.getValidationSchema();
                 await schema.validateAt(field, this.formPeopleData);
-                console.log('field:', field)
+                // console.log('field:', field)
                 this.errors[field] = ""; // Clear error if valid
             } catch (err) {
                 this.errors[field] = err.message; // Set error message
@@ -281,28 +280,31 @@ export default {
         goHome() {
             this.$router.back();
         },
-        async updateVillageOptions(subdistrict) {
-            // Update the village list based on subdistrict
-            if (subdistrict === 'หัวตะพาน' || subdistrict === 'ไทรบุรี') {
+        async updateVillageOptions() {
+            this.village = []
+            const subdistrict = this.formPeopleData.subdistrict;
+            console.log('Subdistrict selected:', subdistrict);
+            if (this.villageOptions[subdistrict]) {
                 this.village = this.villageOptions[subdistrict];
+                console.log('Updated village list:', this.village);
 
-                // If the current village is not in the new list, reset the village selection
+                // ตรวจสอบว่าค่าหมู่บ้านที่เลือกอยู่ในรายการใหม่หรือไม่
                 const isValidVillage = this.village.some(v => String(v.value) === String(this.formPeopleData.village));
 
                 if (!isValidVillage) {
-                    this.formPeopleData.village = "";  // Reset if the current village is not valid for this subdistrict
+                    this.formPeopleData.village = ""; // รีเซ็ตค่าหมู่บ้านหากไม่ตรงกับตำบลที่เลือก
                 }
             } else {
-                this.village = [];  // Clear village options if no valid subdistrict
-                this.formPeopleData.village = "";  // Reset village selection
+                this.village = []; // ล้างรายการหมู่บ้านหากไม่มีข้อมูลสำหรับตำบลที่เลือก
+                this.formPeopleData.village = "";
             }
 
-            // Reset error for village
+            // ล้างข้อผิดพลาดหากมี
             if (this.errors['village']) {
                 this.errors['village'] = "";
             }
 
-            // Trigger validation for subdistrict
+            // เรียกใช้การตรวจสอบค่าตำบล
             await this.validateField("subdistrict");
         },
         async submitCitizen() {

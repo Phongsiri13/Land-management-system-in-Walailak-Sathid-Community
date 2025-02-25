@@ -8,7 +8,7 @@
                         <h2 class="title is-2 has-text-link">สรุปผลการใช้ประโยชน์ที่ดิน</h2>
                     </div>
                     <!-- ปุ่มส่งออกเป็น PDF -->
-                    <div class="has-text-centered my-2">
+                    <div class="has-text-centered my-2" v-if="userRole === roles[3].role_id">
                         <button @click="exportToPDF" class="button is-primary">
                             <i class="fas fa-download"></i>
                             <span>ส่งออกเป็น PDF</span>

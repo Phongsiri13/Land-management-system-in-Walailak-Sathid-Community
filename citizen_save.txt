@@ -22,12 +22,25 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Filter by Gender -->
+                        <div class="field">
+                            <label class="label">เพศ</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="selectedGender">
+                                        <option value="">ทั้งหมด</option>
+                                        <option value="1">ชาย</option>
+                                        <option value="0">หญิง</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Filter by District -->
                         <div class="field">
                             <label class="label">ตำบล</label>
                             <div class="control">
                                 <div class="select">
-                                    <select v-model="selectedDistrict">
+                                    <select v-model="selectedGender">
                                         <option value="">ทั้งหมด</option>
                                         <option value="Huataphan">หัวตะพาน</option>
                                         <option value="Taiburi">ไทรบุรี</option>
@@ -143,7 +156,7 @@ export default {
             isFilterModalActive: false, // ควบคุมการแสดง modal
             filteredCitizens: [], // เก็บข้อมูลราษฎรหลังการกรอง
             selectedSoi: '', // เก็บค่าซอยที่เลือก
-            // selectedGender: '', // เก็บค่าเพศที่เลือก
+            selectedGender: '', // เก็บค่าเพศที่เลือก
             selectedDistrict: '', // เก็บค่าเพศที่เลือก
             btnSearchStatus: false,
             citizen_values: [],
@@ -152,6 +165,7 @@ export default {
             selectedLimit: Number(this.$route.params.limit) || 10,
             currentPage: Number(this.$route.params.page) || 1,
             totalPages: 1,
+            searchDetect: false,
         };
     },
     watch: {
@@ -162,46 +176,69 @@ export default {
                 this.fetchCitizenData();
             },
             immediate: true
-        },
-        selectedSoi(newVal, oldVal) {
-            console.log('selectedSoi changed from', oldVal, 'to', newVal);
-            this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
-            this.fetchCitizenData(); // ดึงข้อมูลใหม่
-        },
-        selectedDistrict(newVal, oldVal) {
-            console.log('selectedDistrict changed from', oldVal, 'to', newVal);
-            this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
-            this.fetchCitizenData(); // ดึงข้อมูลใหม่
-        },
+        }
+    },
+    created() {
+        const query = this.$route.query;
+        if (query.searchType && query.searchQuery) {
+            this.searchFilter = query.searchType;
+            this.searchQuery = query.searchQuery;
+            this.fetchFilteredCitizens(); // เรียกใช้งาน API อีกครั้ง
+        }
     },
     methods: {
         async searchData() {
+            this.searchDetect = true;
             if (this.searchQuery == '') {
-                this.selectedSoi = '', // เก็บค่าซอยที่เลือก
-                    this.selectedDistrict = '', // เก็บค่าเพศที่เลือก
-                    this.searchQuery = '',
-                    this.searchFilter = 'NAME',
-                    this.$router.replace({
-                        path: '/citizen_data/10/1',
-                    });
                 try {
-                    await this.fetchCitizenData();
-                } catch (error) {
-                    
-                }finally{
+                    this.$router.push({
+                        name: 'CitizenDisplay',
+                        params: {
+                            limit: 10, // กำหนดค่าเริ่มต้นสำหรับ limit
+                            page: 1    // กำหนดค่าเริ่มต้นสำหรับ page
+                        }
+                    });
                     return
+                } catch (error) {
+
                 }
             }
             try {
-                this.currentPage = 1;
-                await this.fetchCitizenData();
-                // หลังจาก fetch ข้อมูลเสร็จแล้ว
-                this.$router.replace({
-                    path: `/citizen_data/${this.selectedLimit}/${this.currentPage}`, // เปลี่ยน URL หลังจาก fetch ข้อมูลเสร็จ
+                // ส่งข้อมูลการกรองไปยัง backend
+                const response = await axios.get(`http://localhost:3000/citizen/filter/${this.selectedLimit}/1`, {
+                    params: {
+                        searchType: this.searchFilter, // ประเภทการค้นหา
+                        searchQuery: this.searchQuery, // คำค้นหา
+                    },
                 });
+                console.log('----', response.data);
+
+                // รับข้อมูลที่กรองแล้วจาก backend
+                this.filteredCitizens = response.data;
+                this.citizen_values = response.data.data.results || [];
+                this.totalPages = Math.ceil(parseInt(response.data.data.totalCount) / this.selectedLimit);
+                console.log("total:", this.totalPages);
+
+                if (this.citizen_values.length > 0) {
+                    this.$router.push({
+                        name: 'CitizenDisplay',
+                        params: {
+                            limit: this.selectedLimit, // ค่า limit ที่เลือก
+                            page: 1 // กลับไปที่หน้าแรก
+                        },
+                        query: {
+                            searchType: this.searchFilter,
+                            searchQuery: this.searchQuery
+                        }
+                    });
+                }
+
+                // ปิด modal หลังการกรอง
+                this.isFilterModalActive = false;
             } catch (error) {
                 console.error('Error applying filters:', error);
             }
+
         },
         // เปิด modal และรีเซ็ตค่าการกรอง
         openFilterModal() {
@@ -209,16 +246,8 @@ export default {
         },
         async fetchCitizenData() {
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/${this.selectedLimit}/${this.currentPage}`, {
-                    params: {
-                        searchType: this.searchFilter,
-                        searchQuery: this.searchQuery,
-                        soi: this.selectedSoi,
-                        district: this.selectedDistrict,
-                    },
-                });
+                const response = await axios.get(`http://localhost:3000/citizen/${this.selectedLimit}/${this.currentPage}`);
                 this.citizen_values = response.data.data.results || [];
-                console.log('response.data.data.results:', response.data.data.results)
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -307,7 +336,7 @@ td.hoverable-row:hover .copy-icon {
 }
 
 .filter-style {
-    background-color: burlywood;
+    background-color: gray;
     border-radius: 5px;
 }
 

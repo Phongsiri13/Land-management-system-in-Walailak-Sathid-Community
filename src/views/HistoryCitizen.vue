@@ -1,9 +1,63 @@
 <template>
     <div class="primary_content">
         <div class="py-5 is-flex is-justify-content-center">
+            <!-- Modal for land details -->
+            <div class="modal" :class="{ 'is-active': isModalActive }">
+                <div class="modal-background" @click="closeModal"></div>
+                <div class="modal-content">
+                    <div class="box">
+                        <h3 class="title">ข้อมูลปัจจุบัน</h3>
+                        <p :class="highlightDiff('id_card')" class="my-1"><strong>บัตรประชาชน:</strong> {{
+                            formatIDCARD(citizen_data.ID_CARD) }}</p>
+                        <p :class="highlightDiff('prefix_name')" class="my-1"><strong>คำนำหน้า:</strong> {{
+                            citizen_data.prefix_name }}</p>
+                        <p :class="highlightDiff('first_name')" class="my-1"><strong>ชื่อจริง:</strong> {{
+                            citizen_data.first_name }}</p>
+                        <p :class="highlightDiff('last_name')" class="my-1"><strong>นามสกุล:</strong> {{
+                            citizen_data.last_name }}</p>
+                        <p :class="highlightDiff('birthday')" class="my-1"><strong>วันเกิด:</strong> {{
+                            ToThaiDate(citizen_data.birthday) }}</p>
+                        <p :class="highlightDiff('house_number')" class="my-1"><strong>บ้านเลขที่:</strong> {{
+                            citizen_data.house_number }}</p>
+                        <p :class="highlightDiff('soi')" class="my-1"><strong>ซอย:</strong> {{ citizen_data.soi }}</p>
+                        <p :class="highlightDiff('village_number')" class="my-1"><strong>หมู่ที่:</strong> {{
+                            citizen_data.village_number }}</p>
+                        <p :class="highlightDiff('district')" class="my-1"><strong>ตำบล:</strong> {{
+                            citizen_data.district }}</p>
+                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ citizen_data.gender == '1' ? "ชาย" : "หญิง" }}
+                        </p>
+
+                        <hr>
+                        <h3 class="title">ข้อมูลที่แก้ไข</h3>
+                        <p :class="highlightDiff('id_card')" class="my-1"><strong>บัตรประชาชน:</strong> {{
+                            formatIDCARD(history_data.CARD_ID) }}</p>
+                        <p :class="highlightDiff('prefix_name')" class="my-1"><strong>คำนำหน้า:</strong> {{
+                            history_data.prefix_name }}</p>
+                        <p :class="highlightDiff('first_name')" class="my-1"><strong>ชื่อจริง:</strong> {{
+                            history_data.first_name }}</p>
+                        <p :class="highlightDiff('last_name')" class="my-1"><strong>นามสกุล:</strong> {{
+                            history_data.last_name }}</p>
+                        <p :class="highlightDiff('birthday')" class="my-1"><strong>วันเกิด:</strong> {{
+                            ToThaiDate(history_data.birthday) }}</p>
+                        <p :class="highlightDiff('house_number')" class="my-1"><strong>บ้านเลขที่:</strong> {{
+                            history_data.house_number }}</p>
+                        <p :class="highlightDiff('soi')" class="my-1"><strong>ซอย:</strong> {{ history_data.soi }}</p>
+                        <p :class="highlightDiff('village_number')" class="my-1"><strong>หมู่ที่:</strong> {{
+                            history_data.village_number }}</p>
+                        <p :class="highlightDiff('district')" class="my-1"><strong>ตำบล:</strong> {{
+                            history_data.district }}</p>
+                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ history_data.gender == '1' ? "ชาย" : "หญิง" }}
+                        </p>
+
+                        <button class="button is-primary is-dark my-2" @click="closeModal">ปิด</button>
+                    </div>
+
+
+                </div>
+                <button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
+            </div>
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
-
                     <div class="card-content">
                         <h1 class="is-size-4 has-text-centered">ประวัติการแก้ไขราษฎร</h1>
                         <!-- Search -->
@@ -58,9 +112,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <HistoryCitizenDataRow v-for="(citizen, index) in citizen_values" :key="citizen.ID_CARD"
-                                        :ct="citizen" :index="(currentPage - 1) * selectedLimit + index + 1"
-                                        @view-detail="goToDetail(citizen.ID_CARD)" />
+                                    <HistoryCitizenDataRow v-for="(citizen, index) in citizen_values"
+                                        :key="citizen.ID_CARD" :ct="citizen"
+                                        :index="(currentPage - 1) * selectedLimit + index + 1"
+                                        @view-detail="goToDetail(citizen.id_h_citizen)" />
                                 </tbody>
                             </table>
                             <div v-else>
@@ -89,6 +144,7 @@
 
 <script>
 import HistoryCitizenDataRow from '@/components/display_table/HistoryCitizenDataRow.vue';
+import { convertToThaiDate, formatIDCARD } from '@/utils/commonFunc';
 import axios from 'axios';
 
 export default {
@@ -100,7 +156,10 @@ export default {
             searchFilter: 'name',
             selectedLimit: Number(this.$route.params.limit) || 10,
             currentPage: Number(this.$route.params.page) || 1,
-            totalPages: 1
+            totalPages: 1,
+            isModalActive: false, // สำหรับเปิด/ปิด modal
+            history_data: {},
+            citizen_data: {}
         };
     },
     watch: {
@@ -114,11 +173,18 @@ export default {
         }
     },
     methods: {
+        formatIDCARD(ID_CARD) {
+            return formatIDCARD(ID_CARD)
+        },
+        ToThaiDate(date) {
+            return convertToThaiDate(date)
+        },
         async fetchCitizenData() {
             try {
                 const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`);
                 this.citizen_values = response.data.data.results || [];
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
+                // console.log(response.data.data.results)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -131,8 +197,29 @@ export default {
         updateLimit() {
             this.$router.push({ params: { limit: this.selectedLimit, page: 1 } });
         },
-        goToDetail(id) {
-            this.$router.push({ name: 'CitizenDetail', params: { id } });
+        async goToDetail(ID_CARD) {
+            console.log('id:', ID_CARD)
+            this.isModalActive = true; // เปิด modal
+            try {
+                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${ID_CARD}`);
+                console.log(response.data)
+                this.history_data = response.data.resultsHistoryCitizen[0]
+                this.citizen_data = response.data.resultsCitizen[0]
+                console.log('history_data:', this.history_data)
+                console.log('citizen_data:', this.citizen_data)
+
+            } catch (error) {
+
+            }
+        },
+        highlightDiff(field) {
+            if (this.citizen_data[field] !== this.history_data[field]) {
+                return "has-background-danger-light"; // ใช้ class ของ Bulma เพื่อ highlight สีแดง
+            }
+            return "";
+        },
+        closeModal() {
+            this.isModalActive = false; // ปิด modal
         }
     }
 };

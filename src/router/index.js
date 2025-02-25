@@ -126,14 +126,18 @@ const router = createRouter({
       redirect: '/citizen_data/10/1',
       meta: {
         requiredRole: roles[3].role_id,
-        title: 'Admin | '
+        title: 'Admin | citizen'
       }
     },
     {
       path: '/citizen_data/:limit(10|20|50)/:page',
       name: 'CitizenDisplay',
       component: CitizenDisplay,
-      props: true
+      props: true,
+      meta: {
+        // requiredRole: roles[3].role_id,
+        title: 'Admin | citizen'
+      }
     },
     {
       path: '/land_data/:limit(10|20|50)/:page',
@@ -325,7 +329,10 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/BulmaTesting.vue')
-      component: Login
+      component: Login,
+      meta: {
+        title: 'Login'
+      }
     },
     {
       path: '/admin',
@@ -352,12 +359,10 @@ router.beforeEach(async (to, from, next) => {
   console.log('router guard is working')
   // ตรวจสอบว่า path ที่ร้องขอคือ /login หรือไม่
   if (to.path === '/login') {
-    console.log('Requesting /login', userStore.isUser)
-    await userStore.out_of_system();
-    // if (userStore.isUser === false) {
-    //   next('/') // redirect ไปที่หน้า '/'
-    //   return // หยุดการทำงานของฟังก์ชันต่อ
-    // }
+    console.log('Requesting /login', userStore.isUser)    
+    if (userStore.isUser === false) {
+      await userStore.out_of_system();
+    }
   }
 
   t1++

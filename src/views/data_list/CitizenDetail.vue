@@ -24,7 +24,6 @@
                         <span>เพิ่มไฟล์</span>
                     </button>
                 </div>
-
                 <hr>
 
                 <div class="columns is-multiline px-3">
@@ -41,7 +40,7 @@
                     <div class="column is-half">
                         <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">เลขบัตรประชาชน:</span>
-                            <span class="ml-3 is-size-5">{{ formPeopleData.citizenId || '-' }}</span>
+                            <span class="ml-3 is-size-5">{{ formatIDCARD(formPeopleData.citizenId) || '-' }}</span>
                         </div>
                     </div>
 
@@ -56,7 +55,7 @@
                     <div class="column is-half">
                         <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">เบอร์โทร:</span>
-                            <span class="ml-3 is-size-5">{{ formPeopleData.phone || '-' }}</span>
+                            <span class="ml-3 is-size-5">{{ formatPhoneNumber(formPeopleData.phone) || '-' }}</span>
                         </div>
                     </div>
 
@@ -88,11 +87,17 @@
                 <h2 class="has-text-dark my-3 px-3 is-size-4">ถือครองที่ดิน</h2>
                 <div v-if="formPeopleLandHold.length > 0">
                     <div v-for="(ct, index) in formPeopleLandHold" :key="index" class="box">
-                        <span  @click="goToLandView(ct.id_land)" 
-                        class="view-land-data has-text-weight-bold is-size-6 p-1 mr-3"><i class="fas fa-eye has-text-link"></i></span>
+                        <span @click="goToLandView(ct.id_land)"
+                            class="view-land-data has-text-weight-bold is-size-6 p-1 mr-3"><i
+                                class="fas fa-eye has-text-link"></i></span>
                         <span class="has-text-weight-bold is-size-6">ที่ดินที่: {{ ++index }}</span>
                         <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.number }}</span>
                         <span class="has-text-weight-bold is-size-6"> จำนวนไร่: {{ ct.total_area_in_rai }}</span>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="notification is-info">
+                        <h2 class="title is-size-5 has-text-centered">ยังไม่ได้ครอบครองที่ดิน</h2>
                     </div>
                 </div>
 
@@ -121,7 +126,7 @@
 
 <script>
 import axios from 'axios';
-import { convertToThaiDate } from '@/utils/commonFunc';
+import { convertToThaiDate,formatIDCARD, formatPhoneNumber} from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
 
@@ -134,6 +139,12 @@ export default {
         }
     },
     methods: {
+        formatPhoneNumber(format) {
+            return formatPhoneNumber(format)
+        },
+        formatIDCARD(ID_CARD) {
+            return formatIDCARD(ID_CARD)
+        },
         ToThaiDate(date) {
             return convertToThaiDate(date)
         },
@@ -201,11 +212,11 @@ export default {
     min-width: 120px;
 }
 
-.view-land-data{
+.view-land-data {
     cursor: pointer;
 }
 
-.view-land-data:hover{
+.view-land-data:hover {
     background-color: #333;
     border-radius: 5px;
 }

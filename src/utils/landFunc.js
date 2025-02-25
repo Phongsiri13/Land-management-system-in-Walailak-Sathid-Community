@@ -3,10 +3,6 @@ export function nganToRai(ngan) {
   return ngan / 4
 }
 
-function squareWaToNgan(squareWa) {
-  return squareWa / 100
-}
-
 function parseFloatFormInput(value) {
   let num = parseFloat(value)
   return isNaN(num) || num <= 0 ? 0 : num // Return number (not string) and default to 0 for invalid values

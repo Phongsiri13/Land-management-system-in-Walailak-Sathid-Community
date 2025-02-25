@@ -5,7 +5,7 @@
                 <div @click="goHome" class="go-back has-background-primary is-inline-block p-1">
                     <p>
                         <i class="fas fa-home"></i>
-                        หน้าหลัก
+                        หน้าแรก
                     </p>
                 </div>
                 <div class="is-flex is-justify-content-center my-2">

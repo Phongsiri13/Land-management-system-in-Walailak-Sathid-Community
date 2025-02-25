@@ -32,7 +32,7 @@
         </td>
         <td>
             <div class="button-group">
-                <button class="button is-normal is-primary" @click="$emit('view-detail', land.id_land)">
+                <button class="button is-normal is-primary" @click="$emit('view-detail', land.id_h_land)">
                     <span class="icon">
                         <i class="fas fa-eye"></i>
                     </span>
