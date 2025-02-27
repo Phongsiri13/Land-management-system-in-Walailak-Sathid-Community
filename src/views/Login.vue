@@ -39,10 +39,13 @@
 
                     <div class="field">
                         <div class="control">
-                            <button class="button is-primary is-fullwidth mt-5"
-                                style="border-radius: 5px;">เข้าสู่ระบบ</button>
+                            <button class="button is-primary is-fullwidth mt-5" :class="{ 'is-loading': btn_load }"
+                                :disabled="btn_load" style="border-radius: 5px;">
+                                {{ btn_load ? '...' : 'เข้าสู่ระบบ' }}
+                            </button>
                         </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -59,7 +62,8 @@ export default {
             username: '',
             password: '',
             usernameError: '',
-            passwordError: ''
+            passwordError: '',
+            btn_load: false
         };
     },
     computed: {
@@ -72,7 +76,7 @@ export default {
         }
     },
     methods: {
-        goHome(){
+        goHome() {
             this.$router.push('/');
         },
         validateForm() {
@@ -81,6 +85,7 @@ export default {
             return !this.usernameError && !this.passwordError;
         },
         async handleLogin() {
+            this.btn_load = true
             if (this.validateForm()) {
                 console.log('username:', this.username)
                 console.log('password:', this.password)
@@ -94,6 +99,9 @@ export default {
                 console.log("role:", response.data.role)
                 this.userStore.setUserRole(response.data.role); // กำหนดค่า userRole เป็น "Admin"
                 console.log("state:", this.userStore.userRole)
+                // setTimeout(() => {
+                //     this.btn_load = false
+                // }, 2000);
                 alert('Logged in successfully!');
                 this.goHome();
             } catch (error) {
@@ -145,7 +153,7 @@ export default {
     justify-content: center;
 }
 
-.go-back{
+.go-back {
     cursor: pointer;
     border-radius: 5px;
 }

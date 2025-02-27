@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { formatPhoneNumber } from '@/utils/commonFunc';
+
 export default {
     props: {
         land: Object,
@@ -58,9 +60,7 @@ export default {
     },
     methods: {
         formatPhoneNumber(phoneNumber) {
-            if (!phoneNumber) return '';
-            const phoneStr = String(phoneNumber); // Ensure it's a string
-            return phoneStr.slice(0, 3) + '-' + phoneStr.slice(3, 7) + '-' + phoneStr.slice(7);
+            return formatPhoneNumber(phoneNumber)
         }
     }
 };

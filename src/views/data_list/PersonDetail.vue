@@ -220,12 +220,7 @@
                                     <div class="columns">
                                         <div class="column">
                                             <p><strong><span class="has-text-danger">*</span> หมายเหตุ</strong></p>
-                                            <p>{{ land_information[0]?.notation || `
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae vero
-                                                alias explicabo ab tenetur fugiat fuga nesciunt facere qui deleniti
-                                                saepe, earum
-                                                repellendus numquam, nihil voluptatibus sit minus rem dicta!
-                                                ` }}</p>
+                                            <p>{{ land_information[0]?.notation || `-` }}</p>
                                         </div>
                                     </div>
                                 </div>

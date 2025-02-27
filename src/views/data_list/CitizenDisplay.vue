@@ -38,6 +38,7 @@
                     </section>
                 </div>
             </div>
+            <!-- content -->
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
@@ -309,6 +310,12 @@ td.hoverable-row:hover .copy-icon {
 .filter-style {
     background-color: burlywood;
     border-radius: 5px;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.filter-style:hover {
+    background-color: ghostwhite;
+    transform: scale(1.05); /* ขยายเล็กน้อยเมื่อโฮเวอร์ */
 }
 
 /* สไตล์ modal */

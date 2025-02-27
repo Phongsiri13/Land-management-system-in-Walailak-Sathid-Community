@@ -1,37 +1,37 @@
 <template>
     <div class="primary_content">
         <div class="py-5 is-flex is-justify-content-center">
-            <div class="column is-three-quarters-tablet is-four-fifths-desktop is-full-mobile">
+            <div class="column is-three-quarters-tablet is-three-fifths-desktop is-full-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <!-- Search -->
-                        <div class="is-flex is-justify-content-space-between my-2">
-                            <div class="field has-addons full-screen-card">
-                                <div class="field">
-                                    <div class="control" id="mySelect">
-                                        <div class="select is-fullwidth">
-                                            <select v-model="searchFilter">
-                                                <option value="name">ชื่อ</option>
-                                                <option value="plotNumber">แปลงเลขที่</option>
-                                                <option value="status">สถานะ</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="control">
-                                    <input v-model="searchQuery" class="input" type="text" placeholder="ค้นหา...">
-                                </div>
-                                <div class="control">
-                                    <button class="button" @click="fetchCitizenData">ค้นหา</button>
-                                </div>
-                            </div>
-                            <div class="is-flex is-align-items-center is-justify-content-center">
-                                <span class="px-2">แสดง 50 ตาราง</span>
-                            </div>
-                        </div>
+                        <h1 class="is-size-3 has-text-centered">รายการข้อมูลทายาท</h1>
                         <!-- Content -->
                         <div class="table-container">
-                            <ResponsiveContainer>
+                            <ResponsiveContainer column-class="is-three-quarters-tablet is-full-desktop is-full-mobile">
+                                <!-- Search -->
+                                <div class="is-flex is-justify-content-space-between my-2">
+                                    <div class="field has-addons full-screen-card">
+                                        <div class="field">
+                                            <div class="control" id="mySelect">
+                                                <div class="select is-fullwidth">
+                                                    <select v-model="searchType">
+                                                        <option value="name">ชื่อ</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control">
+                                            <input v-model="searchQuery" class="input" type="text"
+                                                placeholder="ค้นหา...">
+                                        </div>
+                                        <div class="control">
+                                            <button class="button" @click="searchData">ค้นหา</button>
+                                        </div>
+                                    </div>
+                                    <div class="is-flex is-align-items-center is-justify-content-center">
+                                        <span class="px-2">แสดง 50 ตาราง</span>
+                                    </div>
+                                </div>
                                 <table v-if="heir_values.length"
                                     class="table is-striped is-bordered is-hoverable is-fullwidth">
                                     <thead class="table-header">
@@ -52,23 +52,18 @@
                                     <hr class="navbar-divider" />
                                     ไม่พบข้อมูล
                                 </div>
+                                <nav class="pagination" role="navigation" aria-label="pagination">
+                                    <ul class="pagination-list">
+                                        <li v-for="page in totalPages" :key="page">
+                                            <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
+                                                @click="setPage(page)">
+                                                {{ page }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
                             </ResponsiveContainer>
                         </div>
-
-                        <!-- Control Page -->
-                        <ResponsiveContainer>
-                            <nav class="pagination" role="navigation" aria-label="pagination">
-                                <ul class="pagination-list">
-                                    <li v-for="page in totalPages" :key="page">
-                                        <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
-                                            @click="setPage(page)">
-                                            {{ page }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </ResponsiveContainer>
-
                     </div>
                 </div>
             </div>
@@ -80,17 +75,29 @@
 import axios from 'axios';
 import HeirDataRow from '@/components/display_table/HeirDataRow.vue';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer.vue';
+import { fullCheckMatchHeir } from '@/api/apiHeir';
 
 export default {
-    components: { HeirDataRow , ResponsiveContainer},
+    components: { HeirDataRow, ResponsiveContainer },
+    props: {
+        limit: {
+            type: String, // Vue Router params จะเป็น String เสมอ
+            required: true
+        },
+        page: {
+            type: String,
+            default: "1"
+        }
+    },
     data() {
         return {
+            search_status: false,
             heir_values: [],
             searchQuery: '',
-            searchFilter: 'name',
+            searchType: 'name',
             selectedLimit: 50,
             currentPage: Number(this.$route.params.page) || 1,
-            totalPages: 1
+            totalPages: 1,
         };
     },
     watch: {
@@ -98,15 +105,45 @@ export default {
             handler() {
                 this.selectedLimit = 50;
                 this.currentPage = Number(this.$route.params.page) || 1;
-                this.fetchCitizenData();
+                this.fetchHeirData();
             },
             immediate: true
         }
     },
     methods: {
-        async fetchCitizenData() {
+        async searchData() {
+            console.log('hihi:',this.searchQuery)
+            if (this.searchQuery == '') {
+                this.searchQuery = '',
+                this.$router.replace({
+                        path: '/heir_data/50/1',
+                    });
+                try {
+                    await this.fetchHeirData();
+                } catch (error) {
+
+                } finally {
+                    return
+                }
+            }
             try {
-                const response = await axios.get(`http://localhost:3000/heir/${this.selectedLimit}/${this.currentPage}`);
+                this.currentPage = 1;
+                await this.fetchHeirData();
+                // หลังจาก fetch ข้อมูลเสร็จแล้ว
+                this.$router.replace({
+                    path: `/heir_data/${this.selectedLimit}/${this.currentPage}`, // เปลี่ยน URL หลังจาก fetch ข้อมูลเสร็จ
+                });
+            } catch (error) {
+                console.error('Error applying filters:', error);
+            }
+        },
+        async fetchHeirData() {
+            try {
+                const response = await axios.get(`http://localhost:3000/heir/${this.selectedLimit}/${this.currentPage}`,{
+                    params: {
+                        searchQuery: this.searchQuery
+                    },
+                });
                 this.heir_values = response.data.data.results || [];
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
             } catch (error) {

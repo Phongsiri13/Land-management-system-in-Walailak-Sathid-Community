@@ -1,6 +1,7 @@
 <template>
   <div class="themeColor py-4">
-    <div v-if="results.length > 0" class="card column is-three-quarters-tablet is-one-third-desktop is-four-fifths-mobile"
+    <div v-if="results.length > 0"
+      class="card column is-three-quarters-tablet is-one-third-desktop is-four-fifths-mobile"
       style="background-color: #4b3f18; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
       <header class="card-header" style="background-color: #a0752d; border-radius: 8px;">
         <p class="card-header-title has-text-centered"
@@ -54,18 +55,20 @@ export default {
         const response = await axios.get(`http://localhost:3000/land/search?q=${this.keyword}`);
         console.log('res-data:', response.data.results[0])
         console.log('res-length:', response.data.results.length)
-        // เก็บผลลัพธ์ที่ได้รับจาก API ลงใน results
-        this.results = [
-          { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
-          { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
-          { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
-          { value: response.data.results[0].l_district, label: "ตำบล" },
-          { value: calTotalLandArea(      response.data.results[0].rai,
-        response.data.results[0].ngan,
-        response.data.results[0].square_wa), label: "ไร่" },
-        ]
-        // ถ้าไม่พบข้อมูลใน API, สามารถใช้ mock data แทน
-        if (this.results.length === 0) {
+        if (response.data.results.length > 0) {
+          // เก็บผลลัพธ์ที่ได้รับจาก API ลงใน results
+          this.results = [
+            { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
+            { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
+            { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
+            { value: response.data.results[0].l_district, label: "ตำบล" },
+            {
+              value: calTotalLandArea(response.data.results[0].rai,
+                response.data.results[0].ngan,
+                response.data.results[0].square_wa), label: "ไร่"
+            },
+          ]
+        }else{
           this.results = [];
         }
       } catch (error) {
