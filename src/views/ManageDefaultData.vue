@@ -10,7 +10,10 @@
                         <nav class="tabs is-centered py-2">
                             <ul>
                                 <li :class="{ 'is-active': $route.path.includes('manage_status') }">
-                                    <router-link to="/manage_default_Information/manage_status">สถานะ</router-link>
+                                    <router-link to="/manage_default_Information/manage_status">สถานะที่ดิน</router-link>
+                                </li>
+                                <li :class="{ 'is-active': $route.path.includes('manage_land_usages') }">
+                                    <router-link to="/manage_default_Information/manage_land_usages">การใช้ประโยชน์ที่ดิน</router-link>
                                 </li>
                                 <!-- <li :class="{ 'is-active': $route.path.includes('manage_file_type') }">
                                     <router-link to="/manage_default_Information/manage_file_type">ไฟล์ที่ดิน</router-link>

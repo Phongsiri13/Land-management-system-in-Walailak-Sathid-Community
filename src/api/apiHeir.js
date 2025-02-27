@@ -75,3 +75,17 @@ export const fetchRelationActive = async (active) => {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
 }
+
+export const fetchLandUsageActive = async (active) => {
+  try {
+    const response = await axios.get(`http://localhost:3000/manage_land_usages_info/`);
+    console.log('res-land:', response.data)
+    const status_land = []
+    for (let ls of response.data) {
+      status_land.push({ value: ls.id_usage, label: `${ls.land_usage_name}` })
+    }
+    return status_land
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}

@@ -35,7 +35,7 @@ import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from 
 import axios from 'axios'
 
 import CitizenDisplay from '@/views/data_list/CitizenDisplay.vue'
-import ManageFileType from '@/components/manage_default_data/ManageFileType.vue'
+import ManageLandUsage from '@/components/manage_default_data/ManageLandUsage.vue'
 import ManageStatus from '@/components/manage_default_data/ManageStatus.vue'
 import ManageRelation from '@/components/manage_default_data/ManageRelation.vue'
 import ManageRole from '@/components/manage_default_data/ManageRole.vue'
@@ -285,9 +285,9 @@ const router = createRouter({
           component: ManageStatus
         },
         {
-          path: 'manage_file_type', // Child route for managing file types
-          name: 'ManageFileType',
-          component: ManageFileType
+          path: 'manage_land_usages', // Child route for managing file types
+          name: 'ManageLandUsage',
+          component: ManageLandUsage
         },
         {
           path: 'manage_relation', // Child route for managing file types

@@ -19,7 +19,7 @@
                 <i class="fas fa-circle has-text-danger"></i>
             </span>
             <span class="icon" v-else>
-                <i class="fas fa-circle has-text-white-bis"></i>
+                <i class="fas fa-circle has-text-info-dark"></i>
             </span>
             {{ land.land_status_name }}
         </td>
@@ -65,3 +65,9 @@ export default {
     }
 };
 </script>
+
+<style>
+    .button{
+        border-radius: 5px;
+    }
+</style>

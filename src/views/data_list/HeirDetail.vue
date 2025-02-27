@@ -35,8 +35,8 @@
                 <div v-if="peopleList.length > 0">
                     <div v-for="(person, index) in peopleList" :key="index" class="box">
                         <p class="has-text-weight-bold">ราษฎรคนที่: {{ ++index }}</p>
-                        <p class="has-text-weight-bold">ความสัมพันธ์: ราษฎรผู้นี้เป็น{{ person.label }} ของ
-                            {{ formHeirData.firstName || '-' }} {{ formHeirData.lastName || '-' }}</p>
+                        <p class="has-text-weight-bold">ความสัมพันธ์: 
+                            {{ formHeirData.firstName || '-' }} {{ formHeirData.lastName || '-' }} เป็น {{ person.label }} ของราษฎรผู้นี้</p>
                         <p class="title is-4">{{ person.citizen_first_name }} {{ person.citizen_last_name }}</p>
                     </div>
                 </div>

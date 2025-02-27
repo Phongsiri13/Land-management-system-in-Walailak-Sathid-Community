@@ -125,7 +125,7 @@
           <div class="columns">
             <div class="column is-4">
               <div class="field">
-                <label class="label">อยู่บ้านเลขที่</label>
+                <label class="label">บ้านเลขที่</label>
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.address_house }"
                     @input="validateField('address_house')" v-model="formLand.address_house" type="text"

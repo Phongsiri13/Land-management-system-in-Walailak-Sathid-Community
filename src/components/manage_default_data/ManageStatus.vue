@@ -56,7 +56,7 @@
             <div class="modal-background" @click="closeCreateModal"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">เพิ่มสถานะที่ดินใหม่</p>
+                    <p class="modal-card-title">เพิ่มสถานะที่ดิน</p>
                     <button class="delete" aria-label="close" @click="closeCreateModal"></button>
                 </header>
                 <section class="modal-card-body">
