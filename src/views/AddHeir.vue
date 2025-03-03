@@ -2,15 +2,14 @@
     <div class="primary_content">
         <div class="is-flex is-justify-content-center is-align-items-center py-5">
             <div class="box column is-three-quarters-tablet is-half-desktop is-four-fifths-mobile">
-                <h1 class="title has-text-centered is-size-2">รายละเอียดของทายาท</h1>
+                <h1 class="title has-text-centered is-size-2 has-text-link ">รายละเอียดของทายาท</h1>
                 <form @submit.prevent="submitHeir">
                     <div class="container px-5">
                         <!-- People's name -->
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                                        คำนำหน้าชื่อ</label>
+                                    <label class="label is-size-5">คำนำหน้าชื่อ <strong class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <div class="select is-fullwidth">
                                             <select v-model="formHeirData.prefix" @change="validateField('prefix')"
@@ -32,12 +31,11 @@
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                                        ชื่อจริง</label>
+                                    <label class="label is-size-5">ชื่อจริง <strong class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
                                             v-model="formHeirData.heir_fname" type="text"
-                                            placeholder="กรุณากรอกชื่อจริงทายาท" />
+                                            placeholder="กรุณากรอกชื่อจริง" />
                                     </div>
                                     <DisplayError v-if="errors.heir_fname" :err_text="errors.heir_fname" />
                                 </div>
@@ -47,12 +45,11 @@
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                                        นามสกุล</label>
+                                    <label class="label is-size-5">นามสกุล <strong class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
                                             v-model="formHeirData.heir_lname" type="text"
-                                            placeholder="กรุณากรอกนามสกุลทายาท" />
+                                            placeholder="กรุณากรอกนามสกุล" />
                                     </div>
                                     <DisplayError v-if="errors.heir_lname" :err_text="errors.heir_lname" />
                                 </div>
@@ -62,21 +59,15 @@
                         <!-- submit -->
                         <div class="field is-grouped is-grouped-centered mt-4">
                             <!-- Reset Button -->
-                            <button type="button" class="button is-warning is-medium is-size-5 is-rounded px-5"
+                            <button type="button" class="button is-medium is-size-5 px-5"
                                 @click="resetForm">
-                                <span class="icon">
-                                    <i class="fas fa-undo"></i>
-                                </span>
-                                <span>รีเซ็ต</span>
+                                <span>ยกเลิก</span>
                             </button>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
+                            <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3"
                                 :disabled="btnLoad">
-                                <span class="icon">
-                                    <i class="fas fa-check"></i>
-                                </span>
-                                <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'ส่งข้อมูล' }}</span>
+                                <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'บันทึก' }}</span>
                             </button>
                         </div>
 
@@ -198,6 +189,11 @@ export default {
 </script>
 
 <style scoped>
+.button{
+    border-radius: 5px;
+    min-width: 120px;
+}
+
 .date-picker-container {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,5 @@
 <template>
-    <div class="container login-background">
+    <div class="login-background">
         <div>
             <div class="login-container box">
                 <div @click="goHome" class="go-back has-background-primary is-inline-block p-1">
@@ -108,6 +108,8 @@ export default {
                 console.error('Failed to fetch role', error);
                 useUserStore.userRole = null;
                 alert('Logged is failed!');
+            } finally{
+                this.btn_load = false;
             }
         }
     }

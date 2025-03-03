@@ -124,7 +124,7 @@
                                 </thead>
                                 <tbody>
                                     <LandDataRow v-for="(land, index) in land_values" :key="land.id_land" :land="land"
-                                        :index="index + 1" @view-detail="goToDetail(land.id_land)" />
+                                    :index="(currentPage - 1) * selectedLimit + index + 1" @view-detail="goToDetail(land.id_land)" />
                                 </tbody>
                                 <!-- <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td> -->
                             </table>
@@ -299,6 +299,7 @@ export default {
                         console.log(this.land_values)
                         console.log(this.land_values.length)
                     }
+                    this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
                 } else {
                     console.log('no data')
                     this.land_values = []

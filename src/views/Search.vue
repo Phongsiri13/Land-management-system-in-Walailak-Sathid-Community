@@ -31,7 +31,7 @@
 import axios from 'axios';
 import SearchDetail from '@/components/SearchDetail.vue';
 import { formatPhoneNumber } from '@/utils/commonFunc';
-import { calTotalLandArea } from '@/utils/landFunc';
+import { calTotalLandArea, convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 
 export default {
   components: {
@@ -57,18 +57,21 @@ export default {
         console.log('res-length:', response.data.results.length)
         if (response.data.results.length > 0) {
           // เก็บผลลัพธ์ที่ได้รับจาก API ลงใน results
+          const squareWa = response.data.results[0].square_wa || 0;
+          const ngan = response.data.results[0].ngan || 0;
+          const rai = response.data.results[0].rai || 0;
+          console.log('rai, ngan,square_wa:', rai, ngan, squareWa)
+          const textRai = `${rai != 0 ? `${rai} ไร่` : ''} ${ngan != 0 ? `${ngan} งาน` : ''} ${squareWa != 0 ? `${squareWa} ตารางวา` : ''}`;
           this.results = [
             { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
             { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
             { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
             { value: response.data.results[0].l_district, label: "ตำบล" },
             {
-              value: calTotalLandArea(response.data.results[0].rai,
-                response.data.results[0].ngan,
-                response.data.results[0].square_wa), label: "ไร่"
+              value: textRai, label: "พื้นที่"
             },
           ]
-        }else{
+        } else {
           this.results = [];
         }
       } catch (error) {

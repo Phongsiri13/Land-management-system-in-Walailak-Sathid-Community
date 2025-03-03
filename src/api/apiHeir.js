@@ -62,6 +62,23 @@ export const fullCheckMatchHeir = async (heirsNameList) => {
   }
 }
 
+export const fullCheckMatchCitizen = async (citizenFullname) => {
+  console.log("heirsNameList:",heirsNameList)
+  try {
+    const response = await axios.post('http://localhost:3000/heir/searchHeirAll', {
+      citizenFullname: citizenFullname
+    });
+    console.log('send:', response.data)
+    if (response.data.status) {
+      return response.data;
+    } else {
+      return response.data;
+    }
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+
 export const fetchRelationActive = async (active) => {
   try {
     const response = await axios.get(`http://localhost:3000/manage_relation/active/${active}`);

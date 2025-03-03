@@ -79,12 +79,12 @@
                                 <div class="control">
                                     <div class="radio-group">
                                         <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                                            <input type="radio" v-model="formPeopleData.gender" value="1"
+                                            <input type="radio" v-model="formPeopleData.gender" value="1" disabled
                                                 @change="validateField('gender')">
                                             <span class="ml-2">ชาย</span>
                                         </label>
                                         <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                                            <input type="radio" v-model="formPeopleData.gender" value="0"
+                                            <input type="radio" v-model="formPeopleData.gender" value="0" disabled
                                                 @change="validateField('gender')">
                                             <span class="ml-2">หญิง</span>
                                         </label>
@@ -185,10 +185,7 @@
                         <!-- Submit Button -->
                         <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
                             style="min-width: 150px;">
-                            <span class="icon">
-                                <i class="fas fa-check"></i>
-                            </span>
-                            <span>ส่งข้อมูล</span>
+                            <span>บันทึก</span>
                         </button>
                     </div>
                 </form>
@@ -205,6 +202,7 @@ import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { CitizenValidSchema } from '@/model/citizenModel';
 import axios from 'axios';
 import * as yup from "yup";
+import { genderSelection } from '@/utils/citizenFunc';
 
 export default {
     components: {
@@ -250,6 +248,10 @@ export default {
         };
     },
     methods: {
+        genderSelection() {
+            // console.log('genderSelection:', this.formPeopleData.prefix)
+            this.formPeopleData.gender = genderSelection(this.formPeopleData.prefix)
+        },
         async validateForm() {
             try {
                 const schema = this.getValidationSchema();
@@ -411,9 +413,17 @@ export default {
         'formPeopleData.subdistrict': async function (newSubdistrict) {
             // Update the village options when subdistrict changes
             await this.updateVillageOptions(newSubdistrict);
+        },
+        'formPeopleData.prefix'(newVal, oldVal) {
+            this.genderSelection(); // เรียกฟังก์ชันเมื่อค่า prefix เปลี่ยน
+            this.validateField('prefix'); // ตรวจสอบฟิลด์
         }
     },
 };
 
 </script>
-<style scoped></style>
+<style scoped>
+.button{
+    border-radius: 5px;
+}
+</style>

@@ -100,8 +100,12 @@ export default {
 }
 
 .navbar-menu {
+    /* background-color: #4b4a4ac4; */
+    width: 100vw;
+    position: fixed;
     display: flex;
     align-items: center;
     /* Vertically align items */
+    z-index: 10;
 }
 </style>

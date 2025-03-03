@@ -32,6 +32,7 @@
                     </div>
                 </div>
 
+                <!-- Modal for land usage edition -->
                 <div v-if="isEditingLandUse" class="modal is-active">
                     <div class="modal-background" @click="closeLandUseModal"></div>
                     <div class="modal-card">
@@ -39,40 +40,30 @@
                             <p class="modal-card-title">แก้ไขการใช้ประโยชน์ที่ดิน</p>
                             <button class="delete" aria-label="close" @click="closeLandUseModal"></button>
                         </header>
+
                         <section class="modal-card-body">
                             <div class="checkboxes">
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="submitLandUse.rubber_tree"
+                                <label v-for="usage in filteredLandUse" :key="usage.id_usage"
+                                    class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="tempSelectedLandUse" :value="usage.id_usage"
                                         class="larger-checkbox" />
-                                    <span>สวนยางพารา</span>
+                                    <span>{{ usage.land_usage_name }}</span>
                                 </label>
 
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="submitLandUse.fruit_orchard"
-                                        class="larger-checkbox" />
-                                    <span>สวนผลไม้</span>
-                                </label>
-
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="submitLandUse.livestock_farming"
-                                        class="larger-checkbox" />
-                                    <span>ปศุสัตว์</span>
-                                </label>
-
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="submitLandUse.other" class="larger-checkbox" />
-                                    <span>อื่นๆ</span>
-                                </label>
-
-                                <!-- ถ้าเลือก 'อื่นๆ' ให้แสดง Textbox -->
-                                <input :disabled="!submitLandUse.other" type="text" v-model="submitLandUse.details"
-                                    class="input other-textbox" placeholder="ระบุประเภทอื่นๆ..." />
+                                <!-- Details -->
+                                <!-- Details input, shown only if LU04 is selected -->
+                                <input v-if="tempSelectedLandUse.includes('LU04')" type="text"
+                                    v-model="tempLandUseDetails" class="input other-textbox"
+                                    placeholder="ระบุประเภทอื่นๆ..." />
                             </div>
                         </section>
+
                         <footer class="modal-card-foot">
-                            <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
-                                @click="saveLandUse">บันทึก</button>
                             <button class="button" @click="closeLandUseModal">ยกเลิก</button>
+                            <button class="button is-success mx-2" :class="{ 'is-loading': loadingEdit }"
+                                @click="saveLandUse">
+                                บันทึก
+                            </button>
                         </footer>
                     </div>
                 </div>
@@ -83,7 +74,8 @@
                     <div class="columns is-vcentered" style="font-size: 22px;">
                         <div class="column is-10">
                             <!-- <h2 class="title is-4">รหัสที่ดิน • {{ $route.params.id }}</h2> -->
-                            <p>ซอยที่ดินปัจจุบัน : <strong>{{ landSoi !== null && landSoi !== undefined ? landSoi : '---' }}</strong></p>
+                            <p>ซอยที่ดินปัจจุบัน : <strong>{{ landSoi !== null && landSoi !== undefined ? landSoi :
+                                '---' }}</strong></p>
                             <p>ผู้ได้รับสิทธิ์ : <strong>{{ person_name || '---' }}</strong></p>
                             <p>วันที่บันทึกที่ดิน : <strong>{{ ToThaiDate(new Date(create_land_at)) || '---' }}</strong>
                             </p>
@@ -172,7 +164,9 @@
                                         </div>
                                         <div class="column">
                                             <p><strong>ซอย</strong></p>
-                                            <p><strong>{{ land_information[0]?.current_soi !== null && land_information[0]?.current_soi !== undefined ? land_information[0]?.current_soi : '---' }}</strong></p>
+                                            <p><strong>{{ land_information[0]?.current_soi !== null &&
+                                                land_information[0]?.current_soi !== undefined ?
+                                                land_information[0]?.current_soi : '---' }}</strong></p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ตำบล</strong></p>
@@ -257,36 +251,21 @@
                             </div>
                         </div>
                     </div>
+
                     <!-- การใช้ประโยชน์ที่ดิน values -->
                     <transition name="slide-fade">
                         <div v-if="isLandUseVisible">
                             <div class="checkboxes">
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.rubber_tree" disabled
+                                <label v-for="usage in filteredLandUse" :key="usage.id_usage"
+                                    class="checkbox is-large has-text-weight-bold">
+                                    <input type="checkbox" v-model="selectedLandUse" :value="usage.id_usage" disabled
                                         class="larger-checkbox" />
-                                    <span>สวนยางพารา</span>
-                                </label>
-
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.fruit_orchard" disabled
-                                        class="larger-checkbox" />
-                                    <span>สวนผลไม้</span>
-                                </label>
-
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.livestock_farming" disabled
-                                        class="larger-checkbox" />
-                                    <span>ปศุสัตว์</span>
-                                </label>
-
-                                <label class="checkbox is-large has-text-weight-bold">
-                                    <input type="checkbox" v-model="landUse.other" disabled class="larger-checkbox" />
-                                    <span>อื่นๆ</span>
+                                    <span>{{ usage.land_usage_name }}</span>
                                 </label>
 
                                 <!-- ถ้าเลือก 'อื่นๆ' ให้แสดง Textbox -->
-                                <input disabled type="text" v-model="landUse.details" class="input other-textbox"
-                                    placeholder="ระบุประเภทอื่นๆ..." />
+                                <input disabled type="text" v-model="landUsageDetails" class="input other-textbox"
+                                    placeholder="..." />
                             </div>
                         </div>
                     </transition>
@@ -369,8 +348,9 @@
                                         </div>
                                         <div class="column">
                                             <p><strong>ซอย</strong></p>
-                                            <p><strong>{{ person_information[0]?.soi !== null && person_information[0]?.soi !== undefined ? 
-                                            person_information[0]?.soi : '---' }}</strong></p>
+                                            <p><strong>{{ person_information[0]?.soi !== null &&
+                                                person_information[0]?.soi !== undefined ?
+                                                person_information[0]?.soi : '---' }}</strong></p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ตำบล</strong></p>
@@ -420,12 +400,12 @@
                                         <div class="column">
                                             <p><strong>ชื่อ</strong></p>
                                             <p>{{ heir.full_name || '-'
-                                                }}</p>
+                                            }}</p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ความสัมพันธ์</strong></p>
                                             <p>{{ 'เป็น' + heir.relationship_label || '-'
-                                                }}</p>
+                                            }}</p>
                                         </div>
                                         <div
                                             class="column is-inline-block is-flex is-justify-content-center is-align-items-center">
@@ -465,8 +445,8 @@
                             <div class="columns">
                                 <!-- Button 2 -->
                                 <div class="column is-one-third" v-if="CITIZEN_ID">
-                                    <button class="button is-success is-fullwidth" 
-                                    @click="goToUploadCitizenFiles(CITIZEN_ID)">
+                                    <button class="button is-success is-fullwidth"
+                                        @click="goToUploadCitizenFiles(CITIZEN_ID)">
                                         <span class="icon is-small">
                                             <i class="fas fa-portrait"></i>
                                         </span>
@@ -520,7 +500,7 @@ export default {
             isLocationVisible: true,
             isHeirVisible: true,
             isLandUseVisible: true,
-            submitLandUse: [],
+            // submitLandUse: [],
             landUse: [],
             land_information: [],
             person_information: [],
@@ -536,8 +516,20 @@ export default {
             loadingEdit: false, // Loading state for save action
             landStatusName: '',
             LAND_ID: '',
-            CITIZEN_ID: null
+            CITIZEN_ID: null,
+            landUsageData: [],
+            landUsages: [],
+            selectedLandUse: [], // ค่า Checkbox ที่ถูกเลือก
+            landUsageDetails: null, // รายละเอียดของที่ดิน (ถ้ามี)
+            tempLandUseDetails: "", // ข้อมูลเพิ่มเติมชั่วคราว
+            tempSelectedLandUse: [], // ค่าชั่วคราวสำหรับโมดอล
+            landUseDetails: "", // ค่าข้อมูลเพิ่มเติมจริง
         };
+    },
+    computed: {
+        filteredLandUse() {
+            return this.landUsages.filter((usage) => usage.actived === "1");
+        },
     },
     async mounted() {
         try {
@@ -556,7 +548,7 @@ export default {
             if (response_land.data) {
                 const ld = response_land.data
                 this.land_information = ld
-                
+
                 this.landActive = ld[0].active
                 if (ld[0].id_card) {
                     const resCitizen = await axios.get(`http://localhost:3000/citizen/${ld[0].id_card}`);
@@ -573,15 +565,34 @@ export default {
                     }
                 }
             }
-            const res_land_use = await axios.get(`http://localhost:3000/land/land_use/${landId}`);
-            // console.log('land-use:', res_land_use.data[0])
-            this.landUse = res_land_use.data[0]
-            this.landUse.rubber_tree = this.landUse.rubber_tree === '1';
-            this.landUse.fruit_orchard = this.landUse.fruit_orchard === '1';
-            this.landUse.livestock_farming = this.landUse.livestock_farming === '1';
-            this.landUse.other = this.landUse.other === '1';
-            this.submitLandUse = { ...this.landUse };
-            console.log('submit:', this.submitLandUse)
+            // ✅ ดึงข้อมูลประเภทที่ดินทั้งหมด
+            const res_land_usage = await axios.get(
+                `http://localhost:3000/manage_land_usages_info/active/1`
+            );
+            this.landUsages = res_land_usage.data;
+
+            // ✅ ดึงข้อมูลประเภทการใช้ที่ดินที่ใช้งานจริง
+            const res_land_using = await axios.get(
+                `http://localhost:3000/land/v2/land_use/${this.LAND_ID}`
+            );
+
+            // ✅ ดึง `usage_id` ทั้งหมดที่เกี่ยวข้องกับ landId
+            const landUsedIds = res_land_using.data.landThatUse.map(land => land.usage_id);
+            console.log('this.landUsageDetails:', res_land_using.data.landThatUse)
+
+            // ✅ กำหนดค่า `selectedLandUse` ให้ checkbox ถูกเลือก
+            this.selectedLandUse = landUsedIds;
+
+            // ✅ ถ้ามีรายละเอียดอื่นๆ เกี่ยวกับการใช้ที่ดิน ให้บันทึกไว้
+            // Iterate through landThatUse to find if any usage_id is "LU04"
+            res_land_using.data.landThatUse.forEach(land => {
+                if (land.usage_id === "LU04") {
+                    this.landUsageDetails = land.details;  // Set details if usage_id is "LU04"
+                }
+            });
+
+            console.log('new-land-use:', res_land_usage.data)
+            console.log('land-x:', res_land_using.data.landThatUse)
 
         } catch (error) {
             // Handle errors
@@ -655,50 +666,45 @@ export default {
             }
         },
         async saveLandUse() {
-            // Simulating a save action
-            // console.log(`Selected Landuse: `, this.submitLandUse);
-            console.log(`Selected Landuse: `, this.LAND_ID);
+            this.loadingEdit = true;
             try {
-                const resLandUse = await axios.put(`http://localhost:3000/land/land_use/${this.LAND_ID}`,
-                    {
-                        data: this.submitLandUse
-                    }
-                )
+                // ✅ เพิ่มข้อมูลใหม่ของ landId เข้าไปใหม่
+                const newLandUsage = this.tempSelectedLandUse.map(usageId => ({
+                    land_ID: this.LAND_ID,
+                    usage_id: usageId,
+                    details: usageId === "LU04" ? this.tempLandUseDetails : null, // ✅ ตรวจสอบว่าเป็น "อื่นๆ" หรือไม่
+                }));
 
-                if (resLandUse.data) {
-                    console.log('-----------------')
-                    await showSuccessAlert('การเปลี่ยนแปลงการใช้งาน', resLandUse.data.message);
-                    const res_land_use = await axios.get(`http://localhost:3000/land/land_use/${this.LAND_ID}`);
-                    this.landUse = res_land_use.data[0]
-                    this.landUse.rubber_tree = this.landUse.rubber_tree === '1';
-                    this.landUse.fruit_orchard = this.landUse.fruit_orchard === '1';
-                    this.landUse.livestock_farming = this.landUse.livestock_farming === '1';
-                    this.landUse.other = this.landUse.other === '1';
-                    this.submitLandUse = { ...this.landUse };
-                } else {
-                    await showErrorAlert('การเปลี่ยนแปลงการใช้งาน', resLandUse.data.message);
-                }
+                console.log('newLandUsage:', newLandUsage)
+
+                // ✅ ส่งข้อมูลทั้งหมดไปยัง Backend
+                await axios.put(`http://localhost:3000/land/v2/update_land_use/${this.LAND_ID}`, newLandUsage);
+
+                alert("บันทึกข้อมูลเรียบร้อย!"); // แจ้งเตือน
+                // ✅ ดึงข้อมูลประเภทการใช้ที่ดินที่ใช้งานจริง
+                const res_land_using = await axios.get(
+                    `http://localhost:3000/land/v2/land_use/${this.LAND_ID}`
+                );
+
+                // ✅ ดึง `usage_id` ทั้งหมดที่เกี่ยวข้องกับ landId
+                const landUsedIds = res_land_using.data.landThatUse.map(land => land.usage_id);
+                console.log('this.landUsageDetails:', res_land_using.data.landThatUse)
+
+                // ✅ กำหนดค่า `selectedLandUse` ให้ checkbox ถูกเลือก
+                this.selectedLandUse = landUsedIds;
+
+                // ✅ ถ้ามีรายละเอียดอื่นๆ เกี่ยวกับการใช้ที่ดิน ให้บันทึกไว้
+                // Iterate through landThatUse to find if any usage_id is "LU04"
+                res_land_using.data.landThatUse.forEach(land => {
+                    if (land.usage_id === "LU04") {
+                        this.landUsageDetails = land.details;  // Set details if usage_id is "LU04"
+                    }
+                });
+                this.closeLandUseModal();
             } catch (error) {
-                console.log(`Error: ------`);
-                await showErrorAlert('การเปลี่ยนแปลงการใช้งาน', 'ไม่สามารถเปลี่ยนแปลงได้ ณ ขณะนี้ กรุณาลองใหม่');
+                console.error("Error saving land usage data:", error);
             } finally {
-                // this.hidePermissionModal();
-            }
-        },
-        getLandFieldName(field) {
-            switch (field) {
-                case "rubber_tree":
-                    return "สวนยางพารา";
-                case "fruit_orchard":
-                    return "สวนผลไม้";
-                case "livestock_farming":
-                    return "ปศุสัตว์";
-                case "other":
-                    return "อื่นๆ";
-                case "details":
-                    return "รายละเอียด";
-                default:
-                    return field;
+                this.loadingEdit = false;
             }
         },
         ToThaiDate(date) {
@@ -735,6 +741,9 @@ export default {
         },
         toggleEdit() {
             this.isEditingLandUse = !this.isEditingLandUse; // เปลี่ยนค่า isEditingLandUse เป็น true หรือ false สลับไปมา
+            // ✅ ก๊อปปี้ค่าปัจจุบันไปยังตัวแปรสำรอง
+            this.tempSelectedLandUse = [...this.selectedLandUse];
+            this.tempLandUseDetails = this.landUsageDetails;
         },
         goToCitizenEdit(id) {
             this.$router.push({ name: 'CitizenEdit', params: { id } });
@@ -750,7 +759,7 @@ export default {
         },
         closeLandUseModal() {
             this.isEditingLandUse = false; // ปิดโมดอล
-            this.submitLandUse = { ...this.landUse };
+            // this.submitLandUse = { ...this.landUse };
         }
     },
 };

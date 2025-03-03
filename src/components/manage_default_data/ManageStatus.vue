@@ -91,8 +91,8 @@
                 <tr>
                     <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
                     <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
-                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อสถานะที่ดิน</th>
-                    <th class="has-text-centered has-text-white" style="width: 20%;"></th>
+                    <th class="has-text-centered has-text-white" style="width: 40%;">ชื่อสถานะที่ดิน</th>
+                    <th class="has-text-centered has-text-white" style="width: 30%;"></th>
                 </tr>
             </thead>
             <tbody>

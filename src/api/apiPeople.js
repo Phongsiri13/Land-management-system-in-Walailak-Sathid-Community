@@ -50,7 +50,7 @@ export const checkFullnameMatchCitizen = async (fname, lname) => {
   const response = await axios.get(
     `http://localhost:3000/citizen/qf?firstname=${fname}&lastname=${lname}`
   )
-  console.log('send:', response.data)
+  // console.log('send:', response.data)
   if (response.data.status) {
     return response.data
   } else {

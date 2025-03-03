@@ -1,262 +1,358 @@
 <template>
-    <div class="sidebar navigator-color is-flex is-flex-direction-column" :class="{ expanded: isExpanded }" @mouseover="expandSidebar"
-        @mouseleave="collapseSidebar">
-
-        <div v-if="isDashboardMenuVisible" class="dashboard-menu" :style="{ left: isExpanded ? '15%' : '5%' }">
-            <RouterLink to="/dashboard">
-                <span>สรุปการใช้ประโยชน์ที่ดิน</span>
+  <div class="sidebar navigator-color is-flex is-flex-direction-column" :class="{ expanded: isExpanded }">
+    <div class="sidebar-item py-3" @click="toggleSidebar">
+      <div class="sidebar-item">
+        <img src='@/assets/icons/hide-sidebar-svgrepo-com-3.png' width="50" height="50" alt="Menu Icon" />
+        <span v-if="isExpanded" class="ml-2 has-text-white sidebar-text"></span>
+      </div>
+    </div>
+    <div class="sidebar-content">
+      <Accordion>
+        <AccordionItem ref="homepage">
+          <template #accordion-trigger>
+            <RouterLink to="/" class="sidebar-item" active-class="is-active" exact-active-class="is-active">
+              <img class="img" src="@/assets/icons/home-white.png" width="34" height="34" alt="Home Icon" />
+              <span class="ml-2 sidebar-text has-text-white">หน้าแรก</span>
+              <div class="underline"></div>
             </RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion>
+        <AccordionItem ref="homepage">
+          <template #accordion-trigger>
+            <RouterLink to="/search" class="sidebar-item" active-class="is-active" exact-active-class="is-active">
+              <img class="img" src="@/assets/icons/search.png" width="34" height="34" alt="Search Icon" />
+              <span class="ml-2 sidebar-text has-text-white">ค้นหา</span>
+              <div class="underline"></div>
+            </RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion>
+        <AccordionItem ref="dashboardItem">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/dashboard') }">
+              <img class="img" src="@/assets/icons/dashboard-white.png" width="34" height="34" alt="Dashboard Icon" />
+              <span class="ml-2 sidebar-text has-text-white">แดชบอร์ด</span>
+              <div class="underline"></div>
+            </div>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/dashboard" class="menu-link menu-item">สรุปการใช้ประโยชน์ที่ดิน</RouterLink>
             <div class="menu-item">สรุปผลการจัดสรรที่ดิน</div>
-        </div>
+          </template>
+        </AccordionItem>
+      </Accordion>
 
-        <div v-if="isDataMenuVisible" class="dashboard-menu" :style="{ left: isExpanded ? '15%' : '5%' }">
-            <RouterLink to="/land_data">
-                <span>รายละเอียดสิทธิการใช้ที่ดิน</span>
-            </RouterLink>
-            <div>
-                <RouterLink to="/dashboard">
-                    <span>ข้อมูลราษฎร</span>
-                </RouterLink>
+      <Accordion>
+        <AccordionItem ref="dataItem">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dataItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/land_data') }">
+              <img class="img" src="@/assets/icons/data-group-white.png" width="34" height="34" alt="Data Group Icon" />
+              <span class="ml-2 sidebar-text has-text-white">ข้อมูล สปก.</span>
+              <div class="underline"></div>
             </div>
-            <div>
-                <RouterLink to="/dashboard">
-                    <span>ข้อมูลทายาท</span>
-                </RouterLink>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/land_data" class="menu-link menu-item">รายละเอียดสิทธิการใช้ที่ดิน</RouterLink>
+            <RouterLink to="/dashboard" class="menu-link menu-item">ข้อมูลราษฎร</RouterLink>
+            <RouterLink to="/dashboard" class="menu-link menu-item">ข้อมูลทายาท</RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion>
+        <AccordionItem ref="history">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
+              <img class="img" src="@/assets/icons/history-white.png" width="34" height="34" alt="history Icon" />
+              <span class="ml-2 sidebar-text has-text-white">ประวัติข้อมูล</span>
+              <div class="underline"></div>
             </div>
-        </div>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/history_citizen" class="menu-link menu-item">ประวัติข้อมูลที่ดิน</RouterLink>
+            <RouterLink to="/history_land" class="menu-item menu-item">ประวัติข้อมูลราษฎร</RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
 
-        <!-- brand logo -->
-        <div class="center-container py-3">
-            <div>
-                <img src="@/assets/icons/menu-white.png" :width="24" :height="24" alt="Home Icon">
-                <span v-if="isExpanded" class="ml-2 has-text-white">burger</span>
+      <Accordion>
+        <AccordionItem ref="addItem">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
+              <img class="img" src="@/assets/icons/addfile-white.png" width="34" height="34" alt="addItem Icon" />
+              <span class="ml-2 sidebar-text has-text-white">เพิ่มข้อมูล</span>
+              <div class="underline"></div>
             </div>
-        </div>
-
-        <!-- Navigation Links -->
-        <div class="image-container">
-            <RouterLink to="/" class="navbar-item has-text-white" active-class="is-active"
-                exact-active-class="is-active">
-                <img src="@/assets/icons/home-white.png" :width="34" :height="34" alt="Home Icon">
-                <span v-if="isExpanded" class="ml-2 has-text-white">หน้าแรก</span>
-            </RouterLink>
-            <RouterLink to="/login" class="navbar-item has-text-white" active-class="is-active"
-                exact-active-class="is-active">
-                <img src="@/assets/icons/search-white.png" :width="34" :height="34" alt="Search Icon">
-                <span v-if="isExpanded" class="has-text-white">ค้นหา</span>
-            </RouterLink>
-
-            <div @click="toggleDashboardMenu"
-                class="is-flex navbar-item is-align-items-center is-justify-content-space-between">
-                <img src="@/assets/icons/dashboard-white.png" :width="34" :height="34" alt="Dashboard Icon">
-                <span v-if="isExpanded" class="ml-2">แดชบอร์ด</span>
-            </div>
-
-            <div @click="toggleDataMenu"
-                class="is-flex navbar-item is-align-items-center is-justify-content-space-between">
-                <img src="@/assets/icons/data-group-white.png" :width="34" :height="34" alt="Data Group Icon">
-                <span v-if="isExpanded">ข้อมูล สปก.</span>
-            </div>
-
-            <RouterLink to="/history">
-                <img src="@/assets/icons/history-white.png" :width="34" :height="34" alt="History Icon">
-                <span v-if="isExpanded">ประวัติข้อมูล</span>
-            </RouterLink>
-            <RouterLink to="/addfile">
-                <img src="@/assets/icons/addfile-white.png" :width="34" :height="34" alt="Add File Icon">
-                <span v-if="isExpanded">เพิ่มข้อมูล</span>
-            </RouterLink>
-        </div>
-
-        <!-- Bottom Navbar (fixed) -->
-        <div class="center-container py-3" v-if="!isLogOut" @click="outOfSystem" style="cursor: pointer;">
-            <img src="@/assets/icons/logout-white.png" :width="24" :height="24" alt="Logout Icon">
-            <span v-if="isExpanded">ออกจากระบบ</span>
-        </div>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/create_land" class="menu-link menu-item">เพิ่มข้อมูลที่ดิน</RouterLink>
+            <RouterLink to="/create_citizen" class="menu-item menu-item">เพิ่มข้อมูลราษฎร</RouterLink>
+            <RouterLink to="/create_heir" class="menu-item menu-item">เพิ่มข้อมูลทายาท</RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
 
     </div>
+    <div class="logout-container mt-auto" v-if="!isLogOut" @click="outOfSystem" style="cursor: pointer;">
+      <div class="sidebar-item">
+        <img src="@/assets/icons/logout-white.png" width="30" height="30" alt="Logout Icon" />
+        <span class="ml-2 sidebar-text has-text-danger">ออกจากระบบ</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { store } from '../store'
-import { url_citizen } from '@/router/url_list';
+import Accordion from './accordion.vue';
+import AccordionItem from './accordion-item.vue';
 import { useUserStore } from '@/stores/useUserStore';
+import { useRoute } from 'vue-router'; // import
 
 export default {
-    data() {
-        return {
-            isLogOut: false,
-            isDashboardMenuVisible: false,
-            isDataMenuVisible: false,
-            isExpanded: false,
-            isLogOut: false,
-        };
+  name: 'Sidebar',
+  components: {
+    Accordion,
+    AccordionItem
+  },
+  data() {
+    return {
+      isExpanded: false,
+      isLogOut: false,
+      currentRoute: "", // เพิ่ม currentRoute
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      this.isExpanded = !this.isExpanded;
+      // Always close accordions when clicking the logo
+      if (this.$refs.dashboardItem) {
+        this.$refs.dashboardItem.close();
+      }
+      if (this.$refs.dataItem) {
+        this.$refs.dataItem.close();
+      }
+      if (this.$refs.addItem) {
+        this.$refs.addItem.close();
+      }
+      if (this.$refs.history) {
+        this.$refs.history.close();
+      }
     },
-    computed: {
-        isLinkActive() {
-            return this.$route.path === url_citizen || this.$route.path === '/create_land' || this.$route.path === '/create_heir';
-        },
-        isLinkDisplayActive() {
-            return this.$route.path === '/land_data' || this.$route.path === '/upload_files'
-                || /^\/land_data\/detail\/\d+$/.test(this.$route.path)
-                || /^\/land_data\/upload_files\/\d+$/.test(this.$route.path);
-        },
-        isLinkReportActive() {
-            return this.$route.path === '/dashboard';
-            // return this.$route.path === '/table_dashboard' || this.$route.path === '/dashboard';
-        },
-        userRole() {
-            // Access the userRole from your store
-            const userStore = useUserStore();
-            return userStore.userRole;
-        }
+    handleAccordionItemClick(itemRef) {
+      // Expand the sidebar if it's not already expanded
+      if (!this.isExpanded) {
+        this.isExpanded = true;
+      }
+      // *Don't* call toggle here.  Let the @click on sidebar-item handle it.
     },
-    methods: {
-        toggleDashboardMenu() {
-            this.isDashboardMenuVisible = !this.isDashboardMenuVisible;
-        },
-        toggleDataMenu() {
-            this.isDataMenuVisible = !this.isDataMenuVisible;
-        },
-        expandSidebar() {
-            this.isExpanded = true;
-        },
-        collapseSidebar() {
-            this.isExpanded = false;
-        },
-        changePath() {
-            this.store.status_path_change = true
-        },
-        async outOfSystem() {
-            const userStore = useUserStore();
-            await userStore.out_of_system();
-            isLogOut = !isLogOut
-        },
+    async outOfSystem() {
+      const userStore = useUserStore();
+      await userStore.out_of_system();
+      this.isLogOut = true;
     },
+  },
+  watch: { // เพิ่ม watcher
+    '$route'(to, from) {
+      this.currentRoute = to.path; // อัปเดต currentRoute เมื่อ route เปลี่ยน
+    }
+  },
+  mounted() { // เพิ่ม mounted hook
+    this.currentRoute = useRoute().path; // กำหนดค่าเริ่มต้น currentRoute
+  }
 };
 </script>
 
 <style scoped>
+/* styles remain the same (styles เหมือนเดิม) */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 5%;
-    /* Sidebar takes 10% of the width */
-    height: 100%;
-    /* Full height */
-    /* Example background for Sidebar */
-    z-index: 10;
-    /* Ensure sidebar stays on top */
-    transition: width 0.3s ease;
+  position: fixed;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  top: 0;
+  left: 0;
+  width: 70px;
+  /* เพิ่ม width เริ่มต้นให้ sidebar */
+  height: 100%;
+  overflow: visible;
+  z-index: 100;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  background-color: #433727;
+
+  /* 🔥 เพิ่มเงาสำหรับ Sidebar */
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
 }
+
 
 .sidebar.expanded {
-    width: 15%;
+  width: 15%;
+
+  .menu-item {
+    font-size: 1rem;
+  }
 }
 
-.dashboard-menu {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    margin-top: 5px;
-    z-index: 20;
-    position: fixed;
-    top: 0;
-    /* Adjust based on sidebar width */
+.sidebar-content {
+  flex-grow: 1;
+  /* ให้ส่วนเนื้อหาขยายเต็มพื้นที่ */
+  overflow-y: auto;
+  /* เพิ่ม scroll เมื่อเนื้อหาล้น */
 }
 
-.menu-item {
-    padding: 5px 10px;
-    cursor: pointer;
-    color: #0C250E;
+/* ปรับแต่ง scrollbar (optional) */
+.sidebar-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-.menu-item:hover {
-    background-color: #f0f0f0;
+.sidebar::-webkit-scrollbar {
+  width: 10px;
+  /* ความกว้างของ Scroll Bar */
 }
 
-@media (max-width: 1280px) {
-    .sidebar {
-        width: 8%;
-    }
-
-    .sidebar.expanded {
-        width: 12%;
-    }
+.sidebar::-webkit-scrollbar-track {
+  background: #433727;
+  /* สีพื้นหลังของ track */
 }
 
-@media (max-width: 768px) {
-    .sidebar {
-        width: 10%;
-    }
-
-    .sidebar.expanded {
-        width: 15%;
-    }
+.sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+  /* สีของ thumb */
+  border-radius: 5px;
+  /* มุมโค้ง */
 }
 
-@media (max-width: 500px) {
-    .sidebar {
-        top: 0;
-        left: 0;
-        width: 10%;
-    }
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* สีเมื่อ hover */
 }
 
-.navbar-item.is-active {
-    background-color: #3A3B3D;
-    border-radius: 10px;
+/* สไตล์ Scroll Bar สำหรับ sidebar-content */
+.sidebar-content::-webkit-scrollbar {
+  width: 10px;
 }
 
-.center-container {
-    display: flex;
-    justify-content: center;
-    /* Centers horizontally */
-    align-items: center;
-    /* Centers vertically */
+.sidebar-content::-webkit-scrollbar-track {
+  background: #433727;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  cursor: pointer;
+  justify-content: center;
+  /* จัดให้อยู่ตรงกลางเมื่อ sidebar ถูกย่อ */
+  position: relative;
+  /* เพิ่ม position relative */
+}
+
+/* จัดให้ item ชิดซ้ายเมื่อ sidebar ขยาย */
+.sidebar.expanded .sidebar-item {
+  justify-content: flex-start;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-item.is-active .underline {
+  display: block;
+}
+
+.sidebar-item img {
+  max-width: 100%;
+  height: auto;
+  display: flex;
 }
 
 .image-container {
-    display: flex;
-    /* Use Flexbox for layout */
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
-    /* Center the images vertically */
-    gap: 20px;
-    /* Optional gap between the images */
-    height: 100vh;
-    /* Full height to center vertically within the viewport */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  /* จัดให้อยู่ตรงกลางเมื่อ sidebar ถูกย่อ */
 }
 
-/* Transition Animations */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-    transition: all 1s ease;
+/* จัดให้ items ชิดซ้ายเมื่อ sidebar ขยาย */
+.sidebar.expanded .image-container {
+  align-items: flex-start;
 }
 
-.fade-slide-enter-from {
-    opacity: 0;
-    transform: translateY(-10px);
-    /* Slide in from above */
+.menu-link,
+.menu-item {
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #ffffff;
+  display: block;
+  /* ทำให้ RouterLink เป็น block-level */
+  font-size: 0.875rem;
 }
 
-.fade-slide-enter-to {
-    opacity: 1;
-    transform: translateY(0);
+.menu-link:hover,
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.fade-slide-leave-from {
-    opacity: 1;
-    transform: translateY(0);
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.fade-slide-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-    /* Slide out above */
+/* ซ่อนข้อความเมื่อ sidebar ถูกย่อ */
+.sidebar:not(.expanded) .sidebar-text {
+  display: none;
+}
+
+/* แสดงข้อความเมื่อ sidebar ขยาย */
+.sidebar.expanded .sidebar-text {
+  display: inline;
+  /* หรือ display: block; ขึ้นอยู่กับ layout ที่ต้องการ */
+}
+
+/* ลด padding-left ของ accordion__item เมื่อ sidebar ถูกย่อ*/
+.sidebar:not(.expanded) .accordion__item {
+  padding-left: 10px;
+  /* ลด padding-left ลง */
+
+}
+
+.sidebar:not(.expanded) .sidebar-item img {
+  max-width: none !important;
+  /* ยกเลิก max-width */
+}
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  display: none;
+  /* ซ่อนไว้เริ่มต้น */
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 </style>

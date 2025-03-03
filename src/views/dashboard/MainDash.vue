@@ -30,47 +30,20 @@
             <div v-if="isActive">
                 <!-- label dashboard -->
                 <div class="px-2 columns is-multiline is-mobile">
-                    <div class="column is-6-mobile is-3-tablet is-3-desktop">
+                    <div v-for="(landUsage, index) in titleLandUsage" :key="index"
+                        class="column is-6-mobile is-3-tablet is-3-desktop">
                         <div class="card">
                             <div class="card-content">
-                                <h4 class="title is-4 has-text-centered has-text-dark">ยางพารา</h4>
+                                <h4 class="title is-4 has-text-centered has-text-dark">{{ landUsage.label }}</h4>
                                 <h4 class="title is-4 has-text-centered has-text-dark">
-                                    {{ summariesLandUse.total_rubber_tree }}</h4>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="column is-6-mobile is-3-tablet is-3-desktop">
-                        <div class="card">
-                            <div class="card-content">
-                                <h2 class="title is-4 has-text-centered has-text-dark">สวนผลไม้</h2>
-                                <h4 class="title is-4 has-text-centered has-text-dark">
-                                    {{ summariesLandUse.total_fruit_orchard }}</h4>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="column is-6-mobile is-3-tablet is-3-desktop">
-                        <div class="card">
-                            <div class="card-content">
-                                <h2 class="title is-4 has-text-centered has-text-dark">ปศุสัตว์</h2>
-                                <h4 class="title is-4 has-text-centered has-text-dark">
-                                    {{ summariesLandUse.total_livestock_farming }}</h4>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="column is-6-mobile is-3-tablet is-3-desktop">
-                        <div class="card">
-                            <div class="card-content">
-                                <h2 class="title is-4 has-text-centered has-text-dark">อื่นๆ</h2>
-                                <h4 class="title is-4 has-text-centered has-text-dark">{{ summariesLandUse.total_other
-                                }}
+                                    <!-- Dynamically bind the correct key for each landUsage value -->
+                                    {{ getTotalLandUsage(landUsage.value) }}
                                 </h4>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="px-2 columns is-variable is-4 is-multiline">
                     <!-- Pie Chart Column -->
                     <div class="column is-12-mobile is-6-tablet is-6-desktop">
@@ -131,8 +104,8 @@ import {
     LinearScale,
     ArcElement
 } from 'chart.js'
-import axios from 'axios';
 import { fetchLandUseDashboard, fetchSois, fetchOneLandUseDashboard } from '@/api/apiLand';
+import { fetchLandUsageActive } from '@/api/apiHeir';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 
@@ -144,11 +117,9 @@ export default defineComponent({
             sois: [],
             reload: false,
             summariesLandUse: {
-                total_rubber_tree: 0,
-                total_fruit_orchard: 0,
-                total_livestock_farming: 0,
-                total_other: 0
+
             },
+            titleLandUsage: {},
             roles,
             isActive: false,
             // Define static chart options and pie chart data in data()
@@ -201,43 +172,48 @@ export default defineComponent({
         // Define chartData2 as a computed property so it always reflects summariesLandUse values.
         chartData2() {
             return {
-                labels: ['ยางพารา', 'สวนผลไม้', 'ปศุสัตว์', 'อื่นๆ'],
-                datasets: [
-                    {
-                        label: 'จำนวน',
-                        data: [
-                            this.summariesLandUse.total_rubber_tree,
-                            this.summariesLandUse.total_fruit_orchard,
-                            this.summariesLandUse.total_livestock_farming,
-                            this.summariesLandUse.total_other
-                        ],
-                        backgroundColor: ['#41B883', '#FFA500', '#00D8FF', '#FF6347']
-                    }
-                ]
-            }
-        },
-        chartDataPie() {
-            return {
-                labels: ['ยางพารา', 'สวนผลไม้', 'ปศุสัตว์', 'อื่นๆ'],
+                labels: this.titleLandUsage.map(landUsage => landUsage.label), // Dynamically set labels
                 datasets: [
                     {
                         backgroundColor: ['#41B883', '#FFA500', '#00D8FF', '#FF6347'],
-                        data: [
-                            this.summariesLandUse.total_rubber_tree,
-                            this.summariesLandUse.total_fruit_orchard,
-                            this.summariesLandUse.total_livestock_farming,
-                            this.summariesLandUse.total_other
-                        ]
+                        data: this.titleLandUsage.map(landUsage => {
+                            // Find the corresponding count for each landUsage label
+                            const usageData = this.summariesLandUse.find(item => item.usage_id === landUsage.value);
+                            return usageData ? usageData.count : 0; // Return the count or 0 if not found
+                        })
                     }
                 ]
-            }
+            };
         },
+        chartDataPie() {
+            return {
+                labels: this.titleLandUsage.map(landUsage => landUsage.label), // Dynamically set labels
+                datasets: [
+                    {
+                        backgroundColor: ['#41B883', '#FFA500', '#00D8FF', '#FF6347'],
+                        data: this.titleLandUsage.map(landUsage => {
+                            // Find the corresponding count for each landUsage label
+                            const usageData = this.summariesLandUse.find(item => item.usage_id === landUsage.value);
+                            return usageData ? usageData.count : 0; // Return the count or 0 if not found
+                        })
+                    }
+                ]
+            };
+        }
+        ,
         userRole() {
             const userStore = useUserStore();
             return userStore.userRole;
         }
     },
     methods: {
+        getTotalLandUsage(usageId) {
+            // Search for the corresponding land usage object in summariesLandUse array
+            const landUsage = this.summariesLandUse.find(item => item.usage_id === usageId);
+
+            // Return the count if found, otherwise return 0
+            return landUsage ? landUsage.count : 0;
+        },
         async exportToPDF() {
             // เลือกเฉพาะส่วนที่ต้องการส่งออก (ยกเว้นปุ่ม)
             const element = document.querySelector('.dashboard-box');
@@ -297,14 +273,13 @@ export default defineComponent({
         },
         async selectOption() {
             console.log(`Selected: `, this.selectedSoi);
-
             try {
                 const res_dash = await fetchOneLandUseDashboard(this.selectedSoi);
-                console.log('res:', res_dash)
-                this.summariesLandUse = res_dash[0];
+                // console.log('res:', res_dash)
+                this.summariesLandUse = res_dash;
                 this.isActive = true;
             } catch (error) {
-                his.isActive = false;
+                this.isActive = false;
             }
         }
     },
@@ -312,9 +287,12 @@ export default defineComponent({
         try {
             this.sois = await fetchSois();
             const res = await fetchLandUseDashboard();
+            const res_dashboard = await fetchLandUsageActive('1');
+            this.titleLandUsage = res_dashboard;
 
-            this.summariesLandUse = res[0];
-            console.log('res-dash:', res[0]);
+            // console.log('res-dash:', res_dashboard);
+            this.summariesLandUse = res;
+            console.log('res-dash:', res);
             this.isActive = true;
         } catch (error) {
             console.error(error);

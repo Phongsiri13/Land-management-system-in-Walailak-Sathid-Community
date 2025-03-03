@@ -51,7 +51,10 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        title: 'Home'
+      }
     },
     {
       path: '/dashboard',
@@ -64,7 +67,11 @@ const router = createRouter({
     {
       path: url_land,
       name: 'filldata',
-      component: Form
+      component: Form,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'Add Land'
+      }
     },
     {
       path: '/show_files',
@@ -76,7 +83,7 @@ const router = createRouter({
       name: 'fillPeople',
       component: AddCitizen,
       meta: {
-        // requiredRole: roles[3].role_id,
+        requiredRole: roles[3].role_id,
         title: 'Admin | add heir'
       }
     },
@@ -85,7 +92,7 @@ const router = createRouter({
       name: 'fillHeir',
       component: AddHeir,
       meta: {
-        // requiredRole: roles[3].role_id,
+        requiredRole: roles[3].role_id,
         title: 'Admin | add heir'
       }
     },

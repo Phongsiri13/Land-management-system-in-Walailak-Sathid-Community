@@ -189,29 +189,6 @@ export default {
             this.isConfirmModalOpen = false; // Close confirmation modal
             this.deleteItem = null; // Reset the item to null
         },
-        // async activePage(act) {
-        //     // Ensure statusActive is defined in your component's data
-        //     this.statusActive = act;
-        //     const active = this.statusActive ? '1' : '0';
-        //     console.log('active:', active);
-
-        //     try {
-        //         // Await the asynchronous function call
-        //         const ko = await fetchRelationActive(active);
-        //         console.log('ko:', ko[0])
-        //         this.relationFiles = []
-        //         this.relationFiles = [...ko]
-        //     } catch (error) {
-        //         // Ensure showErrorAlert is an asynchronous function returning a Promise
-        //         if (typeof showErrorAlert === 'function') {
-        //             await showErrorAlert('อัพเดทข้อมูลการใช้ประโยชน์ที่ดิน', 'ไม่สำเร็จ');
-        //         } else {
-        //             console.error('showErrorAlert is not a function or not asynchronous');
-        //         }
-        //     } finally {
-        //         // Optional: Any cleanup operations can be performed here
-        //     }
-        // }
     },
     async mounted() {
         try {

@@ -2,17 +2,17 @@
   <div class="primary_content">
     <div class="mx-5 py-5 is-flex is-justify-content-center">
       <div class="box column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
-        <h1 class="title has-text-centered">รายละเอียดของราษฎร</h1>
+        <h1 class="title has-text-centered has-text-link py-2">เพิ่มข้อมูลของราษฎร</h1>
 
         <form @submit.prevent="submitCitizen">
           <div class="columns is-multiline">
             <!-- prefix -->
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> คำนำหน้าชื่อ</label>
+                <label class="label">คำนำหน้าชื่อ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formPeopleData.prefix" @change="validateField('prefix')">
+                    <select v-model="formPeopleData.prefix">
                       <option value="" selected>เลือกคำนำหน้าชื่อ</option>
                       <option v-for="pfl in prefixList" :key="pfl.value" :value="pfl.value">
                         {{ pfl.label }}
@@ -29,7 +29,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง</label>
+                <label class="label">ชื่อจริง <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input" type="text" @input="validateField('firstName')"
                     v-model="formPeopleData.firstName" placeholder="กรุณากรอกชื่อจริง"
@@ -42,7 +42,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> นามสกุล</label>
+                <label class="label">นามสกุล <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input" type="text" @input="validateField('lastName')"
                     :class="{ 'is-danger': errors.lastName }" v-model="formPeopleData.lastName"
@@ -54,7 +54,7 @@
 
             <div class="column is-half">
               <div class="birthDate">
-                <label class="label"><strong class="has-text-danger">*</strong> วันเดือนปีเกิด</label>
+                <label class="label">วันเดือนปีเกิด <strong class="has-text-danger">*</strong></label>
                 <input class="input" type="date" :class="{ 'is-danger': errors.birthDate }"
                   v-model="formPeopleData.birthDate" @change="validateField('birthDate')" />
                 <DisplayError v-if="errors.birthDate" :err_text="errors.birthDate" />
@@ -63,15 +63,17 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label has-text-weight-bold"><strong class="has-text-danger">*</strong> เลือกเพศ</label>
+                <label class="label has-text-weight-bold">เลือกเพศ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="radio-group">
                     <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                      <input type="radio" v-model="formPeopleData.gender" value="1" @change="validateField('gender')">
+                      <input type="radio" disabled v-model="formPeopleData.gender" value="1"
+                        @change="validateField('gender')">
                       <span class="ml-2">ชาย</span>
                     </label>
                     <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
-                      <input type="radio" v-model="formPeopleData.gender" value="0" @change="validateField('gender')">
+                      <input type="radio" disabled v-model="formPeopleData.gender" value="0"
+                        @change="validateField('gender')">
                       <span class="ml-2">หญิง</span>
                     </label>
                     <DisplayError v-if="errors.gender" :err_text="errors.gender" />
@@ -82,7 +84,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> เลขบัตรประชาชน</label>
+                <label class="label">เลขบัตรประชาชน <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input" type="text" @input="validateField('citizenId')"
                     :class="{ 'is-danger': errors.citizenId }" v-model="formPeopleData.citizenId"
@@ -94,7 +96,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> เบอร์โทรศัพท์</label>
+                <label class="label">เบอร์โทรศัพท์ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input" type="tel" v-model="formPeopleData.phone" @input="validateField('phone')"
                     :class="{ 'is-danger': errors.phone }" placeholder="กรุณากรอกเบอร์โทรศัพท์" />
@@ -115,7 +117,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> ตำบล</label>
+                <label class="label">ตำบล <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select v-model="formPeopleData.subdistrict" :class="{ 'is-danger': errors.subdistrict }"
@@ -132,7 +134,7 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> หมู่ที่</label>
+                <label class="label">หมู่ที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select @change="validateField('village')" v-model="formPeopleData.village">
@@ -149,7 +151,7 @@
             <!-- sois -->
             <div class="column is-half">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> อาศัยอยู่ในซอยใด</label>
+                <label class="label">ซอย <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select v-model="formPeopleData.selectedSoi" @change="validateField('selectedSoi')">
@@ -169,21 +171,15 @@
           <!-- Submit -->
           <div class="field is-grouped is-grouped-centered py-3 is-flex is-justify-content-center">
             <!-- Reset Button -->
-            <button type="button" class="button is-warning is-medium is-size-5 is-rounded px-5" @click="resetForm"
+            <button type="button" class="button is-medium is-size-5 px-5" @click="resetForm"
               style="min-width: 150px;">
-              <span class="icon">
-                <i class="fas fa-undo"></i>
-              </span>
-              <span>รีเซ็ต</span>
+              <span>ยกเลิก</span>
             </button>
 
             <!-- Submit Button -->
-            <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
+            <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3"
               style="min-width: 150px;">
-              <span class="icon">
-                <i class="fas fa-check"></i>
-              </span>
-              <span>ส่งข้อมูล</span>
+              <span>บันทึก</span>
             </button>
           </div>
         </form>
@@ -248,6 +244,18 @@ export default {
     };
   },
   methods: {
+    genderSelection() {
+      // console.log('genderSelection:', this.formPeopleData.prefix)
+      if (this.formPeopleData.prefix == '') {
+        this.formPeopleData.gender = ''
+      } else if (this.formPeopleData.prefix == 1) {
+        this.formPeopleData.gender = '1'
+      } else if (this.formPeopleData.prefix == 2) {
+        this.formPeopleData.gender = '0'
+      } else if (this.formPeopleData.prefix == 3) {
+        this.formPeopleData.gender = '0'
+      }
+    },
     showSuccessAlert() {
       Swal.fire({
         title: 'เพิ่มข้อมูลสำเร็จ!',
@@ -266,6 +274,7 @@ export default {
     },
     // Validate individual fields
     async validateField(field) {
+      console.log('prefix:', field)
       try {
         const schema = this.getValidationSchema();
         await schema.validateAt(field, this.formPeopleData);
@@ -372,11 +381,22 @@ export default {
     } catch (error) {
       this.error = 'Error fetching sois: ' + error.message;
     }
+  },
+  watch: {
+    'formPeopleData.prefix'(newVal, oldVal) {
+      this.genderSelection(); // เรียกฟังก์ชันเมื่อค่า prefix เปลี่ยน
+      this.validateField('prefix'); // ตรวจสอบฟิลด์
+    }
   }
+
 };
 </script>
 
 <style scoped>
+.button{
+  border-radius: 5px;
+}
+
 .is-invalid {
   border-color: red;
 }

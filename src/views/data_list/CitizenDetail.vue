@@ -90,9 +90,9 @@
                         <span @click="goToLandView(ct.id_land)"
                             class="view-land-data has-text-weight-bold is-size-6 p-1 mr-3"><i
                                 class="fas fa-eye has-text-link"></i></span>
-                        <span class="has-text-weight-bold is-size-6">ที่ดินที่: {{ ++index }}</span>
-                        <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.number }}</span>
-                        <span class="has-text-weight-bold is-size-6"> จำนวนไร่: {{ ct.total_area_in_rai }}</span>
+                        <span class="has-text-weight-bold is-size-6">ลำดับ: {{ ++index }}, </span>
+                        <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.tf_number }}, </span>
+                        <span class="has-text-weight-bold is-size-6"> จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0 }} งาน {{ ct.square_wa || 0 }} ตารางวา</span>
                     </div>
                 </div>
                 <div v-else>
@@ -129,6 +129,8 @@ import axios from 'axios';
 import { convertToThaiDate,formatIDCARD, formatPhoneNumber} from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
+// convertSquareWaToRaiNganWa
+import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 
 export default {
     data() {
@@ -196,8 +198,12 @@ export default {
 
             // holding lands
             const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${personId}`);
-            console.log('res-hold:', resLandHold.data.data)
-            this.formPeopleLandHold = resLandHold.data.data
+            console.log('res-hold:', resLandHold.data)
+            if(resLandHold.data.length > 0){
+
+            }
+            this.formPeopleLandHold = resLandHold.data
+            console.log(':::',this.formPeopleLandHold)
 
         } catch (error) {
             console.error('Error fetching person data:', error);

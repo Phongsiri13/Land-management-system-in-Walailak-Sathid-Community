@@ -49,7 +49,7 @@
                 <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง-นามสกุล</label>
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="formLand.full_name" type="text"
-                    placeholder="กรุณากรอกชื่อจริง - นามสกุล" />
+                    placeholder="กรุณากรอกชื่อจริง - นามสกุล" disabled />
                   <DisplayError v-if="errors.full_name" :err_text="errors.full_name" />
                 </div>
               </div>
@@ -76,7 +76,7 @@
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.spk_area }"
                     @input="validateField('spk_area')" v-model="formLand.spk_area" type="text"
-                    placeholder="กรุณากรอกกระวาง ส.ป.ก" disabled/>
+                    placeholder="กรุณากรอกกระวาง ส.ป.ก" disabled />
                   <DisplayError v-if="errors.spk_area" :err_text="errors.spk_area" />
                 </div>
               </div>
@@ -87,8 +87,8 @@
                 <label class="label"><strong class="has-text-danger">*</strong> เลขที่</label>
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.number }"
-                    @input="validateField('number')" v-model="formLand.number" type="text"
-                    placeholder="กรุณากรอกเลขที่" disabled />
+                    @input="validateField('number')" v-model="formLand.number" type="text" placeholder="กรุณากรอกเลขที่"
+                    disabled />
                   <DisplayError v-if="errors.number" :err_text="errors.number" />
                 </div>
               </div>
@@ -100,7 +100,7 @@
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.volume }"
                     @input="validateField('volume')" v-model="formLand.volume" type="text"
-                    placeholder="กรุณากรอกเล่มที่" disabled/>
+                    placeholder="กรุณากรอกเล่มที่" />
                   <DisplayError v-if="errors.volume" :err_text="errors.volume" />
                 </div>
               </div>
@@ -242,8 +242,7 @@
           <div class="field is-grouped is-grouped-centered mt-4">
 
             <!-- Submit Button -->
-            <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
-              :disabled="btnLoad">
+            <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3" :disabled="btnLoad">
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
@@ -268,6 +267,7 @@ import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea } from '@/utils/landFunc';
 import { showErrorAlert, showWarningAlert, showSuccessAlert } from '@/utils/alertFunc';
+import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 
 export default {
   components: {
@@ -365,26 +365,28 @@ export default {
         confirmButtonText: 'ตกลง'
       });
     },
+    // หีิทระ
     async updateLand() {
-      console.log('ds')
       // ตรวจสอบข้อมูลที่กรอก
       const isValid = await this.validateForm();
       if (!isValid) {
         this.showErrorAlert();
         return;
       };
-      // Compare form data with old data
-      const hasChanges = this.compareData(this.formLand, this.oldFormLand);
+      // // Compare form data with old data
+      // const hasChanges = this.compareData(this.formLand, this.oldFormLand);
 
-      if (!hasChanges) {
-        await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
-        return; // No changes to submit
-      }
+      // if (!hasChanges) {
+      //   await showSuccessAlert('เพิ่มข้อมูลสำเร็จ', 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว');
+      //   //  return; // No changes to submit
+      // }
+      this.btnLoad = true
+      store.status_path_change = true
 
       const resCitizenID = await fetchPeopleID(this.formLand.id_card)
-      console.log("res-d:",resCitizenID);
+      console.log("res-d:", resCitizenID);
 
-      if(!resCitizenID[0]){
+      if (!resCitizenID[0]) {
         await showWarningAlert('ไม่มีราษฎรผู้นี้ในระบบ!', 'กรุณาเพิ่มราษฎรผู้นี้ก่อน');
       }
 
@@ -394,42 +396,110 @@ export default {
         this.formLand.ngan,
         this.formLand.square_wa);
       console.log('cal-re:', cal_result);
+
       if (cal_result === false) {
         console.error("จำนวนไร่ต้องไม่เกิน 5");
         await showErrorAlert("จำนวนเกิน 5 ไร่", "พื้นที่รวมเกิน 5 ไร่! โปรดตรวจสอบข้อมูลอีกครั้ง")
+        this.btnLoad = false
+        store.status_path_change = false
         return;
-      } else {
-        console.log("พื้นที่ที่คำนวณได้:", cal_result);
       }
-
-      this.btnLoad = true
-      store.status_path_change = true
-      const form_data = {
-        soi: this.formLand.selectedSoi,
-        land_status: this.formLand.selectedStatus,
-        id_card: this.formLand.id_card,
-        address: this.formLand.address_house,
-        village: this.formLand.village,
-        district: this.formLand.district,
-        long: this.formLand.long || null,
-        lat: this.formLand.lat || null,
-        notation: this.formLand.notation,
-        rai: cal_result.rai,
-        ngan: cal_result.ngan,
-        square_wa: cal_result.squareWa,
-      };
-
-      console.log('Form submitted:', form_data);
-      // this.resetForm();
       try {
+        let totalArea = 0
+        const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${this.formLand.id_card}`);
+        console.log('res-hold:', resLandHold.data);
+
+        // if (resLandHold.data.length > 0) {
+        //   // ฟังก์ชันคำนวณพื้นที่รวม
+        //   totalArea = resLandHold.data.reduce((sum, land) => {
+        //     const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+        //     const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+        //     const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
+        //     return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
+        //   }, 0);
+
+        //   console.log("Total Area in Square Wa:", totalArea); // แสดงค่าทั้งหมดในตารางวา
+        // }
+        // can edit without checking
+        if (resLandHold.data.length == 1) {
+          totalArea = resLandHold.data.reduce((sum, land) => {
+            const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+            const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+            const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
+            return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
+          }, 0);
+
+          const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
+          console.log('res-prepare-adding:', totalAreaPrepareAdding)
+          // new land checks total rai
+          if (totalAreaPrepareAdding > max_rai) {
+            const remainingLand = max_rai - parseInt(totalArea);
+            const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
+            await showWarningAlert(
+              'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
+              `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
+            );
+            return
+          }
+
+        } else if (resLandHold.data.length > 1) {
+          // ต้องจองที่ดินก่อนทั้งหมด ที่ไม่ใช่ตัวแก้ ก่อนที่จะทำการแก้ไข
+          const max_rai = 2000; // ตารางวา
+          // จองพื้นที่
+          totalArea = resLandHold.data.reduce((sum, land) => {
+            if (land.id_land == this.ID_LAND) {
+              return sum;
+            }
+            const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+            const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+            const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
+            return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
+          }, 0);
+          // console.log('totalArea:', totalArea)
+          // จำนวนที่สามารถใช้พื้นที่ได้
+          const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
+          console.log('res-prepare-adding:', totalAreaPrepareAdding)
+          // new land checks total rai
+          if (totalAreaPrepareAdding > max_rai) {
+            const remainingLand = max_rai - parseInt(totalArea);
+            const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
+            await showWarningAlert(
+              'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
+              `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
+            );
+            return
+          }
+        }
+        const form_data = {
+          soi: this.formLand.selectedSoi,
+          land_status: this.formLand.selectedStatus,
+          id_card: this.formLand.id_card,
+          address: this.formLand.address_house,
+          village: this.formLand.village,
+          district: this.formLand.district,
+          long: this.formLand.long || null,
+          lat: this.formLand.lat || null,
+          notation: this.formLand.notation,
+          rai: cal_result.rai,
+          ngan: cal_result.ngan,
+          square_wa: cal_result.squareWa,
+        };
+
+        console.log('Form submitted:', form_data);
+        // this.resetForm();
         const response = await axios.put(`http://localhost:3000/land/${this.ID_LAND}`, form_data);
         console.log('Response:', response.data);
         // this.resetForm()
         this.showSuccessAlert()
       } catch (error) {
-        console.error('Error:', error);
-        this.showErrorAlert()
-      }finally{
+        console.error('Error fetching land holding data:', error);
+
+        if (error.response) {
+          await showErrorAlert('การตรวจสอบที่ดิน', error.response.data.message || 'เกิดข้อผิดพลาดขณะดึงข้อมูลที่ดิน');
+        } else {
+          await showErrorAlert('การตรวจสอบที่ดิน', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์');
+        }
+      } finally {
         this.btnLoad = false
         store.status_path_change = false
       }
@@ -568,6 +638,10 @@ input[type='number']::-webkit-outer-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
   /* Firefox */
+}
+
+.button {
+  border-radius: 5px;
 }
 
 #submitLand {

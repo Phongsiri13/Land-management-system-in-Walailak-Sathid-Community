@@ -102,37 +102,20 @@ export const fetchRelation = async () => {
 export const fetchLandUseDashboard = async () => {
   try {
     const response = await axios.get('http://localhost:3000/dashboard')
-    // console.log('res-land:', response.data)
-    const status_land = []
-    for (let ls of response.data) {
-      status_land.push({
-        total_rubber_tree: parseInt(ls.total_rubber_tree) || 0,
-        total_fruit_orchard: parseInt(ls.total_fruit_orchard) || 0,
-        total_livestock_farming: parseInt(ls.total_livestock_farming) || 0,
-        total_other: parseInt(ls.total_other) || 0
-      })
-    }
-    // throw new Error("ค่าที่ส่งมาไม่ถูกต้อง");
-    return status_land
+    console.log('res-land:', response.data)
+    return response.data
   } catch (error) {
-    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+    throw new Error('ไม่สามารถดึงข้อมูลการใช้ประโยชน์ที่ดินได้')
   }
 }
 
+// ฟังชั่นนี้ไม่ใช้แล้ว
 export const fetchOneLandUseDashboard = async (soi_id) => {
   try {
     const response = await axios.get(`http://localhost:3000/dashboard/${soi_id}`)
-
-    const status_land = []
-    for (let ls of response.data) {
-      status_land.push({
-        total_rubber_tree: parseInt(ls.total_rubber_tree) || 0,
-        total_fruit_orchard: parseInt(ls.total_fruit_orchard) || 0,
-        total_livestock_farming: parseInt(ls.total_livestock_farming) || 0,
-        total_other: parseInt(ls.total_other) || 0
-      })
-    }
-    // throw new Error("ค่าที่ส่งมาไม่ถูกต้อง");
+    console.log(response.data)
+    const status_land = response.data
+    // throw new Error("ค่าที่ส่งมาไม่ถูกต้อง");x
     return status_land
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
