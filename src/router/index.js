@@ -44,6 +44,9 @@ import LandEdit from '@/views/data_edit/LandEdit.vue'
 import HeirEdit from '@/views/data_edit/HeirEdit.vue'
 import HistoryCitizen from '@/views/HistoryCitizen.vue'
 
+const officer = roles[3]
+const admin = roles[1]
+
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
   history: createWebHistory(),
@@ -69,7 +72,7 @@ const router = createRouter({
       name: 'filldata',
       component: Form,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: officer.role_id,
         title: 'Add Land'
       }
     },
@@ -108,33 +111,25 @@ const router = createRouter({
     },
     {
       path: '/history_citizen',
-      redirect: '/history_citizen/50/1',
-      meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | '
-      }
+      redirect: '/history_citizen/50/1'
     },
     {
-      path: '/history_citizen/:limit(10|20|50)/:page',
+      path: '/history_citizen/:limit(50)/:page',
       name: 'HistoryCitizen',
       component: HistoryCitizen,
-      props: true
+      props: true,
+      meta: {
+        requiredRole: [officer.role_id, admin.role_id],
+        title: 'Admin | '
+      }
     },
     {
       path: '/land_data',
-      redirect: '/land_data/10/1',
-      meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | '
-      }
+      redirect: '/land_data/10/1'
     },
     {
       path: '/citizen_data',
-      redirect: '/citizen_data/10/1',
-      meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | citizen'
-      }
+      redirect: '/citizen_data/10/1'
     },
     {
       path: '/citizen_data/:limit(10|20|50)/:page',
@@ -142,7 +137,7 @@ const router = createRouter({
       component: CitizenDisplay,
       props: true,
       meta: {
-        // requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | citizen'
       }
     },
@@ -150,30 +145,34 @@ const router = createRouter({
       path: '/land_data/:limit(10|20|50)/:page',
       name: 'DisplayPeople',
       component: DisplayPeople,
-      props: true
-    },
-    {
-      path: '/history_land',
-      name: 'HistoryLand',
-      component: HistoryLand,
+      props: true,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | ประวัติการแก้ไขที่ดิน'
       }
     },
     {
       path: '/history_land',
-      redirect: '/history_land/50/1',
+      name: 'HistoryLand',
+      component: HistoryLand,
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | '
+        requiredRole: [officer.role_id, admin.role_id],
+        title: 'Admin | ประวัติการแก้ไขที่ดิน'
       }
+    },
+    {
+      path: '/history_land',
+      redirect: '/history_land/50/1'
     },
     {
       path: '/history_land/:limit(50)/:page',
       name: 'HistoryLand',
       component: HistoryLand,
-      props: true
+      props: true,
+      meta: {
+        requiredRole: [officer.role_id, admin.role_id],
+        title: 'Admin | '
+      }
     },
     {
       path: '/heir_data',
@@ -195,7 +194,7 @@ const router = createRouter({
       name: 'PersonDetail',
       component: PersonDetail,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | '
       }
     },
@@ -213,7 +212,7 @@ const router = createRouter({
       name: 'CitizenDetail',
       component: CitizenDetail,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | '
       }
     },
@@ -249,7 +248,7 @@ const router = createRouter({
       name: 'LandLiveDocument',
       component: LandLiveDocument,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | '
       }
     },
@@ -258,7 +257,7 @@ const router = createRouter({
       name: 'LandFile',
       component: LandFile,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | '
       }
     },
@@ -316,7 +315,7 @@ const router = createRouter({
       name: 'TableDashboard',
       component: TableDash,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | Home'
       }
     },
@@ -325,7 +324,7 @@ const router = createRouter({
       name: 'CitizenDash',
       component: CitizenDash,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, admin.role_id],
         title: 'Admin | Home'
       }
     },
@@ -346,7 +345,7 @@ const router = createRouter({
       name: 'AdminPage',
       component: AdminPage,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: roles[0].role_id,
         title: 'Admin | Home'
       }
     },
@@ -359,57 +358,40 @@ const router = createRouter({
 })
 
 let t1 = 0
-// Global before route guard
 router.beforeEach(async (to, from, next) => {
   store.status_path_change = true
   const userStore = useUserStore()
   console.log('router guard is working')
-  // ตรวจสอบว่า path ที่ร้องขอคือ /login หรือไม่
-  if (to.path === '/login') {
-    console.log('Requesting /login', userStore.isUser)    
-    if (userStore.isUser === false) {
-      await userStore.out_of_system();
-    }
+
+  // Fetch role if not available
+  if (!userStore.userRole) {
+    await userStore.fetchUserRole()
   }
 
-  t1++
-  // To check there are role or not?
+  // ตรวจสอบสิทธิ์การเข้าถึง
   if (to.meta.requiredRole) {
-    // Await the result of fetching the user's role
-    await userStore.fetchUserRole()
-    // ตรวจสอบ role ของผู้ใช้ก่อนเข้าถึงแต่ละหน้า
-    if (to.meta.requiredRole && to.meta.requiredRole !== userStore.userRole) {
-      // alert('Access Denied')
-      store.status_path_change = false
-      const pathWithoutSlash = to.path.substring(1) // remove / symbol
-      window.scrollTo(0, 0)
-      return next({ name: 'NotFound', params: { pathMatch: pathWithoutSlash } }) // หาก role ไม่ตรง ให้ไปที่หน้า 404
+    if (!Array.isArray(to.meta.requiredRole)) {
+      to.meta.requiredRole = [to.meta.requiredRole] // แปลงเป็น array
     }
-  } else {
-    if (t1 == 1) {
-      await userStore.fetchUserRole()
+
+    if (!to.meta.requiredRole.includes(userStore.userRole)) {
+      console.log('Access Denied:', userStore.userRole)
+      store.status_path_change = false
+      return next({ name: 'NotFound' }) // ไปหน้า 404
     }
   }
-  console.log('t1:', t1)
 
   store.status_path_change = false
+
+  // ตั้งค่า title
   if (to.meta.title) {
-    // Check if the route has a dynamic :id in its path
-    if (to.params.id) {
-      // Check if the route name contains 'detail', which typically indicates a page with an ID
-      if ((to.name && to.name.includes('Detail')) || (to.name && to.name.includes('LandTitle'))) {
-        // Dynamically change the title using the :id parameter
-        document.title = `Admin | ${to.params.id}`
-        window.scrollTo(0, 0)
-        return next()
-      }
-    }
     document.title = to.meta.title
   } else {
-    document.title = 'default title' // default title
+    document.title = 'default title'
   }
+
   window.scrollTo(0, 0)
-  next() // Call next() to proceed to the route
+  next()
 })
 
 export default router

@@ -97,12 +97,15 @@ export default {
                 const response = await axios.post('http://localhost:3000/login', payload, { withCredentials: true });
                 console.log("res:", response)
                 console.log("role:", response.data.role)
-                this.userStore.setUserRole(response.data.role); // กำหนดค่า userRole เป็น "Admin"
-                console.log("state:", this.userStore.userRole)
+                if(response.data.role){
+                    this.userStore.setUserRole(response.data.role); // กำหนดค่า userRole เป็น "Admin"
+                }
+                // console.log("state:", this.userStore.userRole)
                 // setTimeout(() => {
                 //     this.btn_load = false
                 // }, 2000);
                 alert('Logged in successfully!');
+                this.btn_load = false
                 this.goHome();
             } catch (error) {
                 console.error('Failed to fetch role', error);

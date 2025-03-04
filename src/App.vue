@@ -8,7 +8,7 @@
     </div>
 
     <!-- Navigator -->
-    <Sidebar class="sidebar" v-if="userRole === roles[3].role_id" />
+    <Sidebar class="sidebar" v-if="userRole === roles[3].role_id || userRole === roles[1].role_id" />
     <!-- <PeopleBar v-else /> -->
     <PeopleBar v-if="!isLoginPage && userRole === null" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
 
@@ -163,7 +163,7 @@ export default {
 }
 
 .navbar-item.is-active {
-  background-color: #333;
+  background-color: #b95013;
   border-radius: 5px;
   /* Change this to your desired active background color */
   color: #333 !important;

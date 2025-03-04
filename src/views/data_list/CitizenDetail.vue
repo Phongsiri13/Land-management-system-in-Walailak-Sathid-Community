@@ -10,7 +10,7 @@
                     </h2>
                 </div>
 
-                <div class="is-flex is-justify-content-flex-end">
+                <div class="is-flex is-justify-content-flex-end" v-if="userRole === roles[3].role_id">
                     <!-- Edit -->
                     <button class="button is-warning btn-menu" @click="goToEdit(formPeopleData[0]?.ID_CARD)">
                         <span class="icon"><i class="fas fa-pencil-alt"></i></span>
@@ -92,7 +92,8 @@
                                 class="fas fa-eye has-text-link"></i></span>
                         <span class="has-text-weight-bold is-size-6">ลำดับ: {{ ++index }}, </span>
                         <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.tf_number }}, </span>
-                        <span class="has-text-weight-bold is-size-6"> จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0 }} งาน {{ ct.square_wa || 0 }} ตารางวา</span>
+                        <span class="has-text-weight-bold is-size-6"> จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0
+                        }} งาน {{ ct.square_wa || 0 }} ตารางวา</span>
                     </div>
                 </div>
                 <div v-else>
@@ -125,19 +126,30 @@
 </template>
 
 <script>
+import roles from '@/role_config';
 import axios from 'axios';
-import { convertToThaiDate,formatIDCARD, formatPhoneNumber} from '@/utils/commonFunc';
+import { convertToThaiDate, formatIDCARD, formatPhoneNumber } from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
 // convertSquareWaToRaiNganWa
 import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
+import { useUserStore } from '@/stores/useUserStore';
+import { store } from '@/store';
 
 export default {
     data() {
         return {
+            roles,
             formPeopleData: [],
             formPeopleLandHold: [],
             formHeirData: []
+        }
+    },
+    computed: {
+        userRole() {
+            // Access the userRole from your store
+            const userStore = useUserStore();
+            return userStore.userRole;
         }
     },
     methods: {
@@ -199,11 +211,11 @@ export default {
             // holding lands
             const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${personId}`);
             console.log('res-hold:', resLandHold.data)
-            if(resLandHold.data.length > 0){
+            if (resLandHold.data.length > 0) {
 
             }
             this.formPeopleLandHold = resLandHold.data
-            console.log(':::',this.formPeopleLandHold)
+            console.log(':::', this.formPeopleLandHold)
 
         } catch (error) {
             console.error('Error fetching person data:', error);

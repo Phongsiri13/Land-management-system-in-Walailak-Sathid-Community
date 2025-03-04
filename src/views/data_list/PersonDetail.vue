@@ -3,7 +3,8 @@
         <div class="container py-5 is-flex is-justify-content-center">
             <div class="column is-four-fifths-tablet is-four-fifths-desktop is-full-mobile">
                 <!-- Modal for remove land -->
-                <div v-if="isEditModalOpen" class="modal" :class="{ 'is-active': isEditModalOpen }">
+                <div v-if="isEditModalOpen && userRole === roles[3].role_id" class="modal"
+                    :class="{ 'is-active': isEditModalOpen }">
                     <div class="modal-background" @click="hidePermissionModal"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
@@ -33,7 +34,7 @@
                 </div>
 
                 <!-- Modal for land usage edition -->
-                <div v-if="isEditingLandUse" class="modal is-active">
+                <div v-if="isEditingLandUse && userRole === roles[3].role_id" class="modal is-active">
                     <div class="modal-background" @click="closeLandUseModal"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
@@ -87,7 +88,6 @@
                         </div>
                         <div class="column has-text-right">
                             <RouterLink to="/land_data">
-                                <!-- <span class="status-badge">Draft</span> -->
                                 <span class="icon" style="font-size: 24px;color: #333;">
                                     <i class="fa fa-arrow-circle-left"></i>
                                 </span>
@@ -107,7 +107,7 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-2">
+                        <div class="column is-2" v-if="userRole === roles[3].role_id">
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit land -->
                                 <button class="button is-normal is-warning mx-1"
@@ -238,7 +238,7 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-1">
+                        <div class="column is-1" v-if="userRole === roles[3].role_id">
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
                                 <!-- ปุ่มสำหรับเปิด/ปิดการแก้ไข -->
@@ -283,7 +283,7 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-1">
+                        <div class="column is-1" v-if="userRole === roles[3].role_id">
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
                                 <button v-if="person_information && person_information.length !== 0"
@@ -377,15 +377,6 @@
                                 </span>
                             </p>
                         </div>
-                        <!-- <div class="column is-1">
-                            <div class="is-flex is-justify-content-flex-end">
-                                <button class="button is-normal is-success mb-3">
-                                    <span class="icon">
-                                        <i class="fas fa-plus"></i>
-                                    </span>
-                                </button>
-                            </div>
-                        </div> -->
                     </div>
                     <transition name="slide-fade">
                         <div v-if="isHeirVisible">
@@ -407,7 +398,7 @@
                                             <p>{{ 'เป็น' + heir.relationship_label || '-'
                                             }}</p>
                                         </div>
-                                        <div
+                                        <div v-if="userRole === roles[3].role_id"
                                             class="column is-inline-block is-flex is-justify-content-center is-align-items-center">
                                             <div class="is-flex is-justify-content-flex-end">
                                                 <!-- Edit heir -->
@@ -424,6 +415,10 @@
                                                     </span>
                                                 </button>
                                             </div>
+                                        </div>
+                                        <div class="column" v-else>
+                                            <span></span>
+                                            <span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -491,16 +486,19 @@ import axios from 'axios';
 import { convertToThaiDate, formatPhoneNumber, formatIDCARD } from '@/utils/commonFunc';
 import { fetchOneLandStatus } from '@/api/apiLand';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
+import { useUserStore } from '@/stores/useUserStore';
+import { store } from '@/store';
+import roles from '@/role_config';
 
 export default {
     data() {
         return {
+            roles,
             isLandVisible: true, // Track visibility of the Contract Time section
             isPersonVisible: true, // Track visibility of the Contract Time section
             isLocationVisible: true,
             isHeirVisible: true,
             isLandUseVisible: true,
-            // submitLandUse: [],
             landUse: [],
             land_information: [],
             person_information: [],
@@ -530,6 +528,11 @@ export default {
         filteredLandUse() {
             return this.landUsages.filter((usage) => usage.actived === "1");
         },
+        userRole() {
+            // Access the userRole from your store
+            const userStore = useUserStore();
+            return userStore.userRole;
+        }
     },
     async mounted() {
         try {
@@ -759,7 +762,6 @@ export default {
         },
         closeLandUseModal() {
             this.isEditingLandUse = false; // ปิดโมดอล
-            // this.submitLandUse = { ...this.landUse };
         }
     },
 };

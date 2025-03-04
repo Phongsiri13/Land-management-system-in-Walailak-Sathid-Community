@@ -165,11 +165,17 @@ export default {
             immediate: true
         },
         selectedSoi(newVal, oldVal) {
+            this.$router.replace({
+                path: '/citizen_data/10/1',
+            });
             console.log('selectedSoi changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCitizenData(); // ดึงข้อมูลใหม่
         },
         selectedDistrict(newVal, oldVal) {
+            this.$router.replace({
+                path: '/citizen_data/10/1',
+            });
             console.log('selectedDistrict changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCitizenData(); // ดึงข้อมูลใหม่
@@ -188,8 +194,8 @@ export default {
                 try {
                     await this.fetchCitizenData();
                 } catch (error) {
-                    
-                }finally{
+
+                } finally {
                     return
                 }
             }
@@ -315,7 +321,8 @@ td.hoverable-row:hover .copy-icon {
 
 .filter-style:hover {
     background-color: ghostwhite;
-    transform: scale(1.05); /* ขยายเล็กน้อยเมื่อโฮเวอร์ */
+    transform: scale(1.05);
+    /* ขยายเล็กน้อยเมื่อโฮเวอร์ */
 }
 
 /* สไตล์ modal */

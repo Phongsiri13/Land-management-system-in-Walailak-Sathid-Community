@@ -42,8 +42,9 @@
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/dashboard" class="menu-link menu-item">สรุปการใช้ประโยชน์ที่ดิน</RouterLink>
-            <div class="menu-item">สรุปผลการจัดสรรที่ดิน</div>
+            <RouterLink to="/dashboard" class="menu-link menu-item">การสรุปผลการใช้ประโยชน์ที่ดิน</RouterLink>
+            <RouterLink to="/table_dashboard" class="menu-link menu-item">สรุปผลการจัดสรรที่ดิน</RouterLink>
+            <RouterLink to="/citizen_dashboard" class="menu-link menu-item">สรุปผลราษฎรในพื้นที่</RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
@@ -60,30 +61,13 @@
           </template>
           <template #accordion-content>
             <RouterLink to="/land_data" class="menu-link menu-item">รายละเอียดสิทธิการใช้ที่ดิน</RouterLink>
-            <RouterLink to="/dashboard" class="menu-link menu-item">ข้อมูลราษฎร</RouterLink>
-            <RouterLink to="/dashboard" class="menu-link menu-item">ข้อมูลทายาท</RouterLink>
+            <RouterLink to="/citizen_data" class="menu-link menu-item">ข้อมูลราษฎร</RouterLink>
+            <RouterLink to="/heir_data" class="menu-link menu-item">ข้อมูลทายาท</RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
 
-      <Accordion>
-        <AccordionItem ref="history">
-          <template #accordion-trigger>
-            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
-              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
-              <img class="img" src="@/assets/icons/history-white.png" width="34" height="34" alt="history Icon" />
-              <span class="ml-2 sidebar-text has-text-white">ประวัติข้อมูล</span>
-              <div class="underline"></div>
-            </div>
-          </template>
-          <template #accordion-content>
-            <RouterLink to="/history_citizen" class="menu-link menu-item">ประวัติข้อมูลที่ดิน</RouterLink>
-            <RouterLink to="/history_land" class="menu-item menu-item">ประวัติข้อมูลราษฎร</RouterLink>
-          </template>
-        </AccordionItem>
-      </Accordion>
-
-      <Accordion>
+      <Accordion v-if="userRole === roles[3].role_id">
         <AccordionItem ref="addItem">
           <template #accordion-trigger>
             <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
@@ -101,6 +85,23 @@
         </AccordionItem>
       </Accordion>
 
+      <Accordion>
+        <AccordionItem ref="history">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
+              <img class="img" src="@/assets/icons/history-white.png" width="34" height="34" alt="history Icon" />
+              <span class="ml-2 sidebar-text has-text-white">ประวัติข้อมูล</span>
+              <div class="underline"></div>
+            </div>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/history_land" class="menu-link menu-item">ประวัติข้อมูลที่ดิน</RouterLink>
+            <RouterLink to="/history_citizen" class="menu-item menu-item">ประวัติข้อมูลราษฎร</RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
+
     </div>
     <div class="logout-container mt-auto" v-if="!isLogOut" @click="outOfSystem" style="cursor: pointer;">
       <div class="sidebar-item">
@@ -114,8 +115,10 @@
 <script>
 import Accordion from './accordion.vue';
 import AccordionItem from './accordion-item.vue';
-import { useUserStore } from '@/stores/useUserStore';
 import { useRoute } from 'vue-router'; // import
+import { useUserStore } from '@/stores/useUserStore';
+import { store } from '@/store';
+import roles from '@/role_config';
 
 export default {
   name: 'Sidebar',
@@ -125,10 +128,18 @@ export default {
   },
   data() {
     return {
+      roles,
       isExpanded: false,
       isLogOut: false,
       currentRoute: "", // เพิ่ม currentRoute
     };
+  },
+  computed: {
+    userRole() {
+      // Access the userRole from your store
+      const userStore = useUserStore();
+      return userStore.userRole;
+    }
   },
   methods: {
     toggleSidebar() {
@@ -179,7 +190,7 @@ export default {
   flex-wrap: nowrap;
   top: 0;
   left: 0;
-  width: 70px;
+  width: 80px;
   /* เพิ่ม width เริ่มต้นให้ sidebar */
   height: 100%;
   overflow: visible;
@@ -194,7 +205,7 @@ export default {
 
 
 .sidebar.expanded {
-  width: 15%;
+  width: 15vw;
 
   .menu-item {
     font-size: 1rem;

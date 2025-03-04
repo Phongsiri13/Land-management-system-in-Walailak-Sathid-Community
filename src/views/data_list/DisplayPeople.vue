@@ -124,7 +124,8 @@
                                 </thead>
                                 <tbody>
                                     <LandDataRow v-for="(land, index) in land_values" :key="land.id_land" :land="land"
-                                    :index="(currentPage - 1) * selectedLimit + index + 1" @view-detail="goToDetail(land.id_land)" />
+                                        :index="(currentPage - 1) * selectedLimit + index + 1"
+                                        @view-detail="goToDetail(land.id_land)" />
                                 </tbody>
                                 <!-- <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td> -->
                             </table>
@@ -135,7 +136,8 @@
                             </div>
                         </div>
                         <!-- pages -->
-                        <nav v-if="land_values.length != 0" class="pagination" role="navigation" aria-label="pagination">
+                        <nav v-if="land_values.length != 0" class="pagination" role="navigation"
+                            aria-label="pagination">
                             <ul class="pagination-list">
                                 <li v-for="page in totalPages" :key="page">
                                     <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
@@ -224,12 +226,18 @@ export default {
             immediate: true
         },
         selectedSoi(newVal, oldVal) {
-            console.log('selectedSoi changed from', oldVal, 'to', newVal);
+            this.$router.replace({
+                path: '/land_data/10/1',
+            });
+            // console.log('selectedSoi changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCompleteLandData(); // ดึงข้อมูลใหม่
         },
         statusActived(newVal, oldVal) {
-            console.log('selectedSoi changed from', oldVal, 'to', newVal);
+            this.$router.replace({
+                path: '/land_data/10/1',
+            });
+            // console.log('selectedSoi changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCompleteLandData(); // ดึงข้อมูลใหม่
         }
@@ -251,10 +259,10 @@ export default {
             if (this.searchQuery == '') {
                 console.log('hi')
                 this.selectedSoi = '', // เก็บค่าซอยที่เลือก
-                this.statusActived = '', // เก็บค่าเพศที่เลือก
-                this.searchQuery = '',
-                this.searchType = 'LAND',
-                this.$router.replace({
+                    this.statusActived = '', // เก็บค่าเพศที่เลือก
+                    this.searchQuery = '',
+                    this.searchType = 'LAND',
+                    this.$router.replace({
                         path: '/land_data/10/1',
                     });
                 try {

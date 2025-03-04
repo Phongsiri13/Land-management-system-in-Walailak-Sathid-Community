@@ -1,21 +1,24 @@
 <template>
-    <div class="content py-5 titleBgColor">
+    <div class="content citizen-dashboard-bg py-5">
         <!-- Header Section -->
-        <div class="dashboard-box is-primary container has-background-white card px-5 my-2">
+        <div class="dashboard-box is-primary container card px-5 my-2">
             <div class="columns is-centered is-mobile">
                 <div class="column is-narrow has-text-centered">
-                    <div class="has-background-white mt-2 py-3 px-5">
-                        <h2 class="title is-2 has-text-link">สรุปผลการใช้ประโยชน์ที่ดิน</h2>
+                    <div class="has-background-white mt-2 py-3 px-5" style="border-radius: 5px;">
+                        <h2 class="title is-2 has-text-link" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);">
+                            การสรุปผลการใช้ประโยชน์จากที่ดิน</h2>
                     </div>
                     <!-- ปุ่มส่งออกเป็น PDF -->
-                    <div class="has-text-centered my-2" v-if="userRole === roles[3].role_id">
-                        <button @click="exportToPDF" class="button is-primary">
+                    <div class="has-text-centered my-2"
+                        v-if="userRole === roles[3].role_id || userRole === roles[1].role_id">
+                        <button @click="exportToPDF" class="button is-link">
                             <i class="fas fa-download"></i>
-                            <span>ส่งออกเป็น PDF</span>
+                            <span></span>
                         </button>
                     </div>
                     <!-- filter sois -->
-                    <div v-if="userRole === roles[3].role_id" class="select is-rounded">
+                    <div v-if="userRole === roles[3].role_id || userRole === roles[1].role_id"
+                        class="select is-rounded">
                         <select v-model="selectedSoi" @change="selectOption">
                             <option value="" selected>เลือกซอย</option>
                             <option v-for="soi in sois" :key="soi.value" :value="soi.value" @change="selectOption">
@@ -34,7 +37,11 @@
                         class="column is-6-mobile is-3-tablet is-3-desktop">
                         <div class="card">
                             <div class="card-content">
-                                <h4 class="title is-4 has-text-centered has-text-dark">{{ landUsage.label }}</h4>
+                                <h4 class="title is-4 has-text-centered has-text-dark">
+                                    <img width="28" height="28" :src="getDefaultPhoto(landUsage.value)"
+                                        alt="">
+                                    {{ landUsage.label }}
+                                </h4>
                                 <h4 class="title is-4 has-text-centered has-text-dark">
                                     <!-- Dynamically bind the correct key for each landUsage value -->
                                     {{ getTotalLandUsage(landUsage.value) }}
@@ -72,7 +79,7 @@
             </div>
             <div v-else>
                 <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-                    <p class="title is-3 has-text-danger">โหลดข้อมูลไม่สำเร็จ</p>
+                    <!-- <p class="title is-3 has-text-danger">โหลดข้อมูลไม่สำเร็จ</p> -->
                     <button :class="reload ? 'is-loading' : ''" @click="redoLoad"
                         class="button is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
                         style="text-align: center;border-radius: 5px;">
@@ -90,10 +97,8 @@
 <script>
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import roles from '@/role_config';
 import { defineComponent } from 'vue'
 import { Bar, Pie } from 'vue-chartjs'
-import { useUserStore } from '@/stores/useUserStore';
 import {
     Chart as ChartJS,
     Title,
@@ -106,6 +111,9 @@ import {
 } from 'chart.js'
 import { fetchLandUseDashboard, fetchSois, fetchOneLandUseDashboard } from '@/api/apiLand';
 import { fetchLandUsageActive } from '@/api/apiHeir';
+import { useUserStore } from '@/stores/useUserStore';
+import { store } from '@/store';
+import roles from '@/role_config';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 
@@ -169,6 +177,12 @@ export default defineComponent({
         }
     },
     computed: {
+        enhancedSummariesLandUse() {
+            return this.summariesLandUse.map((item) => ({
+                ...item,
+                photo: item.photo || this.getDefaultPhoto(item.usage_id) // ใช้รูป default ถ้าไม่มี photo
+            }));
+        },
         // Define chartData2 as a computed property so it always reflects summariesLandUse values.
         chartData2() {
             return {
@@ -207,6 +221,15 @@ export default defineComponent({
         }
     },
     methods: {
+        getDefaultPhoto(usageId) {
+            const defaultPhotos = {
+                LU01: "/src/assets/icons/dashboard_icon/tree.png",
+                LU02: "/src/assets/icons/dashboard_icon/rubber.png",
+                LU03: "/src/assets/icons/dashboard_icon/livestock.png",
+                LU04: "/src/assets/icons/dashboard_icon/other.png"
+            };
+            return defaultPhotos[usageId] || "/src/assets/icons/dashboard_icon/no_types.png";
+        },
         getTotalLandUsage(usageId) {
             // Search for the corresponding land usage object in summariesLandUse array
             const landUsage = this.summariesLandUse.find(item => item.usage_id === usageId);
@@ -263,7 +286,7 @@ export default defineComponent({
                 this.summariesLandUse = res[0];
                 this.isActive = true
             } catch (error) {
-
+                console.log(error)
             } finally {
                 this.reload = false;
             }
@@ -336,6 +359,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.citizen-dashboard-bg {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1)),
+        url('@/assets/search_bg1_edge.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+
 /* Add margin for mobile screens */
 @media screen and (max-width: 768px) {
     .is-mx-3 {
@@ -366,7 +399,6 @@ export default defineComponent({
     height: 400px;
     /* Fixed height to make charts same size */
     background-color: #fff;
-
 }
 
 #scope-chart {
@@ -375,6 +407,10 @@ export default defineComponent({
 
 .dashboard-box {
     min-height: 100vh;
+    background: rgba(128, 128, 128, 0.6);
+    /* background: rgba(255, 253, 208, 0.5); */
+    /* background: rgba(255, 239, 174, 0.5);  */
+    /* background: rgba(255, 241, 178, 0.5);  */
 }
 
 @media (max-width: 768px) {

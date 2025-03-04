@@ -1,17 +1,17 @@
 <template>
-  <div class="themeColor py-4">
+  <div class="py-4 search-bg">
     <div v-if="results.length > 0"
       class="card column is-three-quarters-tablet is-one-third-desktop is-four-fifths-mobile"
-      style="background-color: #4b3f18; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
-      <header class="card-header" style="background-color: #a0752d; border-radius: 8px;">
+      style="background-color: #654321; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
+      <header class="card-header" style="background-color: #fff; border-radius: 8px;">
         <p class="card-header-title has-text-centered"
-          style="width: 100%; color: white; font-weight: bold; font-size: 26px;">
+          style="width: 100%; color: #333; font-weight: bold; font-size: 26px;">
           ข้อมูลที่ดิน
         </p>
       </header>
       <div class="card-content">
         <SearchDetail v-for="(item, index) in results" :key="index" :label="item.label" :value="item.value"
-          backgroundColor="#5a4518" textColor="white" />
+          backgroundColor="#fff" textColor="#333" />
         <footer class="card-footer" v-if="results.length > 0 && (results[0].lat && results[0].long)">
           <a href="#" class="card-footer-item has-text-link" style="color: #a0752d;">ที่ตั้งตำแหน่ง</a>
         </footer>
@@ -31,7 +31,6 @@
 import axios from 'axios';
 import SearchDetail from '@/components/SearchDetail.vue';
 import { formatPhoneNumber } from '@/utils/commonFunc';
-import { calTotalLandArea, convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 
 export default {
   components: {
@@ -65,11 +64,11 @@ export default {
           this.results = [
             { value: response.data.results[0].tf_number, label: "แปลงเลขที่" },
             { value: response.data.results[0].spk_area, label: "ระวาง ส.ป.ก" },
-            { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
             { value: response.data.results[0].l_district, label: "ตำบล" },
             {
               value: textRai, label: "พื้นที่"
             },
+            { value: this.phoneFormat(response.data.results[0].phone_number || null), label: "เบอร์โทรศัพท์" },
           ]
         } else {
           this.results = [];
@@ -122,6 +121,15 @@ export default {
 </script>
 
 <style scoped>
+.search-bg {
+    background-image: url('../assets/search-bg1.jpg'); /* ใส่รูปพื้นหลัง */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+}
+
+
 .land-info {
   background: #fff;
   display: flex;
@@ -188,9 +196,8 @@ export default {
 .not-found-container {
   display: flex;
   justify-content: center;
-
-  height: 90vh;
-  background-color: #f2f2f2;
+  min-height: 100vh;
+  /* background-color: #f2f2f2; */
 }
 
 .not-found-content {

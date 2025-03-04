@@ -57,7 +57,7 @@
                 <small v-else class="completed-text">✅ Completed</small>
               </div>
               <!-- ปุ่มลบ -->
-              <button class="delete" @click="openDeleteModal(file)"></button>
+              <button class="delete" @click="openDeleteModal(file)" v-if="userRole === roles[3].role_id"></button>
               <!-- ปุ่มดาวน์โหลด -->
               <button class="button is-link is-inverted" @click="downloadLink(file.path_file)">
                 <i class="fas fa-download"></i>
@@ -84,6 +84,8 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 import VueEasyLightbox from 'vue-easy-lightbox';
 import axios from 'axios';
+import { useUserStore } from '@/stores/useUserStore';
+import roles from '@/role_config';
 
 export default {
   components: {
@@ -92,6 +94,7 @@ export default {
   },
   data() {
     return {
+      roles,
       files: [],
       showModal: false,
       fileToDelete: null,
@@ -109,6 +112,11 @@ export default {
     isFileInputDisabled() {
       return this.files.length >= this.maxFileCount; // ถ้าจำนวนไฟล์ >= 10 จะ disable input
     },
+    userRole() {
+      // Access the userRole from your store
+      const userStore = useUserStore();
+      return userStore.userRole;
+    }
   },
   async created() {
     // read query
@@ -220,7 +228,7 @@ export default {
     downloadLink(file) {
       // return `https://example.com/download/${file.id}`;
       const filePath = file; // ชื่อไฟล์ที่ต้องการดาวน์โหลด
-      console.log('file:',filePath)
+      console.log('file:', filePath)
       const downloadUrl = `http://localhost:3000/upload_file/download_live/${filePath}`;
 
       // เปิดลิงก์ดาวน์โหลดในแท็บใหม่
