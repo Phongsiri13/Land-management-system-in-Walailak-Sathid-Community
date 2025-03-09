@@ -98,7 +98,7 @@ export const fetchRelation = async () => {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
 }
-
+// ดึงข้อมูลจาก dashboard
 export const fetchLandUseDashboard = async () => {
   try {
     const response = await axios.get('http://localhost:3000/dashboard')
@@ -109,8 +109,7 @@ export const fetchLandUseDashboard = async () => {
   }
 }
 
-// ฟังชั่นนี้ไม่ใช้แล้ว
-export const fetchOneLandUseDashboard = async (soi_id) => {
+export const fetchOneLandUseDashboard = async (soi_id='-1') => {
   try {
     const response = await axios.get(`http://localhost:3000/dashboard/${soi_id}`)
     console.log(response.data)

@@ -3,18 +3,18 @@
       <div class="modal-background" @click="closeModal"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">ยืนยันการลบ</p>
+          <p class="modal-card-title">ยืนยันการลบไฟล์</p>
           <button class="delete" @click="closeModal"></button>
         </header>
         <section class="modal-card-body">
-          คุณต้องการลบไฟล์ <strong>{{ fileToDelete?.name }}</strong> ใช่หรือไม่?
+          ต้องการลบไฟล์ <strong>{{ fileToDelete?.path_file }}</strong> ใช่หรือไม่?
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-danger" :class="{ 'is-loading': isDeleting }" @click="confirmDelete"
-            :disabled="isDeleting">
-            ลบไฟล์
-          </button>
           <button class="button" @click="closeModal">ยกเลิก</button>
+          <div class='mx-1'></div>
+          <button class="button is-success" :class="{ 'is-loading': isDeleting }" @click="confirmDelete(fileToDelete?.id_live_doc)" :disabled="isDeleting">
+            ยืนยัน
+          </button>
         </footer>
       </div>
     </div>
@@ -25,16 +25,15 @@
     props: {
       showModal: Boolean,
       fileToDelete: Object,
-      isDeleting: Boolean
+      isDeleting: Boolean,
     },
     methods: {
       closeModal() {
         this.$emit('close-modal');
       },
-      confirmDelete() {
-        this.$emit('confirm-delete');
-      }
-    }
+      confirmDelete(file_name) {
+        this.$emit('confirm-delete',file_name);
+      },
+    },
   };
   </script>
-  

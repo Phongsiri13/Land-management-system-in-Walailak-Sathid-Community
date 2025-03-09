@@ -4,7 +4,7 @@
             <div class="column is-three-quarters-tablet is-three-fifths-desktop is-full-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <h1 class="is-size-3 has-text-centered">รายการข้อมูลทายาท</h1>
+                        <h1 class="is-size-3 has-text-centered has-text-link ">รายการข้อมูลทายาท</h1>
                         <!-- Content -->
                         <div class="table-container">
                             <ResponsiveContainer column-class="is-three-quarters-tablet is-full-desktop is-full-mobile">
@@ -38,7 +38,7 @@
                                         <tr>
                                             <th>ลำดับ</th>
                                             <!-- <th>รหัส</th> -->
-                                            <th>ชื่อจริง - นามสกุล</th>
+                                            <th>ชื่อ - นามสกุล</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -50,7 +50,7 @@
                                 </table>
                                 <div v-else>
                                     <hr class="navbar-divider" />
-                                    ไม่พบข้อมูล
+                                    <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
                                 </div>
                                 <nav class="pagination" role="navigation" aria-label="pagination">
                                     <ul class="pagination-list">
@@ -75,7 +75,6 @@
 import axios from 'axios';
 import HeirDataRow from '@/components/display_table/HeirDataRow.vue';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer.vue';
-import { fullCheckMatchHeir } from '@/api/apiHeir';
 
 export default {
     components: { HeirDataRow, ResponsiveContainer },
@@ -164,7 +163,6 @@ export default {
     }
 };
 </script>
-
 
 
 <style scoped>

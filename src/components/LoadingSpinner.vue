@@ -1,38 +1,60 @@
 <template>
-    <div v-if="isLoading" class="loading-container">
-      <i class="fas fa-spinner fa-spin"></i>
-      <span class="loading-text">{{ textTitle }}</span>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'LoadingSpinner',
-    props: {
-      isLoading: {
-        type: Boolean,
-        required: true,
-      },
-      textTitle: {
-        type: String,
-        default: 'กำลังโหลด...', // กำหนดค่าเริ่มต้นของข้อความ
-      },
+  <div 
+    v-if="isLoading" 
+    class="loading-container" 
+    :style="{ 
+      width: width, 
+      height: height, 
+      display: 'flex', 
+      alignItems: align, 
+      justifyContent: justify 
+    }"
+  >
+    <i class="fas fa-spinner fa-spin" :style="{ fontSize: fontSize }"></i>
+    <span class="loading-text" :style="{ fontSize: fontSize }">{{ textTitle }}</span>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'LoadingSpinner',
+  props: {
+    isLoading: {
+      type: Boolean,
+      required: true,
     },
-  };
-  </script>
-  
-  <style scoped>
-  .loading-container {
-    display: flex;
-    align-items: center; /* จัดให้ไอคอนกับข้อความอยู่ตรงกลาง */
-    justify-content: center; /* จัดให้อยู่ตรงกลางของ div */
-    width: 300px;
-    height: 300px;
-    gap: 10px; /* เว้นระยะห่างระหว่างไอคอนกับข้อความ */
+    textTitle: {
+      type: String,
+      default: '',
+    },
+    width: {
+      type: String,
+      default: '0px',
+    },
+    height: {
+      type: String,
+      default: '0px',
+    },
+    align: {
+      type: String,
+      default: 'center', // ค่าเริ่มต้น: จัดตรงกลาง
+    },
+    justify: {
+      type: String,
+      default: 'center', // ค่าเริ่มต้น: จัดตรงกลาง
+    },
+    fontSize: {
+      type: String,
+      default: '16px', // ค่าเริ่มต้นของขนาดตัวอักษร
+    }
   }
-  
-  .loading-text {
-    font-size: 16px; /* ปรับขนาดตัวอักษร */
-  }
-  </style>
-  
+  ,
+};
+</script>
+
+<style scoped>
+.loading-container {
+  border-radius: 10px;
+  padding: 20px;
+}
+</style>

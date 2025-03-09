@@ -18,7 +18,6 @@ import PersonDetail from '@/views/data_list/PersonDetail.vue'
 import CitizenDetail from '@/views/data_list/CitizenDetail.vue'
 import HeirDetail from '@/views/data_list/HeirDetail.vue'
 import LandLiveDocument from '@/views/uploadFile/LandLiveDocument.vue'
-import ShowAllFiles from '@/views/uploadFile/ShowAllFiles.vue'
 import MainDash from '@/views/dashboard/MainDash.vue'
 import AddHeir from '@/views/AddHeir.vue'
 import HistoryLand from '@/views/HistoryLand.vue'
@@ -32,13 +31,11 @@ import CitizenDash from '@/views/dashboard/CitizenDash.vue'
 
 // URL
 import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from './url_list'
-import axios from 'axios'
 
 import CitizenDisplay from '@/views/data_list/CitizenDisplay.vue'
 import ManageLandUsage from '@/components/manage_default_data/ManageLandUsage.vue'
 import ManageStatus from '@/components/manage_default_data/ManageStatus.vue'
 import ManageRelation from '@/components/manage_default_data/ManageRelation.vue'
-import ManageRole from '@/components/manage_default_data/ManageRole.vue'
 
 import LandEdit from '@/views/data_edit/LandEdit.vue'
 import HeirEdit from '@/views/data_edit/HeirEdit.vue'
@@ -77,11 +74,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/show_files',
-      name: 'showfileAall',
-      component: ShowAllFiles
-    },
-    {
       path: url_citizen,
       name: 'fillPeople',
       component: AddCitizen,
@@ -102,7 +94,23 @@ const router = createRouter({
     {
       path: '/connect_relation',
       name: 'ConnectHeirRelation',
-      component: ConnectRelation
+      component: ConnectRelation,
+      meta: {
+        requiredRole: roles[3].role_id,
+        title: 'เชื่อมต่อความสัมพันธ์'
+      },
+      beforeEnter(to, from, next) {
+        // ตรวจสอบ query parameters
+        const { firstName, lastName } = to.query
+
+        if (!firstName || !lastName) {
+          // ถ้าไม่มี firstName หรือ lastName ให้ redirect ไปที่หน้าอื่น
+          next({ path: '/error', query: { message: 'firstName and lastName are required' } })
+        } else {
+          // ถ้ามี query parameters ที่ถูกต้อง ให้ไปหน้าต่อไป
+          next()
+        }
+      }
     },
     {
       path: '/search',
@@ -249,7 +257,7 @@ const router = createRouter({
       component: LandLiveDocument,
       meta: {
         requiredRole: [officer.role_id, admin.role_id],
-        title: 'Admin | '
+        title: 'หน้าไฟล์ภาพที่อยู่อาศัย'
       }
     },
     {
@@ -258,7 +266,7 @@ const router = createRouter({
       component: LandFile,
       meta: {
         requiredRole: [officer.role_id, admin.role_id],
-        title: 'Admin | '
+        title: 'หน้าไฟล์ที่ดิน'
       }
     },
     {
@@ -277,7 +285,7 @@ const router = createRouter({
       meta: {
         requiredRole: roles[3].role_id,
         name: 'ManageDefaultData',
-        title: 'Admin | '
+        title: 'ข้อมูลพื้นฐาน |'
       },
       children: [
         {
@@ -362,10 +370,12 @@ router.beforeEach(async (to, from, next) => {
   store.status_path_change = true
   const userStore = useUserStore()
   console.log('router guard is working')
+  // console.log('userStore:',userStore.userRole)
 
   // Fetch role if not available
   if (!userStore.userRole) {
-    await userStore.fetchUserRole()
+    const user_checking = await userStore.fetchUserRole()
+    console.log('user:', user_checking)
   }
 
   // ตรวจสอบสิทธิ์การเข้าถึง

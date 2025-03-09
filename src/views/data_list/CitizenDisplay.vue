@@ -42,7 +42,7 @@
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <h1 class="is-size-3 has-text-centered">รายการข้อมูลราษฎร</h1>
+                        <h1 class="is-size-3 has-text-centered has-text-link">รายการข้อมูลราษฎร</h1>
                         <!-- Search -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
@@ -95,9 +95,9 @@
                                 <thead class="table-header">
                                     <tr>
                                         <th>ลำดับ</th>
-                                        <th>ID-CARD</th>
-                                        <th>ซอยที่อยู่</th>
-                                        <th>ชื่อจริง - นามสกุล</th>
+                                        <th>เลขบัตรประชาชน</th>
+                                        <th>ซอย</th>
+                                        <th>ชื่อ - นามสกุล</th>
                                         <th>เบอร์โทรศัพท์</th>
                                         <th>ที่อยู่</th>
                                         <th></th>
@@ -111,7 +111,7 @@
                             </table>
                             <div v-else>
                                 <hr class="navbar-divider" />
-                                ไม่พบข้อมูล
+                                <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
                             </div>
                         </div>
 
@@ -180,6 +180,10 @@ export default {
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCitizenData(); // ดึงข้อมูลใหม่
         },
+        // searchFilter
+        searchFilter(newVal, oldVal) {
+            this.searchQuery = ''
+        }
     },
     methods: {
         async searchData() {

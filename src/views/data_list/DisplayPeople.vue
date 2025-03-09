@@ -41,7 +41,7 @@
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <h1 class="is-size-3 has-text-centered">รายการข้อมูลที่ดิน</h1>
+                        <h1 class="is-size-3 has-text-centered has-text-link">รายการข้อมูลที่ดิน</h1>
                         <!-- f1 -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
@@ -115,7 +115,7 @@
                                         <th>ลำดับ</th>
                                         <th>แปลงเลขที่</th>
                                         <th>ซอยที่ดิน</th>
-                                        <th>ชื่อจริง - นามสกุล</th>
+                                        <th>ชื่อ - นามสกุล</th>
                                         <th>เบอร์โทรศัพท์</th>
                                         <th>สถานะ</th>
                                         <th>สถานะการใช้ที่ดิน</th>
@@ -127,7 +127,6 @@
                                         :index="(currentPage - 1) * selectedLimit + index + 1"
                                         @view-detail="goToDetail(land.id_land)" />
                                 </tbody>
-                                <!-- <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td> -->
                             </table>
                             <!-- load first data -->
                             <div v-else>
@@ -224,6 +223,9 @@ export default {
                 this.fetchCompleteLandData();
             },
             immediate: true
+        },
+        searchType(newVal, oldVal) {
+            this.searchQuery = ''
         },
         selectedSoi(newVal, oldVal) {
             this.$router.replace({

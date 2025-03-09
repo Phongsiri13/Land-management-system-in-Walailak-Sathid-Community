@@ -1,9 +1,9 @@
 <template>
-    <nav class="has-navbar-fixed-top navigator-color" role="navigation" aria-label="main navigation">
+    <nav class="navigator-color" role="navigation" aria-label="main navigation">
         <!-- ใช้ <transition> เพื่อเพิ่มเอฟเฟกต์แสดง/ซ่อน -->
         <transition name="slide-fade">
-            <div class="navbar-menu navigator-color" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;"
-            v-show="isNavbarVisible">
+            <div class="navbar navigator-color" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;"
+                v-show="isNavbarVisible">
                 <!-- Start Section -->
                 <div class="navbar-item home-tag">
                     <RouterLink to="/" class="navbar-item" active-class="is-active" exact-active-class="is-active">
@@ -24,11 +24,10 @@
 
                 <!-- Middle Section -->
                 <div class="navbar-start" style="display: flex; justify-content: center; align-items: center; flex: 1;">
-                    <div class="field has-addons" style="width: 40%; max-width: 300px;">
+                    <div class="field has-addons">
                         <div class="control is-expanded">
                             <!-- search -->
-                            <input class="input" type="text" placeholder="ค้นหา แปลงที่ดิน เช่น 7632"
-                                v-model="searchQuery" />
+                            <input class="input" type="text" placeholder="แปลงที่ดิน เช่น 7632" v-model="searchQuery" />
                         </div>
                         <div class="control">
                             <button class="button " @click="search">
@@ -40,9 +39,8 @@
                     </div>
                 </div>
 
-
                 <!-- End Section -->
-                <div class="navbar-item mx-5">
+                <div class="navbar-item px-5">
                     <RouterLink to="/login" class="navbar-item has-text-white" active-class="is-active"
                         exact-active-class="is-active">
                         <span class="icon">
@@ -78,35 +76,58 @@ export default {
         },
         search() {
             if (this.searchQuery === "") {
-                alert('กรุณาระบุเลขที่ดิน');
+                alert('กรุณาระบุเลขแปลงที่ดิน');
                 return;
             }
             this.$router.push({ path: '/search', query: { q: this.searchQuery } });
         }
-    }
+    },
+    watch: {
+        searchQuery(newValue) {
+            // ตรวจสอบว่าเป็นตัวเลขเท่านั้น
+            // ตรวจสอบว่าเป็นตัวเลขเท่านั้นและจำกัดที่ 5 ตัว
+            const regex = /^[0-9]{0,5}$/; // ตรวจสอบเฉพาะตัวเลข 5 ตัว
+            if (!regex.test(newValue)) {
+                this.searchQuery = newValue.replace(/[^0-9]/g, ''); // ลบอักขระที่ไม่ใช่ตัวเลข
+            }
+            // จำกัดให้มีแค่ 5 ตัว
+            if (this.searchQuery.length > 5) {
+                this.searchQuery = this.searchQuery.substring(0, 5); // ตัดให้เหลือแค่ 5 ตัว
+            }
+        },
+        '$route'(to, from) {
+            // ตรวจสอบการเปลี่ยนเส้นทางจาก '/search'
+            if (from.path === '/search') {
+                this.searchQuery = ""; // รีเซ็ต searchQuery
+            }
+        }
+    },
 };
 </script>
 
-<style>
-.navbar-menu {
+<style scoped>
+.navbar {
     position: fixed;
     width: 95vw;
     /* ปรับให้ไม่เกินหน้าจอ */
     /* opacity: 0.9; */
-    z-index: 4;
+    z-index: 10;
     left: 5vw;
     /* ใช้ left แทน margin-left */
 }
 
 .navbar-start {
     display: flex;
-    justify-content: center;  /* จัดให้เนื้อหากลาง */
+    justify-content: center;
+    /* จัดให้เนื้อหากลาง */
     flex: 1;
 }
 
 .field.has-addons {
-    width: 60%;        /* ความกว้าง 60% */
-    max-width: 500px;  /* ขนาดสูงสุด 500px */
+    width: 30%;
+    /* ความกว้าง 60% */
+    max-width: 500px;
+    /* ขนาดสูงสุด 500px */
 }
 
 /* ปุ่ม Toggle Navbar */
@@ -122,7 +143,8 @@ export default {
     font-size: 22px;
     z-index: 5;
     min-width: 42x;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* เงารอบปุ่ม */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    /* เงารอบปุ่ม */
 }
 
 
@@ -139,5 +161,34 @@ export default {
 .slide-fade-leave-to {
     transform: translateY(-100%);
     opacity: 0;
+}
+
+/* แก้ไขการซ่อนเมนู Navbar บนอุปกรณ์ขนาดเล็ก */
+@media screen and (max-width: 1024px) {
+    .navbar {
+        display: flex;
+        width: 85vw;
+        /* ปรับให้ไม่เกินหน้าจอ */
+        /* opacity: 0.9; */
+        z-index: 10;
+        left: 15vw;
+    }
+
+    .field.has-addons {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: 40vw;
+    }
+
+    .navbar-item.home-tag,
+    .navbar-item {
+        order: 1;
+        /* สั่งให้ทั้งสองไอเท็มอยู่ข้างหน้า */
+    }
+
+    .navbar-item.mx-5 {
+        order: 2;
+        /* สั่งให้ไอเท็มนี้อยู่ด้านหลัง */
+    }
 }
 </style>

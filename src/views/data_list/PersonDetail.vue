@@ -8,27 +8,15 @@
                     <div class="modal-background" @click="hidePermissionModal"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
-                            <p class="modal-card-title">แก้ไขสิทธิ์</p>
+                            <p class="modal-card-title" v-if="landActive === '1'">เพิกถอนสิทธิ์</p>
+                            <p class="modal-card-title" v-else-if="landActive === '0'">ให้สิทธิ์</p>
                             <button class="delete" aria-label="close" @click="hidePermissionModal"></button>
                         </header>
-                        <section class="modal-card-body">
-                            <!-- Dropdown for Permissions -->
-                            <div class="field">
-                                <label class="label">เลือกสิทธิ์</label>
-                                <div class="control">
-                                    <div class="select">
-                                        <select v-model="selectedPermission">
-                                            <option value="1">ใช้สิทธิ์</option>
-                                            <option value="0">ยกเลิก</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
                         <footer class="modal-card-foot">
+                            <button class="button" @click="hidePermissionModal">ยกเลิก</button>
+                            <div class="mx-1"></div>
                             <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
                                 @click="savePermission">บันทึก</button>
-                            <button class="button" @click="hidePermissionModal">ยกเลิก</button>
                         </footer>
                     </div>
                 </div>
@@ -116,10 +104,13 @@
                                         <i class="fas fa-edit"></i>
                                     </span>
                                 </button>
-
                                 <!-- Remove land -->
-                                <button class="button is-normal is-danger" @click="showPermissionModal">
-                                    <span class="icon">
+                                <button :class="landActive === '1' ? 'button is-normal is-danger':'button is-normal is-link'" 
+                                @click="showPermissionModal">
+                                    <span class="icon" v-if="landActive === '0'">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                    <span class="icon" v-else-if="landActive === '1'">
                                         <i class="fas fa-trash-alt"></i>
                                     </span>
                                 </button>
@@ -238,11 +229,12 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-1" v-if="userRole === roles[3].role_id">
+                        <div class="column is-1" v-if="userRole === roles[3].role_id && landStatusID != 'LS03'">
+                            <!-- landStatusID -->
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
                                 <!-- ปุ่มสำหรับเปิด/ปิดการแก้ไข -->
-                                <button v-if="isLandUseVisible" @click="toggleEdit"
+                                <button v-if="isLandUseVisible && userRole === roles[3].role_id" @click="toggleEdit"
                                     class="button is-normal is-warning mx-1">
                                     <span class="icon">
                                         <i :class="isEditingLandUse ? 'fas fa-times' : 'fas fa-edit'"></i>
@@ -513,6 +505,7 @@ export default {
             isEditModalOpen: false,  // Modal visibility
             loadingEdit: false, // Loading state for save action
             landStatusName: '',
+            landStatusID: null,
             LAND_ID: '',
             CITIZEN_ID: null,
             landUsageData: [],
@@ -546,6 +539,7 @@ export default {
             const getStatusName = await fetchOneLandStatus(response_land.data[0].current_land_status);
             console.log('getStatusName:', getStatusName.data[0].land_status_name);
             this.landStatusName = getStatusName.data[0].land_status_name
+            this.landStatusID = getStatusName.data[0].ID_land_status
             this.create_land_at = response_land.data[0].created_at
 
             if (response_land.data) {
@@ -623,13 +617,12 @@ export default {
         },
         // Shows the modal
         async showPermissionModal() {
-            console.log('hi')
             this.isEditModalOpen = true;
+            console.log('::',this.landActive)
             try {
                 const resActive = await axios.get(`http://localhost:3000/land/active/${this.land_information[0].id_land}`);
                 console.log('resActive:', resActive.data)
                 if (resActive.data.length > 0) {
-                    console.log('koksa')
                     this.selectedPermission = resActive.data[0].active
                 }
                 console.log(this.selectedPermission)
@@ -651,7 +644,7 @@ export default {
             console.log('active-v:', activeValue)
             try {
                 const resActive = await axios.delete(`http://localhost:3000/land/active/${this.land_information[0].id_land}`, {
-                    data: { active: activeValue }
+                    data: { active: activeValue == '1' ? '0':'1' }
                 });
 
                 if (resActive.data.success) {

@@ -1,6 +1,12 @@
 <template>
     <div>
         <!-- add status -->
+        <button class="button is-success is-rounded mb-3 is-pulled-right" @click="openCreateModal">
+            <span class="icon">
+                <i class="fas fa-plus"></i>
+            </span>
+        </button>
+
         <!-- MODAL (Edit) -->
         <div v-if="isEditModalOpen == true" class="modal" :class="{ 'is-active': isEditModalOpen }">
             <div class="modal-background" @click="closeEditModal"></div>
@@ -19,32 +25,43 @@
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button" @click="closeEditModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
                     <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
                         @click="saveEdit">บันทึก</button>
                 </footer>
             </div>
         </div>
 
+        <button class="button is-hovered btn-active-using" :class="{
+            'is-success': statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(true)">ใช้งาน</button>
+        <button class="button btn-active-using" :class="{
+            'is-danger': !statusActive,
+            'is-hovered': !statusActive
+        }" @click="activePage(false)">
+            ไม่ได้ใช้งาน
+        </button>
+
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
+                    <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
                     <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อการใช้ประโยชน์ที่ดิน</th>
-                    <th class="has-text-centered has-text-white" style="width: 20%;">Action</th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="!page_loading">
                 <tr v-for="(item, index) in relationFiles" :key="item.value" class="has-text-centered">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.value }}</td>
+                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
                             <span class="icon">
                                 <i class="fas fa-edit"></i>
                             </span>
-                            <span>แก้ไข</span>
                         </button>
                         <!-- <button class="button mx-2 is-rounded is-normal is-danger" @click="prepareRemove(item.value)">
                             <span class="icon">
@@ -58,7 +75,7 @@
                     <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
                 </tr>
             </tbody>
-
+            <LoadingSpinner :isLoading="page_loading" fontSize="22px" v-else />
         </table>
     </div>
 </template>
@@ -67,9 +84,13 @@
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { getOneLandUsage } from '@/api/apiManageInformation';
-import { fetchRelationActive, fetchLandUsageActive} from '@/api/apiHeir';
+import { fetchRelationActive, fetchLandUsageActive } from '@/api/apiHeir';
+import LoadingSpinner from '../LoadingSpinner.vue';
 
 export default {
+    components: {
+        LoadingSpinner
+    },
     data() {
         return {
             statusActive: true, // 1 false = 0
@@ -83,7 +104,8 @@ export default {
             loadingRemove: false,
             new_Relation: '',
             deleteItem: null,
-            btn_loading: false
+            btn_loading: false,
+            page_loading: true
         };
     },
     methods: {
@@ -195,18 +217,26 @@ export default {
             this.relationFiles = await fetchLandUsageActive('1');
         } catch (error) {
 
+        } finally {
+            setTimeout(() => {
+                this.page_loading = false;
+            }, 500);
         }
     }
 }
 </script>
 
 <style scoped>
-
 .table-header {
     background-color: #0D1B2A;
 }
 
-.btn-active-using{
+.btn-active-using {
     min-width: 100px;
+    margin-right: 5px;
+}
+
+.button {
+    border-radius: 5px;
 }
 </style>

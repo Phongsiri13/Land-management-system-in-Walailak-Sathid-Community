@@ -6,21 +6,13 @@
                 <div class="column is-narrow has-text-centered">
                     <div class="has-background-white mt-2 py-3 px-5" style="border-radius: 5px;">
                         <h2 class="title is-2 has-text-link" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);">
-                            การสรุปผลการใช้ประโยชน์จากที่ดิน</h2>
-                    </div>
-                    <!-- ปุ่มส่งออกเป็น PDF -->
-                    <div class="has-text-centered my-2"
-                        v-if="userRole === roles[3].role_id || userRole === roles[1].role_id">
-                        <button @click="exportToPDF" class="button is-link">
-                            <i class="fas fa-download"></i>
-                            <span></span>
-                        </button>
+                            สรุปผลการใช้ประโยชน์จากที่ดินในชุมชนสาธิต</h2>
                     </div>
                     <!-- filter sois -->
                     <div v-if="userRole === roles[3].role_id || userRole === roles[1].role_id"
-                        class="select is-rounded">
+                        class="select ">
                         <select v-model="selectedSoi" @change="selectOption">
-                            <option value="" selected>เลือกซอย</option>
+                            <option value="" selected>ทั้งหมด</option>
                             <option v-for="soi in sois" :key="soi.value" :value="soi.value" @change="selectOption">
                                 {{ soi.label }}
                             </option>
@@ -87,9 +79,7 @@
                         <p>โหลดข้อมูลใหม่</p>
                     </button>
                 </div>
-
             </div>
-
         </div>
     </div>
 </template>
@@ -223,8 +213,8 @@ export default defineComponent({
     methods: {
         getDefaultPhoto(usageId) {
             const defaultPhotos = {
-                LU01: "/src/assets/icons/dashboard_icon/tree.png",
-                LU02: "/src/assets/icons/dashboard_icon/rubber.png",
+                LU01: "/src/assets/icons/dashboard_icon/rubber.png",
+                LU02: "/src/assets/icons/dashboard_icon/tree.png",
                 LU03: "/src/assets/icons/dashboard_icon/livestock.png",
                 LU04: "/src/assets/icons/dashboard_icon/other.png"
             };
@@ -282,8 +272,8 @@ export default defineComponent({
             console.log('reload')
             this.reload = true;
             try {
-                const res = await fetchLandUseDashboard();
-                this.summariesLandUse = res[0];
+                const res_dash = await fetchOneLandUseDashboard(this.selectedSoi == ''? -1:this.selectedSoi);
+                this.summariesLandUse = res_dash;
                 this.isActive = true
             } catch (error) {
                 console.log(error)
@@ -297,8 +287,7 @@ export default defineComponent({
         async selectOption() {
             console.log(`Selected: `, this.selectedSoi);
             try {
-                const res_dash = await fetchOneLandUseDashboard(this.selectedSoi);
-                // console.log('res:', res_dash)
+                const res_dash = await fetchOneLandUseDashboard(typeof this.selectedSoi === 'string' && this.selectedSoi.trim() === '' ? '-1' : this.selectedSoi);
                 this.summariesLandUse = res_dash;
                 this.isActive = true;
             } catch (error) {
@@ -309,7 +298,7 @@ export default defineComponent({
     async created() {
         try {
             this.sois = await fetchSois();
-            const res = await fetchLandUseDashboard();
+            const res = await fetchOneLandUseDashboard();
             const res_dashboard = await fetchLandUsageActive('1');
             this.titleLandUsage = res_dashboard;
 
@@ -360,14 +349,8 @@ export default defineComponent({
 
 <style scoped>
 .citizen-dashboard-bg {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1)),
-        url('@/assets/search_bg1_edge.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 100%;
+    background-color: #c2b280;
 }
-
 
 /* Add margin for mobile screens */
 @media screen and (max-width: 768px) {
@@ -407,7 +390,7 @@ export default defineComponent({
 
 .dashboard-box {
     min-height: 100vh;
-    background: rgba(128, 128, 128, 0.6);
+    /* background: rgba(128, 128, 128, 0.6); */
     /* background: rgba(255, 253, 208, 0.5); */
     /* background: rgba(255, 239, 174, 0.5);  */
     /* background: rgba(255, 241, 178, 0.5);  */

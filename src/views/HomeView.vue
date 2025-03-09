@@ -8,7 +8,7 @@
             <span class="icon">
               <i class="fas fa-landmark"></i>
             </span>
-            ประวัติของชุมชนสาธิตวลัยลักษณ์
+             ชุมชนสาธิตวลัยลักษณ์
           </h1>
           <p class="lead slide-up">
             ชุมชนสาธิตวลัยลักษณ์ ตั้งอยู่ในบริเวณ 2 ตําบล คือ ตําบลไทยบุรี และตําบลหัวตะพาน อําเภอท่าศาลา
@@ -41,9 +41,7 @@
 </template>
 
 <script>
-export default {
-  name: "HomePage",
-};
+
 </script>
 
 <style>

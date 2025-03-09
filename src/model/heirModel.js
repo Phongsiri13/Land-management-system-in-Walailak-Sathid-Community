@@ -25,3 +25,12 @@ export const HeirValidSchema = {
     .min(3, 'นามสกุลต้องมีอย่างน้อย 3 ตัวอักษร')
     .max(30, 'นามสกุลต้องไม่เกิน 30 ตัวอักษร'),
 }
+
+export const HeirFullnameValidSchema = {
+  // prefix: yup.string().required('กรุณาเลือกคำนำหน้าชื่อ'),
+  fullname: yup
+    .string()
+    .min(5, 'ชื่อ - นามกสุลต้องมีอย่างน้อย 5 ตัวอักษร')
+    .max(60, 'ชื่อจริงต้องไม่เกิน 60 ตัวอักษร')
+    .required('กรุณากรอกชื่อ - นามสกุล')
+}

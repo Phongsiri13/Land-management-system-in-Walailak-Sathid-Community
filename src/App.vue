@@ -98,9 +98,6 @@ export default {
     closeReportDropdown() {
       this.isDropdownReportActive = false;
     },
-    changePath() {
-      this.store.status_path_change = true
-    },
     toggleMenu() {
       this.isActive = !this.isActive;
     },
@@ -122,8 +119,44 @@ export default {
     },
     goToUserSearchPage() {
       this.$router.push('/uq');
-    }
+    },
+    // getCookie(name) {
+    //   const value = `; ${document.cookie}`;
+    //   const parts = value.split(`; ${name}=`);
+    //   if (parts.length === 2) return parts.pop().split(';').shift();
+    //   return null;
+    // },
+    // deleteCookie(name) {
+    //   document.cookie = `${name}=; Max-Age=-1; path=/;`;
+    // },
+    // monitorCookies() {
+    //   setInterval(() => {
+    //     const currentJwtValue = this.getCookie("jwt");
+
+    //     // ตรวจสอบว่า jwt เปลี่ยนแปลงหรือไม่
+    //     if (currentJwtValue !== this.jwtCookieValue) {
+    //       this.jwtCookieValue = currentJwtValue;
+    //       console.log("JWT has changed:", currentJwtValue);
+    //       // หาก jwt เปลี่ยนแปลงให้ลบ cookies อื่น
+    //       this.deleteOtherCookies();
+    //     }
+
+    //     // ตรวจสอบว่ามี cookie อื่นๆ เพิ่มเข้ามาหรือไม่
+    //     const cookies = document.cookie.split(';');
+    //     cookies.forEach(cookie => {
+    //       const cookieName = cookie.split('=')[0].trim();
+    //       if (cookieName !== 'jwt') {
+    //         console.log(`Deleting extra cookie: ${cookieName}`);
+    //         this.deleteCookie(cookieName); // ลบ cookie ที่ไม่ใช่ jwt
+    //       }
+    //     });
+
+    //   }, 10000); // ตรวจสอบทุกๆ 1 วินาที
+    // },
   },
+  // created() {
+  //   this.monitorCookies();
+  // },
   mounted() {
     document.addEventListener('click', this.handleClickOutside);
     setTimeout(() => {

@@ -19,7 +19,7 @@
         </AccordionItem>
       </Accordion>
 
-      <Accordion>
+      <!-- <Accordion>
         <AccordionItem ref="homepage">
           <template #accordion-trigger>
             <RouterLink to="/search" class="sidebar-item" active-class="is-active" exact-active-class="is-active">
@@ -29,7 +29,7 @@
             </RouterLink>
           </template>
         </AccordionItem>
-      </Accordion>
+      </Accordion> -->
 
       <Accordion>
         <AccordionItem ref="dashboardItem">
@@ -42,7 +42,7 @@
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/dashboard" class="menu-link menu-item">การสรุปผลการใช้ประโยชน์ที่ดิน</RouterLink>
+            <RouterLink to="/dashboard" class="menu-link menu-item">สรุปผลการใช้ประโยชน์ที่ดิน</RouterLink>
             <RouterLink to="/table_dashboard" class="menu-link menu-item">สรุปผลการจัดสรรที่ดิน</RouterLink>
             <RouterLink to="/citizen_dashboard" class="menu-link menu-item">สรุปผลราษฎรในพื้นที่</RouterLink>
           </template>
@@ -60,9 +60,9 @@
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/land_data" class="menu-link menu-item">รายละเอียดสิทธิการใช้ที่ดิน</RouterLink>
-            <RouterLink to="/citizen_data" class="menu-link menu-item">ข้อมูลราษฎร</RouterLink>
-            <RouterLink to="/heir_data" class="menu-link menu-item">ข้อมูลทายาท</RouterLink>
+            <RouterLink to="/land_data" class="menu-link menu-item">รายละเอียดข้อมูลที่ดิน</RouterLink>
+            <RouterLink to="/citizen_data" class="menu-link menu-item">รายละเอียดข้อมูลราษฎร</RouterLink>
+            <RouterLink to="/heir_data" class="menu-link menu-item">รายละเอียดข้อมูลทายาท</RouterLink>
           </template>
         </AccordionItem>
       </Accordion>

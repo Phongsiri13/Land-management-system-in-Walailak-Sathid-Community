@@ -5,7 +5,6 @@
             <span class="icon">
                 <i class="fas fa-plus"></i>
             </span>
-            <span>เพิ่ม</span>
         </button>
 
         <!-- MODAL (Edit) -->
@@ -25,9 +24,10 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot">
+                    <button class="button" @click="closeEditModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
                     <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
                         @click="saveEdit">บันทึก</button>
-                    <button class="button" @click="closeEditModal">ยกเลิก</button>
                 </footer>
             </div>
         </div>
@@ -44,9 +44,10 @@
                     <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-danger" :class="{ 'is-loading': loadingRemove }"
-                        @click="confirmRemove(deleteItem)">ยืนยัน</button>
                     <button class="button" @click="closeConfirmModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
+                    <button class="button is-success" :class="{ 'is-loading': loadingRemove }"
+                        @click="confirmRemove(deleteItem)">บันทึก</button>
                 </footer>
             </div>
         </div>
@@ -68,9 +69,10 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot">
+                    <button class="button" @click="closeCreateModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
                     <button class="button is-success" :class="{ 'is-loading': loadingCreate }"
                         @click="saveNewDCLandType">บันทึก</button>
-                    <button class="button" @click="closeCreateModal">ยกเลิก</button>
                 </footer>
             </div>
         </div>
@@ -89,29 +91,46 @@
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
+                    <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
                     <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อความสัมพันธ์</th>
-                    <th class="has-text-centered has-text-white" style="width: 20%;">Action</th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
                 </tr>
             </thead>
-            <tbody>
-                <tr v-for="(item, index) in relationFiles" :key="item.value" class="has-text-centered">
+            <tbody v-if="!page_loading">
+                <tr v-if="statusActive == true" v-for="(item, index) in relationFiles" :key="item.value" class="has-text-centered">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.value }}</td>
+                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
                             <span class="icon">
                                 <i class="fas fa-edit"></i>
                             </span>
-                            <span>แก้ไข</span>
                         </button>
                         <button class="button mx-2 is-rounded is-normal is-danger" @click="prepareRemove(item.value)">
                             <span class="icon">
                                 <i class="fas fa-trash"></i>
                             </span>
-                            <span>เปลี่ยน</span>
+                        </button>
+                    </td>
+                </tr>
+                <tr v-if="statusActive == false" v-for="(item, index) in relationFiles" :key="item.value"
+                    class="has-text-centered">
+                    <td>{{ index + 1 }}</td>
+                    <!-- <td>{{ item.value }}</td> -->
+                    <td>{{ item.label }}</td>
+                    <td>
+                        <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
+                            <span class="icon">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                        </button>
+                        <button class="button mx-2 is-rounded is-normal is-link" @click="prepareRemove(item.value)">
+                            <span class="icon">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            <!-- <span>ใช้งาน</span> -->
                         </button>
                     </td>
                 </tr>
@@ -119,6 +138,7 @@
                     <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
                 </tr>
             </tbody>
+            <LoadingSpinner :isLoading="page_loading" fontSize="22px" v-else />
 
         </table>
     </div>
@@ -129,8 +149,12 @@ import axios from 'axios';
 import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { getOneRelation } from '@/api/apiManageInformation';
 import { fetchRelationActive } from '@/api/apiHeir';
+import LoadingSpinner from '../LoadingSpinner.vue';
 
 export default {
+    components: {
+        LoadingSpinner
+    },
     data() {
         return {
             statusActive: true, // 1 false = 0
@@ -143,7 +167,8 @@ export default {
             loadingEdit: false,
             loadingRemove: false,
             new_Relation: '',
-            deleteItem: null
+            deleteItem: null,
+            page_loading: true
         };
     },
     methods: {
@@ -172,13 +197,13 @@ export default {
             const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.put(`http://localhost:3000/manage_relation/active/${item}`, 
-                    {id: active}
+                const response = await axios.put(`http://localhost:3000/manage_relation/active/${item}`,
+                    { id: active }
                 );
-                await showSuccessAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
                     this.relationFiles = [];
                     this.relationFiles = await fetchRelationActive(active)
+                    await showSuccessAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
                 }
             } catch (error) {
                 await showErrorAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
@@ -258,8 +283,7 @@ export default {
             try {
                 // Await the asynchronous function call
                 const ko = await fetchRelationActive(active);
-                console.log('ko:', ko[0])
-                this.relationFiles = []
+                // console.log('ko:', ko[0])
                 this.relationFiles = [...ko]
             } catch (error) {
                 // Ensure showErrorAlert is an asynchronous function returning a Promise
@@ -278,6 +302,10 @@ export default {
             this.relationFiles = await fetchRelationActive('1');
         } catch (error) {
 
+        }finally{
+            setTimeout(() => {
+                this.page_loading = false;
+            }, 500);
         }
     }
 }
@@ -288,7 +316,12 @@ export default {
     background-color: #C04000;
 }
 
-.btn-active-using{
+.btn-active-using {
     min-width: 100px;
+    margin-right: 5px;
+}
+
+.button {
+    border-radius: 5px;
 }
 </style>

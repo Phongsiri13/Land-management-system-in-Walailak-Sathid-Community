@@ -243,10 +243,7 @@
 
             <!-- Submit Button -->
             <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3" :disabled="btnLoad">
-              <span class="icon">
-                <i class="fas fa-check"></i>
-              </span>
-              <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'ส่งข้อมูล' }}</span>
+              <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'บันทึก' }}</span>
             </button>
           </div>
         </form>

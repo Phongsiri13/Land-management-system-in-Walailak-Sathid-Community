@@ -1,20 +1,19 @@
 <template>
     <tr>
         <td>{{ index }}</td>
-        <td>{{ ct.ID_CARD }}</td>
+        <td>{{ format_id_card(ct.ID_CARD) }}</td>
         <td>{{ ct.soi }}</td>
-        <td>{{ ct.first_name + ' ' + ct.last_name }}</td>
+        <td>{{ ct.prefix_name + ct.first_name + ' ' + ct.last_name }}</td>
         <td>{{ formatPhoneNumber(ct.phone_number) || '-' }}</td>
         <td>
             {{ ct.house_number + ' หมู่ที่ ' + ct.village_number + ' ต.'+ ct.district }}
         </td>
         <td>
             <div class="button-group">
-                <button class="button is-rounded is-normal is-primary" @click="$emit('view-detail', ct.id_land)">
+                <button class="button is-primary" @click="$emit('view-detail', ct.id_land)">
                     <span class="icon">
                         <i class="fas fa-eye"></i>
                     </span>
-                    <!-- <span>ดู</span> -->
                 </button>
             </div>
         </td>
@@ -22,6 +21,8 @@
 </template>
 
 <script>
+import { formatIDCARD } from '@/utils/commonFunc';
+
 export default {
     props: {
         ct: Object,
@@ -35,7 +36,23 @@ export default {
             if (!phoneNumber) return '';
             const phoneStr = String(phoneNumber); // Ensure it's a string
             return phoneStr.slice(0, 3) + '-' + phoneStr.slice(3, 6) + '-' + phoneStr.slice(6);
+        },
+        format_id_card(id_card){
+            return formatIDCARD(id_card)
         }
     }
 };
+
 </script>
+
+<style scoped>
+.button-group {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    align-items: center; /* Centers content vertically */
+}
+
+.button{
+    border-radius: 5px;
+}
+</style>

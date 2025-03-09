@@ -9,8 +9,8 @@
             <div class="columns pt-1">
               <div class="column is-full">
                 <div class="field">
-                  <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                    คำนำหน้าชื่อ</label>
+                  <label class="label is-size-5">
+                    คำนำหน้าชื่อ <strong class="has-text-danger">*</strong></label>
                   <div class="control">
                     <div class="select is-fullwidth">
                       <select v-model="formHeirData.prefix" @change="validateField('prefix')" class="is-size-5">
@@ -31,8 +31,8 @@
             <div class="columns pt-1">
               <div class="column is-full">
                 <div class="field">
-                  <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                    ชื่อจริง</label>
+                  <label class="label is-size-5">
+                    ชื่อจริง <strong class="has-text-danger">*</strong></label>
                   <div class="control">
                     <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
                       v-model="formHeirData.heir_fname" type="text" placeholder="กรุณากรอกชื่อจริงทายาท" />
@@ -45,8 +45,8 @@
             <div class="columns pt-1">
               <div class="column is-full">
                 <div class="field">
-                  <label class="label is-size-5"><strong class="has-text-danger">*</strong>
-                    นามสกุล</label>
+                  <label class="label is-size-5">
+                    นามสกุล <strong class="has-text-danger">*</strong></label>
                   <div class="control">
                     <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
                       v-model="formHeirData.heir_lname" type="text" placeholder="กรุณากรอกนามสกุลทายาท" />
@@ -59,12 +59,9 @@
             <!-- submit -->
             <div class="field is-grouped is-grouped-centered mt-4">
               <!-- Submit Button -->
-              <button type="submit" class="button is-success is-medium is-size-5 is-rounded px-5 ml-3"
+              <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3"
                 :disabled="btnLoad">
-                <span class="icon">
-                  <i class="fas fa-check"></i>
-                </span>
-                <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'ส่งข้อมูล' }}</span>
+                <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'บันทึก' }}</span>
               </button>
             </div>
 
@@ -144,14 +141,14 @@ export default {
       console.log("Heir-length:", this.formHeirData.heir_fname.length)
 
       // Compare form data with old data
-      const hasChanges = this.compareData(this.formHeirData, this.oldFormHeirData);
+      // const hasChanges = this.compareData(this.formHeirData, this.oldFormHeirData);
 
-      if (!hasChanges) {
-        await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
-        this.btnLoad = false;
-        store.status_path_change = false;
-        return; // No changes to submit
-      }
+      // if (!hasChanges) {
+      //   await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
+      //   this.btnLoad = false;
+      //   store.status_path_change = false;
+      //   return; // No changes to submit
+      // }
       // return;
       const form_data = {
         // relation_select: this.
@@ -170,6 +167,8 @@ export default {
           return
         }
       } catch (error) {
+        this.btnLoad = false;
+        store.status_path_change = false;
         throw new Error('ไม่สามารถค้นหาข้อมูลได้')
       }
       // const matchName = await checkFullnameMatchHeir(this.formHeirData.heir_fname, this.formHeirData.heir_lname)
@@ -226,6 +225,9 @@ export default {
 </script>
 
 <style scoped>
+.button{
+  border-radius: 5px;
+}
 .date-picker-container {
   display: flex;
   flex-direction: column;

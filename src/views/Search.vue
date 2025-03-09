@@ -2,23 +2,23 @@
   <div class="py-4 search-bg">
     <div v-if="results.length > 0"
       class="card column is-three-quarters-tablet is-one-third-desktop is-four-fifths-mobile"
-      style="background-color: #654321; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
-      <header class="card-header" style="background-color: #fff; border-radius: 8px;">
-        <p class="card-header-title has-text-centered"
-          style="width: 100%; color: #333; font-weight: bold; font-size: 26px;">
-          ข้อมูลที่ดิน
+      style="background-color: #333333; color: white; border-radius: 8px; padding: 16px; max-width: 600px; margin: auto;">
+      <header class="card-header" style="width: 100%; background-color: #fff; border-radius: 8px;">
+        <p class="card-header-title has-text-centered" style="color: #654321; font-weight: bold; font-size: 26px;">
+          รายละเอียดของที่ดิน
         </p>
       </header>
       <div class="card-content">
         <SearchDetail v-for="(item, index) in results" :key="index" :label="item.label" :value="item.value"
-          backgroundColor="#fff" textColor="#333" />
+          backgroundColor="#fff" textColor="#654321" />
+        <!-- lat && long -->
         <footer class="card-footer" v-if="results.length > 0 && (results[0].lat && results[0].long)">
           <a href="#" class="card-footer-item has-text-link" style="color: #a0752d;">ที่ตั้งตำแหน่ง</a>
         </footer>
       </div>
     </div>
     <div class="not-found-container" v-else>
-      <div class="not-found-content">
+      <div class="not-found-content" style="max-height: 50vh;">
         <h1 class="not-found-title">ขออภัย!</h1>
         <p class="not-found-message" v-if="errorStatus">ระบบขัดข้องชั่วคราว</p>
         <p class="not-found-message" v-else>ไม่พบแปลงที่ดินนี้ "<span class="search-query">{{ keyword }}</span>"</p>
@@ -95,6 +95,14 @@ export default {
     this.updateTitle(to.query.q);
     next();
   },
+  beforeRouteLeave(to, from, next) {
+    // Perform clean-up or action before leaving the current route
+    console.log("Leaving the search page.");
+    // Reset or perform any necessary action
+    this.keyword = ""
+    this.results = []; // Reset results or any other state
+    next();
+  },
   watch: {
     '$route.query.q'(newQuery) {
       this.keyword = newQuery || '';
@@ -105,7 +113,7 @@ export default {
       } else {
         this.search()
       }
-    },
+    },    
   },
   async mounted() {
     // Initialize keyword from the query parameter if available
@@ -122,13 +130,8 @@ export default {
 
 <style scoped>
 .search-bg {
-    background-image: url('../assets/search-bg1.jpg'); /* ใส่รูปพื้นหลัง */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 100%;
+  background-color: #c2b280;
 }
-
 
 .land-info {
   background: #fff;

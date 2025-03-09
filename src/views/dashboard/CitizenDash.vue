@@ -1,7 +1,7 @@
 <template>
     <div>
         <p class="py-1 is-size-4 is-size-6-mobile has-text-centered titleBgColor">
-            สรุปผลราษฎรในพื้นที่ชุมชนสาธิตวลัยลักษณ์
+            สรุปสถานะราษฎรในพื้นที่ชุมชนสาธิตวลัยลักษณ์
         </p>
         <div class="container my-3">
             <div class="column is-three-quarters-tablet is-full-desktop is-four-fifths-mobile">

@@ -2,7 +2,7 @@
   <div class="primary_content">
     <div class="py-5 is-flex is-justify-content-center">
       <div class="box column is-three-quarters-tablet is-three-quarters-desktop is-four-fifths-mobile">
-        <h1 class="title has-text-centered py-2">รายละเอียดที่ดิน</h1>
+        <h1 class="title has-text-centered has-text-link py-2">เพิ่มข้อมูลที่ดิน</h1>
         <form @submit.prevent="creationLand" class="px-3">
           <!-- ซอย -->
           <div class="columns">
@@ -270,6 +270,7 @@ import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea, convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
 export default {
+  // นำเข้า component
   components: {
     DisplayError
   },
@@ -374,11 +375,11 @@ export default {
     // submit
     async creationLand() {
       // ตรวจสอบข้อมูลที่กรอก
-      // const isValid = await this.validateForm();
-      // if (!isValid) {
-      //   console.log('valid:', isValid)
-      //   return; // หยุดการทำงานหากฟอร์มไม่ถูกต้อง
-      // }
+      const isValid = await this.validateForm();
+      if (!isValid) {
+        await showWarningAlert('การเพิ่มข้อมูลที่ดิน', 'กรุณากรอกข้อมูลให้ถูกต้อง!')
+        return; // หยุดการทำงานหากฟอร์มไม่ถูกต้อง
+      }
 
       this.btnLoad = true
       store.status_path_change = true
@@ -509,9 +510,6 @@ export default {
         this.btnLoad = false
         store.status_path_change = false
       }
-
-      // return
-
     },
     resetForm() {
       // reset formLand

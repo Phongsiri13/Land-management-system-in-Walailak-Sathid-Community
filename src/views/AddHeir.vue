@@ -9,7 +9,8 @@
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5">คำนำหน้าชื่อ <strong class="has-text-danger">*</strong></label>
+                                    <label class="label is-size-5">คำนำหน้าชื่อ <strong
+                                            class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <div class="select is-fullwidth">
                                             <select v-model="formHeirData.prefix" @change="validateField('prefix')"
@@ -31,7 +32,8 @@
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5">ชื่อจริง <strong class="has-text-danger">*</strong></label>
+                                    <label class="label is-size-5">ชื่อจริง <strong
+                                            class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
                                             v-model="formHeirData.heir_fname" type="text"
@@ -45,7 +47,8 @@
                         <div class="columns pt-1">
                             <div class="column is-full">
                                 <div class="field">
-                                    <label class="label is-size-5">นามสกุล <strong class="has-text-danger">*</strong></label>
+                                    <label class="label is-size-5">นามสกุล <strong
+                                            class="has-text-danger">*</strong></label>
                                     <div class="control">
                                         <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
                                             v-model="formHeirData.heir_lname" type="text"
@@ -59,8 +62,7 @@
                         <!-- submit -->
                         <div class="field is-grouped is-grouped-centered mt-4">
                             <!-- Reset Button -->
-                            <button type="button" class="button is-medium is-size-5 px-5"
-                                @click="resetForm">
+                            <button type="button" class="button is-medium is-size-5 px-5" @click="resetForm">
                                 <span>ยกเลิก</span>
                             </button>
 
@@ -160,6 +162,8 @@ export default {
             const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
             if (matchName) {
                 await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
+                this.btnLoad = false;
+                store.status_path_change = false;
                 return
             }
 
@@ -189,7 +193,7 @@ export default {
 </script>
 
 <style scoped>
-.button{
+.button {
     border-radius: 5px;
     min-width: 120px;
 }

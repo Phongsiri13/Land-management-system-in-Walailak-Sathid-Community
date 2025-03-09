@@ -4,7 +4,7 @@
             <div class="box column is-three-quarters-tablet is-two-thirds-desktop is-full-mobile">
                 <div class="py-2 is-flex 
                 is-justify-content-space-between">
-                    <h2 class="title has-text-primary px-3 is-size-3">ข้อมูลทายาท</h2>
+                    <h2 class="title has-text-link px-3 is-size-3">ข้อมูลทายาท</h2>
                     <h2 class="has-text-weight-semibold is-size-6">
                         วันที่สร้าง: {{ ToThaiDate(new Date(formHeirData.created)) || '-' }}
                     </h2>
@@ -13,7 +13,7 @@
                 <div class="is-flex is-justify-content-flex-end">
                     <!-- Edit -->
                     <button class="button is-warning px-5 my-3 btn-menu" @click="goToEdit(formHeirData[0]?.ID_CARD)">
-                        <span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>แก้ไข</span>
                     </button>
                 </div>
@@ -42,7 +42,7 @@
                 </div>
                 <div v-else>
                     <div class="notification is-info">
-                        <h2 class="title is-4 has-text-centered">ทายาทผู้ในยังไม่มีใครเป็นราษฎร</h2>
+                        <h2 class="title is-4 has-text-centered">ทายาทผู้นี้ยังไม่มีใครเป็นราษฎร</h2>
                     </div>
                 </div>
 
@@ -51,7 +51,6 @@
         </div>
     </div>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -85,7 +84,8 @@ export default {
             console.log('person:', response.data[0])
             const originalData = response.data[0]
             if (response.data.length <= 0) {
-                await showErrorAlert('ไม่พบทายาทคนนี้');
+                await showErrorAlert('ไม่พบทายาทท่านนี้');
+                this.$router.push('/heir_data/50/1'); // กลับไปที่หน้าแรก
                 return;
             }
             // ฟิลเตอร์ข้อมูลที่ตรงกับ prefix_id ของ originalData

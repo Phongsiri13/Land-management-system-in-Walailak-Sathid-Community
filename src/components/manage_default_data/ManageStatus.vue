@@ -5,7 +5,6 @@
             <span class="icon">
                 <i class="fas fa-plus"></i>
             </span>
-            <span>เพิ่ม</span>
         </button>
 
         <!-- MODAL (Edit) -->
@@ -20,14 +19,15 @@
                     <div class="field">
                         <label class="label">ชื่อสถานะที่ดิน</label>
                         <div class="control">
-                            <input class="input" type="text" v-model="newStatus.label" />
+                            <input class="input" type="text" v-model="newStatus.label" required />
                         </div>
                     </div>
                 </section>
                 <footer class="modal-card-foot">
+                    <button class="button" @click="closeEditModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
                     <button class="button is-success" :class="{ 'is-loading': loadingEdit }"
                         @click="saveEdit">บันทึก</button>
-                    <button class="button" @click="closeEditModal">ยกเลิก</button>
                 </footer>
             </div>
         </div>
@@ -44,9 +44,10 @@
                     <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-danger" :class="{ 'is-loading': loadingRemove }"
-                        @click="confirmRemove(deleteItem)">ยืนยัน</button>
                     <button class="button" @click="closeConfirmModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
+                    <button class="button is-success" :class="{ 'is-loading': loadingRemove }"
+                        @click="confirmRemove(deleteItem)">บันทึก</button>
                 </footer>
             </div>
         </div>
@@ -68,9 +69,10 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot">
+                    <button class="button" @click="closeCreateModal">ยกเลิก</button>
+                    <div class="mx-1"></div>
                     <button class="button is-success" :class="{ 'is-loading': loadingCreate }"
                         @click="saveNewStatus">บันทึก</button>
-                    <button class="button" @click="closeCreateModal">ยกเลิก</button>
                 </footer>
             </div>
         </div>
@@ -89,69 +91,69 @@
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">ลำดับ</th>
-                    <th class="has-text-centered has-text-white" style="width: 10%;">รหัส</th>
-                    <th class="has-text-centered has-text-white" style="width: 40%;">ชื่อสถานะที่ดิน</th>
-                    <th class="has-text-centered has-text-white" style="width: 30%;"></th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
+                    <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
+                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อสถานะที่ดิน</th>
+                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="!page_loading">
                 <tr v-if="statusActive == true" v-for="(item, index) in statusFiles" :key="item.value"
                     class="has-text-centered">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.value }}</td>
+                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
                             <span class="icon">
                                 <i class="fas fa-edit"></i>
                             </span>
-                            <span>แก้ไข</span>
                         </button>
                         <button class="button mx-2 is-rounded is-normal is-danger" @click="prepareRemove(item.value)">
                             <span class="icon">
                                 <i class="fas fa-trash"></i>
                             </span>
-                            <span>เปลี่ยน</span>
                         </button>
                     </td>
                 </tr>
                 <tr v-if="statusActive == false" v-for="(item, index) in statusFiles" :key="item.value"
                     class="has-text-centered">
                     <td>{{ index + 1 }}</td>
-                    <td>{{ item.value }}</td>
+                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
                             <span class="icon">
                                 <i class="fas fa-edit"></i>
                             </span>
-                            <span>แก้ไข</span>
                         </button>
-                        <button class="button mx-2 is-rounded is-normal is-success" @click="prepareRemove(item.value)">
+                        <button class="button mx-2 is-rounded is-normal is-link" @click="prepareRemove(item.value)">
                             <span class="icon">
                                 <i class="fas fa-check-circle"></i>
                             </span>
-                            <span>ใช้งาน</span>
+                            <!-- <span>ใช้งาน</span> -->
                         </button>
                     </td>
                 </tr>
                 <tr v-if="statusFiles.length === 0">
                     <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
                 </tr>
-
             </tbody>
-
+            <LoadingSpinner :isLoading="page_loading" fontSize="22px" v-else />
         </table>
     </div>
 </template>
 <script>
 import { fetchLandStatus, fetchLandStatusActive } from '@/api/apiLand';
 import axios from 'axios';
-import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
+import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
 import { getOneStatus } from '@/api/apiManageInformation';
+import LoadingSpinner from '../LoadingSpinner.vue';
 
 export default {
+    components: {
+        LoadingSpinner
+    },
     data() {
         return {
             statusActive: true, // 1 false = 0
@@ -165,7 +167,8 @@ export default {
             loadingEdit: false,
             loadingRemove: false,
             newNameStatus: '',
-            deleteItem: null
+            deleteItem: null,
+            page_loading: true
         };
     },
     methods: {
@@ -178,7 +181,6 @@ export default {
             try {
                 // Await the asynchronous function call
                 const ko = await fetchLandStatusActive(active);
-                console.log('ko:', ko)
                 this.statusFiles = [...ko]
             } catch (error) {
                 // Ensure showErrorAlert is an asynchronous function returning a Promise
@@ -191,6 +193,7 @@ export default {
                 // Optional: Any cleanup operations can be performed here
             }
         },
+        // 
         async saveNewStatus() {
             console.log('save status')
             const active = this.statusActive ? '1' : '0';
@@ -198,12 +201,19 @@ export default {
             const createData = {
                 newNameStatus: this.newNameStatus
             }
+
+            // valid
+            if (this.newNameStatus.length == '' || this.newNameStatus == null) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'กรุณากรอกชื่อสถานะที่ดิน!');
+                return
+            }
+
             // Close the modal after saving
             this.loadingCreate = true;
             try {
                 const response = await axios.post('http://localhost:3000/manage_status_info/create', createData);
                 console.log('Response:', response.data);
-                await showSuccessAlert('เพิ่มข้อมูลสถานะ', response.data.message);
+                await showSuccessAlert('การเพิ่มข้อมูลสถานะที่ดิน', response.data.message);
                 if (response.data.success) {
                     if (active == '1') {
                         this.statusFiles = await fetchLandStatusActive('1')
@@ -212,12 +222,14 @@ export default {
                     }
                 }
             } catch (error) {
-                await showErrorAlert('เพิ่มข้อมูลสถานะ', 'ไม่สำเร็จ');
+                await showErrorAlert('การเพิ่มข้อมูลสถานะที่ดิน', 'ไม่สำเร็จ');
             } finally {
                 this.loadingCreate = false;
+                this.newNameStatus = '';
                 this.closeCreateModal();
             }
         },
+        // Remove status
         async confirmRemove(item) {
             console.log("Removing item:", item);
             this.loadingRemove = true;
@@ -237,6 +249,7 @@ export default {
                         this.statusFiles = await fetchLandStatusActive('0')
                     }
                 }
+                console.log('error')
             } catch (error) {
                 await showErrorAlert('เพิ่มข้อมูลสถานะ', 'ไม่สำเร็จ');
             } finally {
@@ -244,19 +257,24 @@ export default {
                 this.closeConfirmModal(); // Close the modal after deletion
             }
         },
+        // Edit status name
         async saveEdit() {
             console.log('edit com:', this.editData)
             console.log('edit-v:', this.newStatus.label)
             const active = this.statusActive == true ? '0' : '1';
+
+            // newStatus.label
+            if (this.newStatus.label.length == '' || this.newStatus.label == null) {
+                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'กรุณากรอกชื่อสถานะที่ดิน');
+                return
+            }
             this.loadingEdit = true;
-            setTimeout(() => {
-                this.loadingEdit = false;
-            }, 3000);
+
             try {
                 const response = await axios.put(`http://localhost:3000/manage_status_info/${this.newStatus.value}`, {
                     land_status_name: this.newStatus.label
                 });
-                await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
+                await showSuccessAlert('การอัพเดทข้อมูลสถานะ', response.data.message);
                 this.statusFiles = [];
                 if (response.data.success) {
                     if (this.statusActive) {
@@ -266,9 +284,10 @@ export default {
                     }
                 }
             } catch (error) {
-                await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
+                await showErrorAlert('การอัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
             } finally {
                 this.newStatus = { value: null, label: '' };
+                this.loadingEdit = false;
                 this.isEditModalOpen = false;
             }
             // this.closeEditModal(); // close model
@@ -318,7 +337,11 @@ export default {
             this.statusFiles = await fetchLandStatusActive('1');
             console.log("statusFile:", this.statusFiles)
         } catch (error) {
-
+            
+        }finally{
+            setTimeout(() => {
+                this.page_loading = false;
+            }, 500);
         }
     }
 }
@@ -330,5 +353,10 @@ export default {
 
 .btn-active-using {
     min-width: 100px;
+    margin-right: 5px;
+}
+
+.button {
+    border-radius: 5px;
 }
 </style>

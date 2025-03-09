@@ -25,7 +25,9 @@ export const useUserStore = defineStore('user', {
         console.log(':::', response.status)
         this.userRole = response.data.user.role // กำหนดค่า role ที่ได้รับจาก API
       } catch (error) {
+        // console.log('err:',error.status)
         this.userRole = null
+        return null
       }
     },
     async out_of_system() {

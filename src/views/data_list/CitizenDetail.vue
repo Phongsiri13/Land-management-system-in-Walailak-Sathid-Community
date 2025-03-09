@@ -4,7 +4,7 @@
             <div class="box column is-three-quarters-tablet is-two-thirds-desktop is-full-mobile">
                 <div class="py-2 is-flex 
                 is-justify-content-space-between">
-                    <h2 class="title has-text-primary px-3 is-size-3">ข้อมูลราษฎร</h2>
+                    <h2 class="title has-text-link px-3 is-size-3">ข้อมูลราษฎร</h2>
                     <h2 class="has-text-weight-semibold is-size-6">
                         วันที่สร้าง: {{ ToThaiDate(new Date(formPeopleData.created)) || '-' }}
                     </h2>
@@ -13,7 +13,7 @@
                 <div class="is-flex is-justify-content-flex-end" v-if="userRole === roles[3].role_id">
                     <!-- Edit -->
                     <button class="button is-warning btn-menu" @click="goToEdit(formPeopleData[0]?.ID_CARD)">
-                        <span class="icon"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>แก้ไข</span>
                     </button>
 
@@ -86,26 +86,41 @@
                 <!-- ข้อมูลที่ถือครองที่ดิน  -->
                 <h2 class="has-text-dark my-3 px-3 is-size-4">ถือครองที่ดิน</h2>
                 <div v-if="formPeopleLandHold.length > 0">
-                    <div v-for="(ct, index) in formPeopleLandHold" :key="index" class="box">
-                        <span @click="goToLandView(ct.id_land)"
-                            class="view-land-data has-text-weight-bold is-size-6 p-1 mr-3"><i
-                                class="fas fa-eye has-text-link"></i></span>
-                        <span class="has-text-weight-bold is-size-6">ลำดับ: {{ ++index }}, </span>
-                        <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.tf_number }}, </span>
-                        <span class="has-text-weight-bold is-size-6"> จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0
-                        }} งาน {{ ct.square_wa || 0 }} ตารางวา</span>
+                    <div v-for="(ct, index) in formPeopleLandHold" :key="index"
+                        class="box is-flex is-align-items-center">
+                        <button class="button is-primary mr-2" @click="goToLandView(ct.id_land)">
+                            <span class="icon">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </button>
+                        <div>
+                            <span class="has-text-weight-bold is-size-6">ลำดับ: {{ index + 1 }}, </span>
+                            <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.tf_number }}, </span>
+                            <span class="has-text-weight-bold is-size-6">
+                                จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0 }} งาน {{ ct.square_wa || 0 }}
+                                ตารางวา
+                            </span>
+                        </div>
                     </div>
+
                 </div>
                 <div v-else>
                     <div class="notification is-info">
-                        <h2 class="title is-size-5 has-text-centered">ยังไม่ได้ครอบครองที่ดิน</h2>
+                        <h2 class="title is-size-5 has-text-centered">ยังไม่ได้ถือกรรมสิทธิ์ที่ดิน</h2>
                     </div>
                 </div>
 
                 <!-- heir -->
                 <!-- ข้อมูลทายาท -->
                 <hr>
-                <h2 class="has-text-dark my-3 px-3 is-size-4">ทายาทที่มีความสัมพันธ์กับราษฎรผู้นี้</h2>
+                <div class="is-flex is-justify-content-space-between is-align-content-center mb-1">
+                    <h2 class="has-text-dark my-3 px-3 is-size-4">ทายาทของราษฎรผู้นี้</h2>
+                    <button class="button is-success mb-3" style="width: 50px;" @click="goToConnectHeir">
+                        <span class="icon">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                    </button>
+                </div>
                 <div v-if="formHeirData.length > 0">
                     <div v-for="(heir, index) in formHeirData" :key="heir.heir_id" class="box">
                         <p class="has-text-weight-bold">ทายาทคนที่: {{ ++index }}</p>
@@ -117,7 +132,7 @@
                 </div>
                 <div v-else>
                     <div class="notification is-info">
-                        <h2 class="title is-size-5 has-text-centered">ราษฎรคนนี้ยังไม่มีใครเป็นทายาท</h2>
+                        <h2 class="title is-size-5 has-text-centered">ยังไม่มีทายาทผู้สืบทอด</h2>
                     </div>
                 </div>
             </div>
@@ -131,10 +146,7 @@ import axios from 'axios';
 import { convertToThaiDate, formatIDCARD, formatPhoneNumber } from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
-// convertSquareWaToRaiNganWa
-import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 import { useUserStore } from '@/stores/useUserStore';
-import { store } from '@/store';
 
 export default {
     data() {
@@ -153,6 +165,19 @@ export default {
         }
     },
     methods: {
+        goToConnectHeir() {
+            // move to
+            console.log(
+                this.formPeopleData.firstName,
+                this.formPeopleData.lastName
+            )
+            // props: true,
+            this.$router.push({
+                name: 'ConnectHeirRelation',
+                query: { firstName: this.formPeopleData.firstName, 
+                    lastName: this.formPeopleData.lastName }
+            });
+        },
         formatPhoneNumber(format) {
             return formatPhoneNumber(format)
         },
@@ -235,7 +260,7 @@ export default {
 }
 
 .view-land-data:hover {
-    background-color: #333;
+    /* background-color: #333; */
     border-radius: 5px;
 }
 </style>
