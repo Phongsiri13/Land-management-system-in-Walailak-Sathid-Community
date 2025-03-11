@@ -3,7 +3,7 @@
         <div>
             <div class="login-container box">
                 <div @click="goHome" class="go-back has-background-primary is-inline-block p-1">
-                    <p>
+                    <p class="p-1">
                         <i class="fas fa-home"></i>
                         หน้าแรก
                     </p>

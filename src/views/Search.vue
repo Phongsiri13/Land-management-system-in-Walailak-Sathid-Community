@@ -130,8 +130,23 @@ export default {
 
 <style scoped>
 .search-bg {
-  background-color: #c2b280;
+  position: relative;
+  background: #c2b280 url('/src/assets/search-bg1.jpg') no-repeat center;
+  background-size: cover;
 }
+
+.search-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.1); /* สีขาวโปร่งแสง */
+  pointer-events: none; /* ไม่ให้มีผลต่อการคลิก */
+}
+
+
 
 .land-info {
   background: #fff;

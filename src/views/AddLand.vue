@@ -46,10 +46,10 @@
           <div class="columns">
             <div class="column is-full">
               <div class="field">
-                <label class="label">ชื่อจริง-นามสกุล <strong class="has-text-danger">*</strong></label>
+                <label class="label">ชื่อ - นามสกุล <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="full_name" type="text"
-                    :class="{ 'is-danger': errors.full_name }" placeholder="กรุณากรอกชื่อจริง - นามสกุล"
+                    :class="{ 'is-danger': errors.full_name }" placeholder="กรุณากรอกชื่อ - นามสกุล"
                     @input="validateField('full_name')" />
                   <DisplayError v-if="errors.full_name" :err_text="errors.full_name" />
                 </div>
@@ -77,7 +77,7 @@
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.spk_area }"
                     @input="validateField('spk_area')" v-model="spk_area" type="text"
-                    placeholder="กรุณากรอกกระวาง ส.ป.ก" />
+                    placeholder="กรุณากรอกระวาง ส.ป.ก" />
                   <DisplayError v-if="errors.spk_area" :err_text="errors.spk_area" />
                 </div>
               </div>
@@ -114,7 +114,7 @@
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.address_house }"
                     @input="validateField('address_house')" v-model="address_house" type="text"
-                    placeholder="กรุณากรอกกอยู่บ้านเลขที่" />
+                    placeholder="กรุณากรอกบ้านเลขที่" />
                   <DisplayError v-if="errors.address_house" :err_text="errors.address_house" />
                 </div>
               </div>
@@ -208,7 +208,7 @@
                 <div class="control">
                   <input class="input is-normal" @input="validateField('lat')" step="0.000000001"
                     :class="{ 'is-danger': errors.lat }" v-model="formLand.lat" type="number"
-                    placeholder="กรุณากรอกรัตติจูด" />
+                    placeholder="กรุณากรอกละติจูด" />
                   <DisplayError v-if="errors.lat" :err_text="errors.lat" />
                 </div>
               </div>
@@ -220,7 +220,7 @@
                 <div class="control">
                   <input class="input is-normal" @input="validateField('long')" step="0.000000001"
                     :class="{ 'is-danger': errors.long }" v-model="formLand.long" type="number"
-                    placeholder="กรุณากรอกลองติจูด" />
+                    placeholder="กรุณากรอกลองจิจูด" />
                   <DisplayError v-if="errors.long" :err_text="errors.long" />
                 </div>
               </div>

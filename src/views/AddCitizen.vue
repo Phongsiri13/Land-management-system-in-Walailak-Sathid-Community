@@ -315,16 +315,6 @@ export default {
     getValidationSchema() {
       return yup.object().shape({ ...CitizenValidSchema });
     },
-    // Validate a single field
-    async validateField(field) {
-      try {
-        const schema = this.getValidationSchema();
-        await schema.validateAt(field, this.formPeopleData);
-        this.errors[field] = ""; // Clear error if valid
-      } catch (err) {
-        this.errors[field] = err.message; // Set error message
-      }
-    },
     // เปลี่ยนอำเภอและตำบล
     async submitCitizen() {
       // ตรวจสอบข้อมูลที่กรอก

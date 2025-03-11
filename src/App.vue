@@ -12,6 +12,8 @@
     <!-- <PeopleBar v-else /> -->
     <PeopleBar v-if="!isLoginPage && userRole === null" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
 
+    <AdminSidebar v-if="userRole === roles[0].role_id" /> <!-- ซ่อน PeopleBar เมื่ออยู่หน้า /login -->
+
     <!-- content -->
     <div>
       <router-view />
@@ -39,11 +41,13 @@ import { useUserStore } from '@/stores/useUserStore';
 
 import Sidebar from './components/SidebarRole.vue';
 import PeopleBar from './components/PeopleBar.vue';
+import AdminSidebar from './components/AdminSidebar.vue';
 
 export default {
   components: {
     Sidebar,
-    PeopleBar
+    PeopleBar,
+    AdminSidebar
   },
   data() {
     return {

@@ -33,16 +33,20 @@ import CitizenDash from '@/views/dashboard/CitizenDash.vue'
 import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from './url_list'
 
 import CitizenDisplay from '@/views/data_list/CitizenDisplay.vue'
+
+// Handle Roles
 import ManageLandUsage from '@/components/manage_default_data/ManageLandUsage.vue'
 import ManageStatus from '@/components/manage_default_data/ManageStatus.vue'
 import ManageRelation from '@/components/manage_default_data/ManageRelation.vue'
+import ManageRole from '@/components/manage_default_data/ManageRole.vue'
 
 import LandEdit from '@/views/data_edit/LandEdit.vue'
 import HeirEdit from '@/views/data_edit/HeirEdit.vue'
 import HistoryCitizen from '@/views/HistoryCitizen.vue'
 
 const officer = roles[3]
-const admin = roles[1]
+const Land_reform_officer = roles[1]
+const admin = roles[0]
 
 // history: createWebHistory(import.meta.env.BASE_URL),
 const router = createRouter({
@@ -53,7 +57,7 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        title: 'Home'
+        title: 'หน้าหลัก'
       }
     },
     {
@@ -127,7 +131,7 @@ const router = createRouter({
       component: HistoryCitizen,
       props: true,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | '
       }
     },
@@ -145,7 +149,7 @@ const router = createRouter({
       component: CitizenDisplay,
       props: true,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | citizen'
       }
     },
@@ -155,7 +159,7 @@ const router = createRouter({
       component: DisplayPeople,
       props: true,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | ประวัติการแก้ไขที่ดิน'
       }
     },
@@ -164,7 +168,7 @@ const router = createRouter({
       name: 'HistoryLand',
       component: HistoryLand,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | ประวัติการแก้ไขที่ดิน'
       }
     },
@@ -178,31 +182,31 @@ const router = createRouter({
       component: HistoryLand,
       props: true,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | '
       }
     },
     {
       path: '/heir_data',
       redirect: '/heir_data/50/1',
-      component: HeirDisplay,
-      meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | '
-      }
+      component: HeirDisplay
     },
     {
       path: '/heir_data/:limit(50)/:page',
       name: 'HeirDisplay',
       component: HeirDisplay,
-      props: true
+      props: true,
+      meta: {
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
+        title: 'Admin | '
+      }
     },
     {
       path: '/complete_view/:id', // Child route for detail view
       name: 'PersonDetail',
       component: PersonDetail,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | '
       }
     },
@@ -220,7 +224,7 @@ const router = createRouter({
       name: 'CitizenDetail',
       component: CitizenDetail,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | '
       }
     },
@@ -256,7 +260,7 @@ const router = createRouter({
       name: 'LandLiveDocument',
       component: LandLiveDocument,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'หน้าไฟล์ภาพที่อยู่อาศัย'
       }
     },
@@ -265,7 +269,7 @@ const router = createRouter({
       name: 'LandFile',
       component: LandFile,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'หน้าไฟล์ที่ดิน'
       }
     },
@@ -274,7 +278,7 @@ const router = createRouter({
       name: 'CitizenFiles',
       component: CitizenFiles,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | '
       }
     },
@@ -311,6 +315,16 @@ const router = createRouter({
       ]
     },
     {
+      path: '/manage_role',
+      name: 'ManageRole',
+      component: ManageRole,
+      meta: {
+        requiredRole: roles[0].role_id,
+        name: 'ManageDefaultData',
+        title: 'ข้อมูลพื้นฐาน | จัดการสิทธิ์ของผู้ใช้'
+      }
+    },
+    {
       path: '/uq',
       name: 'UserSearch',
       component: HomeView,
@@ -323,7 +337,7 @@ const router = createRouter({
       name: 'TableDashboard',
       component: TableDash,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | Home'
       }
     },
@@ -332,31 +346,28 @@ const router = createRouter({
       name: 'CitizenDash',
       component: CitizenDash,
       meta: {
-        requiredRole: [officer.role_id, admin.role_id],
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
         title: 'Admin | Home'
       }
     },
     {
       path: '/login',
       name: 'Login',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/BulmaTesting.vue')
       component: Login,
       meta: {
         title: 'Login'
       }
     },
     {
-      path: '/admin',
+      path: '/user_report',
       name: 'AdminPage',
       component: AdminPage,
       meta: {
-        requiredRole: roles[0].role_id,
-        title: 'Admin | Home'
+        requiredRole: admin.role_id,
+        title: 'จัดการบัญชีผู้ใช้'
       }
     },
+    // not found pages
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
