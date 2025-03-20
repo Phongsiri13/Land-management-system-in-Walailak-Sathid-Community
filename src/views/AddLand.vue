@@ -129,7 +129,7 @@
                       @change="updateVillage">
                       <option value="" selected>เลือกตำบล</option>
                       <option value="หัวตะพาน">หัวตะพาน</option>
-                      <option value="ไทรบุรี">ไทรบุรี</option>
+                      <option value="ไทยบุรี">ไทยบุรี</option>
                     </select>
                   </div>
                   <DisplayError v-if="errors.district" :err_text="errors.district" />
@@ -179,9 +179,9 @@
               <div class="field">
                 <label class="label">จำนวนงาน</label>
                 <div class="control">
-                  <input class="input is-normal" v-model="formLand.ngan" @input="validateField('ngan')"
-                    :class="{ 'is-danger': errors.ngan }" step="0.01" max="4" type="number"
-                    placeholder="กรุณากรอกจำนวนงาน" />
+                  <input :disabled="formLand.rai === 5" class="input is-normal" v-model="formLand.ngan"
+                    @input="validateField('ngan')" :class="{ 'is-danger': errors.ngan }" step="0.01" max="4"
+                    type="number" placeholder="กรุณากรอกจำนวนงาน" />
                   <DisplayError v-if="errors.ngan" :err_text="errors.ngan" />
                 </div>
               </div>
@@ -191,8 +191,8 @@
               <div class="field">
                 <label class="label">จำนวนตารางวา</label>
                 <div class="control">
-                  <input class="input is-normal" @input="validateField('square_wa')" step="0.01"
-                    :class="{ 'is-danger': errors.square_wa }" v-model="formLand.square_wa" type="number"
+                  <input :disabled="formLand.rai === 5" class="input is-normal" @input="validateField('square_wa')"
+                    step="0.01" :class="{ 'is-danger': errors.square_wa }" v-model="formLand.square_wa" type="number"
                     placeholder="กรุณากรอกจำนวนตารางวา" max="100" />
                   <DisplayError v-if="errors.square_wa" :err_text="errors.square_wa" />
                 </div>
@@ -259,7 +259,6 @@
 </template>
 
 <script>
-import { store } from '@/store';
 import * as yup from "yup";
 import { getRai, updateVillageOptions } from '@/utils/addressFunc';
 import axios from 'axios';
@@ -349,12 +348,12 @@ export default {
   },
   methods: {
     async updateVillage() {
-      // console.log('village:', this.formLand.district)
+      console.log('village:', this.formLand.district)
       // this.village = updateVillageOptions(this.formLand.district)
       // // console.log('result-village:', this.village)
       // this.formLand.village = ""
 
-      if (this.formLand.district === 'หัวตะพาน' || this.formLand.district === 'ไทรบุรี') {
+      if (this.formLand.district === 'หัวตะพาน' || this.formLand.district === 'ไทยบุรี') {
         this.village = updateVillageOptions(this.formLand.district)
       } else {
         this.village = [];
@@ -382,7 +381,6 @@ export default {
       }
 
       this.btnLoad = true
-      store.status_path_change = true
 
       console.log(":::", this.formLand.ngan)
       const cal_result = calculateLandArea(
@@ -408,7 +406,6 @@ export default {
         return;
       } finally {
         this.btnLoad = false
-        store.status_path_change = false
       }
       if (cal_result === false) {
         console.error("จำนวนไร่ต้องไม่เกิน 5");
@@ -419,12 +416,12 @@ export default {
       }
       // citizen holding
       try {
+        const max_rai = 2000; // ตารางวา
         let totalArea = 0
         const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${this.formLand.id_card}`);
         console.log('res-hold:', resLandHold.data);
 
-        if (resLandHold.data.length > 0) {
-          // ฟังก์ชันคำนวณพื้นที่รวม
+        if (resLandHold.data.length == 1) {
           totalArea = resLandHold.data.reduce((sum, land) => {
             const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
             const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
@@ -432,25 +429,43 @@ export default {
             return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
           }, 0);
 
-          console.log("Total Area in Square Wa:", totalArea); // แสดงค่าทั้งหมดในตารางวา
-        }
-        const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
-        console.log('res-prepare-adding:', totalAreaPrepareAdding)
-        const max_rai = 2000; // ตารางวา
-        // land exist
-        if (totalArea > max_rai) {
-          await showErrorAlert('จำนวนไร่เกินกำหนด!', 'จำนวนที่ดินที่เพิ่มมาก่อนหน้านี้รวมกันเกิน 5 ไร่แล้ว!');
-          return
-        }
-        // // new land checks total rai
-        if (totalAreaPrepareAdding > max_rai) {
-          const remainingLand = max_rai - parseInt(totalArea);
-          const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
-          await showWarningAlert(
-            'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
-            `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
-          );
-          return
+          const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
+          console.log('res-prepare-adding:', totalAreaPrepareAdding)
+          // new land checks total rai
+          if (totalAreaPrepareAdding > max_rai) {
+            const remainingLand = max_rai - parseInt(totalArea);
+            const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
+            await showWarningAlert(
+              'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
+              `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
+            );
+            return
+          }
+
+        } else if (resLandHold.data.length > 1) {
+          // ต้องจองที่ดินก่อนทั้งหมด ที่ไม่ใช่ตัวแก้ ก่อนที่จะทำการแก้ไข
+          // จองพื้นที่
+          totalArea = resLandHold.data.reduce((sum, land) => {
+            const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+            const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+            const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
+            return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
+          }, 0);
+          console.log('totalArea:', totalArea)
+          // จำนวนที่สามารถใช้พื้นที่ได้
+          const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
+          // console.log('res-prepare-adding:', totalAreaPrepareAdding)
+          // new land checks total rai
+          if (totalAreaPrepareAdding > max_rai) {
+            console.log('rai-plus:', max_rai - totalArea);
+            const remainingLand = Math.abs(max_rai - totalArea);
+            const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
+            await showWarningAlert(
+              'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
+              `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
+            );
+            return
+          }
         }
 
         const form_data = {
@@ -495,7 +510,6 @@ export default {
           }
         } finally {
           this.btnLoad = false
-          store.status_path_change = false
         }
       } catch (error) {
         console.error('Error fetching land holding data:', error);
@@ -508,7 +522,6 @@ export default {
         return; // หยุดทำงานต่อถ้า API ล้มเหลว
       } finally {
         this.btnLoad = false
-        store.status_path_change = false
       }
     },
     resetForm() {
@@ -572,14 +585,29 @@ export default {
         this.formLand.number = cleanedValue; // อัปเดตค่าใหม่ที่มีเฉพาะตัวเลข
       }
     },
+    'formLand.rai'(newValue) {
+      if (typeof newValue === 'number' && newValue >= 5) {
+        this.formLand.rai = 5;
+        this.formLand.ngan = 0;
+        this.formLand.square_wa = 0;
+      }
+    },
     'formLand.square_wa'(newValue) {
-      if (typeof newValue === 'number' && newValue > 100) {
-        this.formLand.square_wa = 99;
+      if (typeof newValue === 'number' && newValue >= 100) {
+        this.formLand.square_wa = 0;
+
+        if (this.formLand.ngan === 3) {
+          this.formLand.rai = (this.formLand.rai || 0) + 1;
+          this.formLand.ngan = 0;
+        } else {
+          this.formLand.ngan = (this.formLand.ngan || 0) + 1;
+        }
       }
     },
     'formLand.ngan'(newValue) {
       if (typeof newValue === 'number' && newValue > 3) {
-        this.formLand.ngan = 3;
+        this.formLand.ngan = 0;
+        this.formLand.rai = (this.formLand.rai || 0) + 1;
       }
     },
     'formLand.long'(newValue) {

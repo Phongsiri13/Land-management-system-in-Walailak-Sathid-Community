@@ -19,7 +19,7 @@
                 <table>
                   <thead>
                     <tr>
-                      <sortable-table-header tag="th" header-text="ID" sort-key="id" :current-sort-column="sortColumn"
+                      <sortable-table-header tag="th" header-text="ลำดับ" sort-key="id" :current-sort-column="sortColumn"
                         :current-sort-order="sortOrder" @sort-changed="handleSortChange" />
                       <sortable-table-header tag="th" header-text="บัญชี" sort-key="username"
                         :current-sort-column="sortColumn" :current-sort-order="sortOrder"
@@ -56,10 +56,10 @@
                       <td>{{ admin.role_name }}</td>
                       <td>
                         <span class="icon" v-if="admin.user_actived === '1'">
-                          <i class="fas fa-circle has-text-success"></i> y
+                          <i class="fas fa-circle has-text-success"></i>
                         </span>
                         <span class="icon" v-else>
-                          <i class="fas fa-circle has-text-danger"></i> n
+                          <i class="fas fa-circle has-text-danger"></i>
                         </span>
                       </td>
                       <td>
@@ -358,7 +358,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .button {

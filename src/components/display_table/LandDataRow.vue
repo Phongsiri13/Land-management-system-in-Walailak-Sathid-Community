@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td>{{ index }}</td>
-        <td>{{ land.number }}</td>
+        <td>{{ land.tf_number }}</td>
         <td>{{ land.current_soi }}</td>
         <td>{{ land.fullname }}</td>
         <td>{{ formatPhoneNumber(land.phone_number) || '-' }}</td>

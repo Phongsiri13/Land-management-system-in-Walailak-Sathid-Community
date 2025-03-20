@@ -10,7 +10,7 @@
                     </h2>
                 </div>
 
-                <div class="is-flex is-justify-content-flex-end">
+                <div class="is-flex is-justify-content-flex-end " v-if="userRole === roles[3].role_id">
                     <!-- Edit -->
                     <button class="button is-warning px-5 my-3 btn-menu" @click="goToEdit(formHeirData[0]?.ID_CARD)">
                         <span class="icon"><i class="fas fa-edit"></i></span>
@@ -35,8 +35,9 @@
                 <div v-if="peopleList.length > 0">
                     <div v-for="(person, index) in peopleList" :key="index" class="box">
                         <p class="has-text-weight-bold">ราษฎรคนที่: {{ ++index }}</p>
-                        <p class="has-text-weight-bold">ความสัมพันธ์: 
-                            {{ formHeirData.firstName || '-' }} {{ formHeirData.lastName || '-' }} เป็น {{ person.label }} ของราษฎรผู้นี้</p>
+                        <p class="has-text-weight-bold">ความสัมพันธ์:
+                            {{ formHeirData.firstName || '-' }} {{ formHeirData.lastName || '-' }} เป็น {{ person.label
+                            }} ของราษฎรผู้นี้</p>
                         <p class="title is-4">{{ person.citizen_first_name }} {{ person.citizen_last_name }}</p>
                     </div>
                 </div>
@@ -53,17 +54,27 @@
 </template>
 
 <script>
+import roles from '@/role_config';
 import axios from 'axios';
 import { convertToThaiDate } from '@/utils/commonFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
+import { useUserStore } from '@/stores/useUserStore';
 
 export default {
     data() {
         return {
+            roles,
             formHeirData: [],
             peopleList: [],
             prefixName: ''
+        }   
+    },
+    computed: {
+        userRole() {
+            // Access the userRole from your store
+            const userStore = useUserStore();
+            return userStore.userRole;
         }
     },
     methods: {
@@ -120,7 +131,7 @@ export default {
 </script>
 
 <style scoped>
-    .button{
-        border-radius: 5px;
-    }
+.button {
+    border-radius: 5px;
+}
 </style>

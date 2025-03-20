@@ -8,7 +8,7 @@
           <div class="columns">
             <div class="column">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> ที่ตั้งของที่ดิน</label>
+                <label class="label">ซอย <strong class="has-text-danger">*</strong> </label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select v-model="formLand.selectedSoi" @change="validateField('selectedSoi')">
@@ -26,7 +26,7 @@
             <!-- เลือกซอยสถานะที่ดิน -->
             <div class="column">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> สถานะที่ดิน</label>
+                <label class="label">สถานะที่ดิน <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select v-model="formLand.selectedStatus" :class="{ 'is-danger': errors.selectedStatus }"
@@ -46,7 +46,7 @@
           <div class="columns">
             <div class="column is-full">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง-นามสกุล</label>
+                <label class="label">ชื่อจริง-นามสกุล <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="formLand.full_name" type="text"
                     placeholder="กรุณากรอกชื่อจริง - นามสกุล" disabled />
@@ -60,11 +60,11 @@
           <div class="columns">
             <div class="column is-3">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> แปลงเลขที่</label>
+                <label class="label">แปลงเลขที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" v-model="formLand.tf_number" type="text"
                     @input="validateField('tf_number')" :class="{ 'is-danger': errors.tf_number }"
-                    placeholder="กรุณากรอกแปลงเลขที่" disabled />
+                    placeholder="กรุณากรอกแปลงเลขที่" />
                   <!-- <DisplayError v-if="errors.tf_number" :err_text="errors.tf_number" /> -->
                 </div>
               </div>
@@ -72,11 +72,11 @@
 
             <div class="column is-3">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> ระวาง ส.ป.ก ที่</label>
+                <label class="label">ระวาง ส.ป.ก ที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.spk_area }"
                     @input="validateField('spk_area')" v-model="formLand.spk_area" type="text"
-                    placeholder="กรุณากรอกกระวาง ส.ป.ก" disabled />
+                    placeholder="กรุณากรอกกระวาง ส.ป.ก" />
                   <DisplayError v-if="errors.spk_area" :err_text="errors.spk_area" />
                 </div>
               </div>
@@ -84,11 +84,11 @@
 
             <div class="column is-3">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> เลขที่</label>
+                <label class="label">เลขที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.number }"
                     @input="validateField('number')" v-model="formLand.number" type="text" placeholder="กรุณากรอกเลขที่"
-                    disabled />
+                     />
                   <DisplayError v-if="errors.number" :err_text="errors.number" />
                 </div>
               </div>
@@ -96,7 +96,7 @@
 
             <div class="column is-3">
               <div class="field">
-                <label class="label"><strong class="has-text-danger">*</strong> เล่ม</label>
+                <label class="label">เล่ม <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.volume }"
                     @input="validateField('volume')" v-model="formLand.volume" type="text"
@@ -111,7 +111,7 @@
           <div class="columns">
             <div class="column is-4">
               <div class="field">
-                <label class="label">อยู่บ้านเลขที่</label>
+                <label class="label">บ้านเลขที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal" :class="{ 'is-danger': errors.address_house }"
                     @input="validateField('address_house')" v-model="formLand.address_house" type="text"
@@ -123,30 +123,33 @@
 
             <div class="column is-4">
               <div class="field">
-                <label class="label">ตำบล</label>
+                <label class="label">ตำบล <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="this.formLand.district" @change="updateVillage">
+                    <select v-model="formLand.district" :class="{ 'is-danger': errors.district }"
+                      @change="updateVillage">
                       <option value="" selected>เลือกตำบล</option>
                       <option value="หัวตะพาน">หัวตะพาน</option>
-                      <option value="ไทรบุรี">ไทรบุรี</option>
+                      <option value="ไทยบุรี">ไทยบุรี</option>
                     </select>
                   </div>
+                  <DisplayError v-if="errors.district" :err_text="errors.district" />
                 </div>
               </div>
             </div>
 
             <div class="column is-4">
               <div class="field">
-                <label class="label">หมู่ที่</label>
+                <label class="label">หมู่ที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                    <select v-model="formLand.village">
+                    <select @change="validateField('village')" v-model="formLand.village">
                       <option value="" selected>เลือกหมู่</option>
                       <option v-for="pfl in village" :key="pfl.value" :value="pfl.value">
                         {{ pfl.label }}
                       </option>
                     </select>
+                    <DisplayError v-if="errors.village" :err_text="errors.village" />
                   </div>
                 </div>
               </div>
@@ -162,7 +165,7 @@
                 <div class="control">
                   <div class="select is-fullwidth">
                     <select v-model="formLand.rai" :class="{ 'is-danger': errors.rai }" @change="validateField('rai')">
-                      <option value="" selected>เลือกจำนวนไร่</option>
+                      <option :value="formLand.rai === null ? '' : ''" selected>เลือกจำนวนไร่</option>
                       <option v-for="pfl in rais" :key="pfl.value" :value="pfl.value">
                         {{ pfl.label }}
                       </option>
@@ -177,9 +180,9 @@
               <div class="field">
                 <label class="label">จำนวนงาน</label>
                 <div class="control">
-                  <input class="input is-normal" v-model="formLand.ngan" @input="validateField('ngan')"
-                    :class="{ 'is-danger': errors.ngan }" step="0.01" max="4" type="number"
-                    placeholder="กรุณากรอกจำนวนงาน" />
+                  <input class="input is-normal" :disabled="formLand.rai === 5" v-model="formLand.ngan"
+                    @input="validateField('ngan')" :class="{ 'is-danger': errors.ngan }" step="0.01" max="4"
+                    type="number" placeholder="กรุณากรอกจำนวนงาน" />
                   <DisplayError v-if="errors.ngan" :err_text="errors.ngan" />
                 </div>
               </div>
@@ -189,8 +192,8 @@
               <div class="field">
                 <label class="label">จำนวนตารางวา</label>
                 <div class="control">
-                  <input class="input is-normal" @input="validateField('square_wa')" step="0.01"
-                    :class="{ 'is-danger': errors.square_wa }" v-model="formLand.square_wa" type="number"
+                  <input class="input is-normal" :disabled="formLand.rai === 5" @input="validateField('square_wa')"
+                    step="0.01" :class="{ 'is-danger': errors.square_wa }" v-model="formLand.square_wa" type="number"
                     placeholder="กรุณากรอกจำนวนตารางวา" max="100" />
                   <DisplayError v-if="errors.square_wa" :err_text="errors.square_wa" />
                 </div>
@@ -253,7 +256,6 @@
 </template>
 
 <script>
-import { store } from '@/store';
 import * as yup from "yup";
 import { getRai } from '@/utils/addressFunc';
 import axios from 'axios';
@@ -274,7 +276,6 @@ export default {
     return {
       ID_LAND: "",
       formLand: {},
-      oldFormLand: {},
       errors: {}, // Stores validation errors
       rais: getRai(),
       sois: [
@@ -296,27 +297,27 @@ export default {
       btnLoad: false,
       villageOptions: {
         'หัวตะพาน': [
-          { value: 1, label: 'หมู่ที่ 1 บ้านคลองดิน' },
-          { value: 2, label: 'หมู่ที่ 2 บ้านฉิมพลี' },
-          { value: 3, label: 'หมู่ที่ 3 บ้านคลองขุด' },
-          { value: 4, label: 'หมู่ที่ 4 บ้านทุ่งตก' },
-          { value: 5, label: 'หมู่ที่ 5 บ้านดอนยาง' },
-          { value: 6, label: 'หมู่ที่ 6 บ้านทุ่งชน' },
-          { value: 7, label: 'หมู่ที่ 7 บ้านวัดประดู่' },
-          { value: 8, label: 'หมู่ที่ 8 บ้านสวนหมาก' },
-          { value: 9, label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
+          { value: '1', label: 'หมู่ที่ 1 บ้านคลองดิน' },
+          { value: '2', label: 'หมู่ที่ 2 บ้านฉิมพลี' },
+          { value: '3', label: 'หมู่ที่ 3 บ้านคลองขุด' },
+          { value: '4', label: 'หมู่ที่ 4 บ้านทุ่งตก' },
+          { value: '5', label: 'หมู่ที่ 5 บ้านดอนยาง' },
+          { value: '6', label: 'หมู่ที่ 6 บ้านทุ่งชน' },
+          { value: '7', label: 'หมู่ที่ 7 บ้านวัดประดู่' },
+          { value: '8', label: 'หมู่ที่ 8 บ้านสวนหมาก' },
+          { value: '9', label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
         ],
-        'ไทรบุรี': [
-          { value: 1, label: 'หมู่ที่ 1 บ้านโพธิ์' },
-          { value: 2, label: 'หมู่ที่ 2 บ้านคูเถร' },
-          { value: 3, label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
-          { value: 4, label: 'หมู่ที่ 4 บ้านในหัน' },
-          { value: 5, label: 'หมู่ที่ 5 บ้านไม้มูก' },
-          { value: 6, label: 'หมู่ที่ 6 บ้านปลักจอก' },
-          { value: 7, label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
-          { value: 8, label: 'หมู่ที่ 8 บ้านลุ่มนา' },
-          { value: 9, label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
-          { value: 10, label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
+        'ไทยบุรี': [
+          { value: '1', label: 'หมู่ที่ 1 บ้านโพธิ์' },
+          { value: '2', label: 'หมู่ที่ 2 บ้านคูเถร' },
+          { value: '3', label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
+          { value: '4', label: 'หมู่ที่ 4 บ้านในหัน' },
+          { value: '5', label: 'หมู่ที่ 5 บ้านไม้มูก' },
+          { value: '6', label: 'หมู่ที่ 6 บ้านปลักจอก' },
+          { value: '7', label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
+          { value: '8', label: 'หมู่ที่ 8 บ้านลุ่มนา' },
+          { value: '9', label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
+          { value: '10', label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
         ]
       }
     }
@@ -324,7 +325,7 @@ export default {
   methods: {
     async updateVillageOptions(district) {
       // Update the village list based on subdistrict
-      if (district === 'หัวตะพาน' || district === 'ไทรบุรี') {
+      if (district === 'หัวตะพาน' || district === 'ไทยบุรี') {
         this.village = this.villageOptions[district];
 
         // If the current village is not in the new list, reset the village selection
@@ -348,17 +349,9 @@ export default {
     },
     showSuccessAlert() {
       Swal.fire({
-        title: 'เพิ่มข้อมูลสำเร็จ!',
+        title: 'อัพเดทข้อมูลสำเร็จ!',
         text: 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว',
         icon: 'success', // ใช้ 'success' เพื่อแสดงไอคอนสีเขียว
-        confirmButtonText: 'ตกลง'
-      });
-    },
-    showErrorAlert() {
-      Swal.fire({
-        title: 'เพิ่มข้อมูลไม่สำเร็จ!',
-        text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
-        icon: 'error', // ใช้ 'error' เพื่อแสดงไอคอนสีแดง
         confirmButtonText: 'ตกลง'
       });
     },
@@ -367,18 +360,11 @@ export default {
       // ตรวจสอบข้อมูลที่กรอก
       const isValid = await this.validateForm();
       if (!isValid) {
-        this.showErrorAlert();
+        await showWarningAlert('การอัพเดทข้อมูลที่ดิน', 'กรุณากรอกข้อมูลให้ถูกต้อง!')
         return;
       };
-      // // Compare form data with old data
-      // const hasChanges = this.compareData(this.formLand, this.oldFormLand);
 
-      // if (!hasChanges) {
-      //   await showSuccessAlert('เพิ่มข้อมูลสำเร็จ', 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว');
-      //   //  return; // No changes to submit
-      // }
       this.btnLoad = true
-      store.status_path_change = true
 
       const resCitizenID = await fetchPeopleID(this.formLand.id_card)
       console.log("res-d:", resCitizenID);
@@ -398,25 +384,14 @@ export default {
         console.error("จำนวนไร่ต้องไม่เกิน 5");
         await showErrorAlert("จำนวนเกิน 5 ไร่", "พื้นที่รวมเกิน 5 ไร่! โปรดตรวจสอบข้อมูลอีกครั้ง")
         this.btnLoad = false
-        store.status_path_change = false
         return;
       }
       try {
         let totalArea = 0
+        const max_rai = 2000; // ตารางวา
         const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${this.formLand.id_card}`);
         console.log('res-hold:', resLandHold.data);
 
-        // if (resLandHold.data.length > 0) {
-        //   // ฟังก์ชันคำนวณพื้นที่รวม
-        //   totalArea = resLandHold.data.reduce((sum, land) => {
-        //     const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
-        //     const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
-        //     const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
-        //     return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
-        //   }, 0);
-
-        //   console.log("Total Area in Square Wa:", totalArea); // แสดงค่าทั้งหมดในตารางวา
-        // }
         // can edit without checking
         if (resLandHold.data.length == 1) {
           totalArea = resLandHold.data.reduce((sum, land) => {
@@ -441,7 +416,6 @@ export default {
 
         } else if (resLandHold.data.length > 1) {
           // ต้องจองที่ดินก่อนทั้งหมด ที่ไม่ใช่ตัวแก้ ก่อนที่จะทำการแก้ไข
-          const max_rai = 2000; // ตารางวา
           // จองพื้นที่
           totalArea = resLandHold.data.reduce((sum, land) => {
             if (land.id_land == this.ID_LAND) {
@@ -467,7 +441,12 @@ export default {
             return
           }
         }
+        console.log('this.formLand:',this.formLand)
         const form_data = {
+          tf_number: this.formLand.tf_number,
+          spk_area: this.formLand.spk_area,
+          number: this.formLand.number,
+          volume: this.formLand.volume,
           soi: this.formLand.selectedSoi,
           land_status: this.formLand.selectedStatus,
           id_card: this.formLand.id_card,
@@ -487,18 +466,17 @@ export default {
         const response = await axios.put(`http://localhost:3000/land/${this.ID_LAND}`, form_data);
         console.log('Response:', response.data);
         // this.resetForm()
-        this.showSuccessAlert()
+        await showSuccessAlert('การอัพเดทข้อมูลที่ดิน', 'อัพเดทข้อมูลสำเร็จ!');
       } catch (error) {
         console.error('Error fetching land holding data:', error);
 
         if (error.response) {
-          await showErrorAlert('การตรวจสอบที่ดิน', error.response.data.message || 'เกิดข้อผิดพลาดขณะดึงข้อมูลที่ดิน');
+          await showErrorAlert('การอัพเดทข้อมูลที่ดิน', error.response.data.message || 'เกิดข้อผิดพลาดขณะที่ใช้ฐานข้อมูลที่ดิน');
         } else {
-          await showErrorAlert('การตรวจสอบที่ดิน', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์');
+          await showErrorAlert('การอัพเดทข้อมูลที่ดิน', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์');
         }
       } finally {
         this.btnLoad = false
-        store.status_path_change = false
       }
     },
     resetForm() {
@@ -543,27 +521,32 @@ export default {
     },
     getValidationSchema() {
       return yup.object().shape({ ...LandValidSchema });
-    },
-    compareData(newData, oldData) {
-      for (const key in newData) {
-        if (newData[key] !== oldData[key]) {
-          return true; // If any field is different, return true (indicating a change)
-        }
-      }
-      return false; // No changes detected
     }
   },
   watch: {
-    // Watch for changes to square_wa
-    'formLand.square_wa'(newValue) {
-      if (newValue > 100) {
-        this.formLand.square_wa = 100;
+    'formLand.rai'(newValue) {
+      if (typeof newValue === 'number' && newValue >= 5) {
+        this.formLand.rai = 5;
+        this.formLand.ngan = 0;
+        this.formLand.square_wa = 0;
       }
     },
-    // Watch for changes to ngan
+    'formLand.square_wa'(newValue) {
+      if (typeof newValue === 'number' && newValue >= 100) {
+        this.formLand.square_wa = 0;
+
+        if (this.formLand.ngan === 3) {
+          this.formLand.rai = (this.formLand.rai || 0) + 1;
+          this.formLand.ngan = 0;
+        } else {
+          this.formLand.ngan = (this.formLand.ngan || 0) + 1;
+        }
+      }
+    },
     'formLand.ngan'(newValue) {
-      if (newValue > 4) {
-        this.formLand.ngan = 4;
+      if (typeof newValue === 'number' && newValue > 3) {
+        this.formLand.ngan = 0;
+        this.formLand.rai = (this.formLand.rai || 0) + 1;
       }
     },
     'formLand.long'(newValue) {
@@ -589,6 +572,7 @@ export default {
       console.log('landID:', landID)
       const resLand = await fetchLandOne(landID)
       this.ID_LAND = resLand[0].id_land;
+      console.log('resLand:', resLand)
       const originalData = {
         full_name: '', // Full name needs to be provided separately if available
         id_card: resLand[0].id_card,
@@ -601,7 +585,7 @@ export default {
         address_house: resLand[0].l_house_number,
         group_number: resLand[0].l_village_number,
         soi: resLand[0].current_soi, // Assuming 'soi' is equivalent to 'current_soi'
-        rai: resLand[0].rai,
+        rai: resLand[0].rai || '',
         ngan: resLand[0].ngan,
         square_wa: resLand[0].square_wa,
         district: resLand[0].l_district,
@@ -611,11 +595,9 @@ export default {
         notation: resLand[0].notation,
       };
       this.formLand = { ...originalData };
-      this.oldFormLand = { ...originalData };
       console.log(this.formLand.id_card)
       const resCitizenID = await fetchPeopleID(this.formLand.id_card)
       this.formLand['full_name'] = resCitizenID[0].first_name + ' ' + resCitizenID[0].last_name;
-      this.oldFormLand['full_name'] = resCitizenID[0].first_name + ' ' + resCitizenID[0].last_name;
     } catch (err) {
       this.error = 'Error fetching sois: ' + err.message;
     }

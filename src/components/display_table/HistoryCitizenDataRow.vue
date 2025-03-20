@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td>{{ index }}</td>
-        <td>{{ ct.CARD_ID }}</td>
+        <td>{{ formatIDCARD(ct.CARD_ID) }}</td>
         <td>{{ ct.soi }}</td>
         <td>{{ ct.first_name + ' ' + ct.last_name }}</td>
         <td>{{ formatPhoneNumber(ct.phone_number) || '-' }}</td>
@@ -22,6 +22,9 @@
 </template>
 
 <script>
+import { formatIDCARD } from '@/utils/commonFunc';
+
+
 export default {
     props: {
         ct: Object,
@@ -31,6 +34,9 @@ export default {
 
     },
     methods: {
+        formatIDCARD(ID_CARD){
+            return formatIDCARD(ID_CARD)
+        },
         formatPhoneNumber(phoneNumber) {
             if (!phoneNumber) return '';
             const phoneStr = String(phoneNumber); // Ensure it's a string
@@ -39,3 +45,9 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.button {
+    border-radius: 5px;
+}
+</style>

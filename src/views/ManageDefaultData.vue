@@ -1,7 +1,7 @@
 <template>
     <div class="primary_content">
         <div class="py-5 is-flex is-justify-content-center">
-            <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
+            <div class="column is-three-quarters-tablet is-half-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
                         <h1 class="is-size-3 has-text-centered has-text-link">จัดการข้อมูลพื้นฐาน</h1>
@@ -19,7 +19,7 @@
                                     <router-link to="/manage_default_Information/manage_file_type">ไฟล์ที่ดิน</router-link>
                                 </li> -->
                                 <li :class="{ 'is-active': $route.path.includes('manage_relation') }">
-                                    <router-link to="/manage_default_Information/manage_relation">ความสัมพันธ์</router-link>
+                                    <router-link to="/manage_default_Information/manage_relation">ความสัมพันธ์ของทายาท</router-link>
                                 </li>
                             </ul>
                         </nav>

@@ -1,5 +1,7 @@
 <template>
-  <div class="sidebar navigator-color is-flex is-flex-direction-column" :class="{ expanded: isExpanded }">
+  <div class="sidebar navigator-color is-flex is-flex-direction-column" 
+  style="border-top-right-radius: 15px; border-bottom-right-radius: 15px;"
+  :class="{ expanded: isExpanded }">
     <div class="sidebar-item py-3" @click="toggleSidebar">
       <div class="sidebar-item">
         <img src='@/assets/icons/hide-sidebar-svgrepo-com-3.png' width="50" height="50" alt="Menu Icon" />
@@ -11,7 +13,7 @@
         <AccordionItem ref="homepage">
           <template #accordion-trigger>
             <RouterLink to="/" class="sidebar-item" active-class="is-active" exact-active-class="is-active">
-              <img class="img" src="@/assets/icons/home-white.png" width="34" height="34" alt="Home Icon" />
+              <img class="img" src="@/assets/icons/home-white.png" width="30" height="30" alt="Home Icon" />
               <span class="ml-2 sidebar-text has-text-white">หน้าแรก</span>
               <div class="underline"></div>
             </RouterLink>
@@ -19,32 +21,31 @@
         </AccordionItem>
       </Accordion>
 
-      <!-- <Accordion>
-        <AccordionItem ref="homepage">
-          <template #accordion-trigger>
-            <RouterLink to="/search" class="sidebar-item" active-class="is-active" exact-active-class="is-active">
-              <img class="img" src="@/assets/icons/search.png" width="34" height="34" alt="Search Icon" />
-              <span class="ml-2 sidebar-text has-text-white">ค้นหา</span>
-              <div class="underline"></div>
-            </RouterLink>
-          </template>
-        </AccordionItem>
-      </Accordion> -->
-
       <Accordion>
         <AccordionItem ref="dashboardItem">
           <template #accordion-trigger>
             <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
-              :class="{ 'is-active': currentRoute.startsWith('/dashboard') }">
-              <img class="img" src="@/assets/icons/dashboard-white.png" width="34" height="34" alt="Dashboard Icon" />
+              :class="{ 'is-active': isActiveDashboard }">
+              <img class="img" src="@/assets/icons/dashboard-white.png" width="30" height="30" alt="Dashboard Icon" />
               <span class="ml-2 sidebar-text has-text-white">แดชบอร์ด</span>
               <div class="underline"></div>
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/dashboard" class="menu-link menu-item">สรุปผลการใช้ประโยชน์ที่ดิน</RouterLink>
-            <RouterLink to="/table_dashboard" class="menu-link menu-item">สรุปผลการจัดสรรที่ดิน</RouterLink>
-            <RouterLink to="/citizen_dashboard" class="menu-link menu-item">สรุปผลราษฎรในพื้นที่</RouterLink>
+            <!-- แสดง + เมื่ออยู่ในเส้นทาง /dashboard -->
+            <RouterLink to="/dashboard" class="menu-link menu-item">
+              <span v-html="dashboardText"></span>
+            </RouterLink>
+
+            <!-- แสดง + เมื่ออยู่ในเส้นทาง /table_dashboard -->
+            <RouterLink to="/table_dashboard" class="menu-link menu-item">
+              <span v-html="tableDashboardText"></span>
+            </RouterLink>
+
+            <!-- แสดง + เมื่ออยู่ในเส้นทาง /citizen_dashboard -->
+            <RouterLink to="/citizen_dashboard" class="menu-link menu-item">
+              <span v-html="citizenDashboardText"></span>
+            </RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
@@ -53,16 +54,47 @@
         <AccordionItem ref="dataItem">
           <template #accordion-trigger>
             <div class="sidebar-item" @click="handleAccordionItemClick('dataItem')"
-              :class="{ 'is-active': currentRoute.startsWith('/land_data') }">
-              <img class="img" src="@/assets/icons/data-group-white.png" width="34" height="34" alt="Data Group Icon" />
+              :class="{ 'is-active': isActiveDataDisplay }">
+              <img class="img" src="@/assets/icons/data-group-white.png" width="30" height="30" alt="Data Group Icon" />
               <span class="ml-2 sidebar-text has-text-white">ข้อมูล สปก.</span>
               <div class="underline"></div>
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/land_data" class="menu-link menu-item">ข้อมูลที่ดิน</RouterLink>
-            <RouterLink to="/citizen_data" class="menu-link menu-item">ข้อมูลราษฎร</RouterLink>
-            <RouterLink to="/heir_data" class="menu-link menu-item">ข้อมูลทายาท</RouterLink>
+            <RouterLink to="/land_data" class="menu-link menu-item">
+              <span v-html="landDisplayText"></span>
+            </RouterLink>
+            <RouterLink to="/citizen_data" class="menu-link menu-item">
+              <!-- citizenDisplayText -->
+              <span v-html="citizenDisplayText"></span>
+            </RouterLink>
+            <RouterLink to="/heir_data" class="menu-link menu-item">
+              <span v-html="heirDisplayText"></span>
+            </RouterLink>
+          </template>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion v-if="userRole === roles[3].role_id">
+        <AccordionItem ref="basicData">
+          <template #accordion-trigger>
+            <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
+              :class="{ 'is-active': currentRoute.startsWith('/manage_default_Information') }">
+              <img class="img" src="@/assets/icons/data_foundation.png" width="30" height="30" alt="addItem Icon" />
+              <span class="ml-2 sidebar-text has-text-white">ข้อมูลพื้นฐาน</span>
+              <div class="underline"></div>
+            </div>
+          </template>
+          <template #accordion-content>
+            <RouterLink to="/manage_default_Information/manage_status" class="menu-link menu-item">
+              <span v-html="statusDisplayText"></span>
+            </RouterLink>
+            <RouterLink to="/manage_default_Information/manage_land_usages" class="menu-item menu-item">
+              <span v-html="landUsageDisplayText"></span>
+            </RouterLink>
+            <RouterLink to="/manage_default_Information/manage_relation" class="menu-item menu-item">
+              <span v-html="relationDisplayText"></span>
+            </RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
@@ -71,16 +103,22 @@
         <AccordionItem ref="addItem">
           <template #accordion-trigger>
             <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
-              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
-              <img class="img" src="@/assets/icons/addfile-white.png" width="34" height="34" alt="addItem Icon" />
+              :class="{ 'is-active': isActiveAddData }">
+              <img class="img" src="@/assets/icons/addfile-white.png" width="30" height="30" alt="addItem Icon" />
               <span class="ml-2 sidebar-text has-text-white">เพิ่มข้อมูล</span>
               <div class="underline"></div>
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/create_land" class="menu-link menu-item">เพิ่มข้อมูลที่ดิน</RouterLink>
-            <RouterLink to="/create_citizen" class="menu-item menu-item">เพิ่มข้อมูลราษฎร</RouterLink>
-            <RouterLink to="/create_heir" class="menu-item menu-item">เพิ่มข้อมูลทายาท</RouterLink>
+            <RouterLink to="/create_land" class="menu-link menu-item">
+              <span v-html="addLandText"></span>
+            </RouterLink>
+            <RouterLink to="/create_citizen" class="menu-item menu-item">
+              <span v-html="addCitizenText"></span>
+            </RouterLink>
+            <RouterLink to="/create_heir" class="menu-item menu-item">
+              <span v-html="addHeirText"></span>
+            </RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
@@ -89,15 +127,19 @@
         <AccordionItem ref="history">
           <template #accordion-trigger>
             <div class="sidebar-item" @click="handleAccordionItemClick('dashboardItem')"
-              :class="{ 'is-active': currentRoute.startsWith('/upload_files') }">
-              <img class="img" src="@/assets/icons/history-white.png" width="34" height="34" alt="history Icon" />
+              :class="{ 'is-active': isActiveHistory }">
+              <img class="img" src="@/assets/icons/history-white.png" width="30" height="30" alt="history Icon" />
               <span class="ml-2 sidebar-text has-text-white">ประวัติข้อมูล</span>
               <div class="underline"></div>
             </div>
           </template>
           <template #accordion-content>
-            <RouterLink to="/history_land" class="menu-link menu-item">ประวัติข้อมูลที่ดิน</RouterLink>
-            <RouterLink to="/history_citizen" class="menu-item menu-item">ประวัติข้อมูลราษฎร</RouterLink>
+            <RouterLink to="/history_land" class="menu-link menu-item">
+              <span v-html="landHistoryText"></span>
+            </RouterLink>
+            <RouterLink to="/history_citizen" class="menu-item menu-item">
+              <span v-html="citizenHistoryText"></span>
+            </RouterLink>
           </template>
         </AccordionItem>
       </Accordion>
@@ -131,14 +173,133 @@ export default {
       roles,
       isExpanded: false,
       isLogOut: false,
-      currentRoute: "", // เพิ่ม currentRoute
+      currentRoute: this.$route.path, // เพิ่ม currentRoute
+      sub_route_icon: '<i class="fas fa-circle has-text-primary"></i>'
     };
   },
   computed: {
+    dashboardText() {
+      let word = 'สรุปผลการใช้ประโยชน์ที่ดิน'
+      return this.$route.path === '/dashboard'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    // สำหรับ /table_dashboard: เพิ่ม + ถ้าอยู่ในเส้นทางนี้
+    tableDashboardText() {
+      let word = 'สรุปผลการจัดสรรพื้นที่'
+      return this.$route.path === '/table_dashboard'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    citizenDashboardText() {
+      let word = 'สรุปผลราษฎรพื้นที่'
+      return this.$route.path === '/citizen_dashboard'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    landDisplayText() {
+      let word = 'ข้อมูลที่ดิน'
+      return this.$route.path.startsWith('/land_data/')
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    citizenDisplayText() {
+      let word = 'ข้อมูลราษฎร'
+      return this.$route.path.startsWith('/citizen_data/')
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    heirDisplayText() {
+      let word = 'ข้อมูลทายาท'
+      return this.$route.path.startsWith('/heir_data/')
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    statusDisplayText() {
+      let word = 'ข้อมูลสถานะที่ดิน'
+      return this.$route.path === '/manage_default_Information/manage_status'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    landUsageDisplayText() {
+      let word = 'ข้อมูลการใช้ประโยชน์ที่ดิน'
+      return this.$route.path === '/manage_default_Information/manage_land_usages'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    relationDisplayText() {
+      let word = 'ข้อมูลความสัมพันธ์'
+      return this.$route.path === '/manage_default_Information/manage_relation'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    addLandText() {
+      let word = 'เพิ่มข้อมูลที่ดิน'
+      return this.$route.path === '/create_land'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    addCitizenText() {
+      let word = 'เพิ่มข้อมูลราษฎร'
+      return this.$route.path === '/create_citizen'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    addHeirText() {
+      let word = 'เพิ่มข้อมูลทายาท'
+      return this.$route.path === '/create_heir'
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    landHistoryText() {
+      let word = 'ประวัติข้อมูลที่ดิน'
+      return this.currentRoute.startsWith('/history_land/')
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
+    citizenHistoryText() {
+      let word = 'ประวัติข้อมูลราษฎร'
+      return this.currentRoute.startsWith('/history_citizen/')
+        ? `${this.sub_route_icon} ${word}`
+        : `${word}`;
+    },
+
     userRole() {
       // Access the userRole from your store
       const userStore = useUserStore();
       return userStore.userRole;
+    },
+    isActiveDashboard() {
+      return this.currentRoute.startsWith('/dashboard') ||
+        this.currentRoute.startsWith('/table_dashboard') ||
+        this.currentRoute.startsWith('/citizen_dashboard');
+    },
+    isActiveDataDisplay() {
+      return this.currentRoute.startsWith('/land_data') ||
+        this.currentRoute.startsWith('/citizen_data') ||
+        this.currentRoute.startsWith('/heir_data');
+    },
+    isActiveAddData() {
+      return this.currentRoute.startsWith('/create_land') ||
+        this.currentRoute.startsWith('/create_citizen') ||
+        this.currentRoute.startsWith('/create_heir');
+    },
+    isActiveHistory() {
+      return this.currentRoute.startsWith('/history_land') ||
+        this.currentRoute.startsWith('/history_citizen')
     }
   },
   methods: {
@@ -156,6 +317,9 @@ export default {
       }
       if (this.$refs.history) {
         this.$refs.history.close();
+      }
+      if (this.$refs.basicData) {
+        this.$refs.basicData.close();
       }
     },
     handleAccordionItemClick(itemRef) {

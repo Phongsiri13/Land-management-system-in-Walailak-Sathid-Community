@@ -74,7 +74,7 @@ const router = createRouter({
       component: Form,
       meta: {
         requiredRole: officer.role_id,
-        title: 'Add Land'
+        title: 'เพิ่มข้อมูลที่ดิน'
       }
     },
     {
@@ -92,7 +92,7 @@ const router = createRouter({
       component: AddHeir,
       meta: {
         requiredRole: roles[3].role_id,
-        title: 'Admin | add heir'
+        title: 'เพิ่มข้อมูลราษฎร'
       }
     },
     {
@@ -215,8 +215,8 @@ const router = createRouter({
       name: 'HeirDetail',
       component: HeirDetail,
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | '
+        requiredRole: [officer.role_id, Land_reform_officer.role_id],
+        title: 'รายละเอียดทายาท'
       }
     },
     {
@@ -233,7 +233,7 @@ const router = createRouter({
       name: 'LandEdit',
       component: LandEdit,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: officer.role_id,
         title: 'Admin | '
       }
     },
@@ -289,7 +289,7 @@ const router = createRouter({
       meta: {
         requiredRole: roles[3].role_id,
         name: 'ManageDefaultData',
-        title: 'ข้อมูลพื้นฐาน |'
+        title: 'จัดการสถานะที่ดิน | ข้อมูลพื้นฐาน'
       },
       children: [
         {
@@ -305,12 +305,18 @@ const router = createRouter({
         {
           path: 'manage_land_usages', // Child route for managing file types
           name: 'ManageLandUsage',
-          component: ManageLandUsage
+          component: ManageLandUsage,
+          meta: {
+            title: 'จัดการการใช้ประโยชน์ที่ดิน | ข้อมูลพื้นฐาน'
+          }
         },
         {
           path: 'manage_relation', // Child route for managing file types
           name: 'ManageRelation',
-          component: ManageRelation
+          component: ManageRelation,
+          meta: {
+            title: 'จัดการความสัมพันธ์ | ข้อมูลพื้นฐาน'
+          }
         }
       ]
     },
@@ -377,6 +383,7 @@ const router = createRouter({
 })
 
 let t1 = 0
+// guard router
 router.beforeEach(async (to, from, next) => {
   store.status_path_change = true
   const userStore = useUserStore()
@@ -386,7 +393,7 @@ router.beforeEach(async (to, from, next) => {
   // Fetch role if not available
   if (!userStore.userRole) {
     const user_checking = await userStore.fetchUserRole()
-    console.log('user:', user_checking)
+    // console.log('user:', user_checking)
   }
 
   // ตรวจสอบสิทธิ์การเข้าถึง

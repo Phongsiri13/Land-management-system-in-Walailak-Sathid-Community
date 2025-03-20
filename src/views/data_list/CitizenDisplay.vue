@@ -30,7 +30,7 @@
                                     <select v-model="selectedDistrict">
                                         <option value="">ทั้งหมด</option>
                                         <option value="Huataphan">หัวตะพาน</option>
-                                        <option value="Taiburi">ไทรบุรี</option>
+                                        <option value="Taiburi">ไทยบุรี</option>
                                     </select>
                                 </div>
                             </div>

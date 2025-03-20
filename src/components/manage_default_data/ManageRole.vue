@@ -1,6 +1,6 @@
 <template>
     <div class="py-5 is-flex is-justify-content-center primary_content">
-        <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
+        <div class="column is-three-quarters-tablet is-half-desktop is-four-fifths-mobile">
             <div class="card">
                 <div class="card-content">
                     <h1 class="is-size-3 has-text-centered has-text-link">จัดการสิทธิ์ผู้ใช้</h1>
@@ -96,16 +96,16 @@
                         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
                             <thead class="table-header">
                                 <tr>
-                                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
-                                    <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
-                                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อสิทธิ์ผู้ใช้
+                                    <th class="has-text-left has-text-white" style="width: 10%;">ลำดับ</th>
+                                    <!-- <th class="has-text-left has-text-white" style="width: 15%;">รหัส</th> -->
+                                    <th class="has-text-left has-text-white" style="width: 60%;">ชื่อสิทธิ์ผู้ใช้
                                     </th>
-                                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
+                                    <th class="has-text-left has-text-white" ></th>
                                 </tr>
                             </thead>
                             <tbody v-if="!page_loading">
                                 <tr v-if="statusActive == true" v-for="(item, index) in roleFiles" :key="item.value"
-                                    class="has-text-centered">
+                                    class="has-text-left">
                                     <td>{{ index + 1 }}</td>
                                     <!-- <td>{{ item.value }}</td> -->
                                     <td>{{ item.label }}</td>
@@ -125,7 +125,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="statusActive == false" v-for="(item, index) in roleFiles" :key="item.value"
-                                    class="has-text-centered">
+                                    class="has-text-left">
                                     <td>{{ index + 1 }}</td>
                                     <!-- <td>{{ item.value }}</td> -->
                                     <td>{{ item.label }}</td>
@@ -145,7 +145,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="roleFiles.length === 0">
-                                    <td colspan="5" class="has-text-centered has-text-danger title is-4">
+                                    <td colspan="5" class="has-text-left has-text-danger title is-4">
                                         ไม่มีรายการข้อมูล</td>
                                 </tr>
                             </tbody>

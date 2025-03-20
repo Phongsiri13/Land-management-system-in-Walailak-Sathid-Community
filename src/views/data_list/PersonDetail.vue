@@ -229,7 +229,7 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-1" v-if="userRole === roles[3].role_id && landStatusID != 'LS03'">
+                        <div class="column is-1" v-if="userRole === roles[3].role_id && (landStatusID !== 'LS03' && landStatusID !== 'LS04')">
                             <!-- landStatusID -->
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
@@ -394,18 +394,18 @@
                                             class="column is-inline-block is-flex is-justify-content-center is-align-items-center">
                                             <div class="is-flex is-justify-content-flex-end">
                                                 <!-- Edit heir -->
-                                                <button class="button is-normal is-warning mx-1 my-1"
+                                                <!-- <button class="button is-normal is-warning mx-1 my-1"
                                                     @click="goToHeirEdit(heir.heir_id)">
                                                     <span class="icon">
                                                         <i class="fas fa-edit"></i>
                                                     </span>
-                                                </button>
+                                                </button> -->
                                                 <!-- Remove heir -->
-                                                <button class="button is-normal is-danger mx-1 my-1">
+                                                <!-- <button class="button is-normal is-danger mx-1 my-1">
                                                     <span class="icon">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </span>
-                                                </button>
+                                                </button> -->
                                             </div>
                                         </div>
                                         <div class="column" v-else>

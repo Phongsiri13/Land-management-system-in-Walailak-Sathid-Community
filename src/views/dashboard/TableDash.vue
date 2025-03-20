@@ -1,18 +1,28 @@
 <template>
   <div>
     <p class="py-1 is-size-4 is-size-6-mobile has-text-centered titleBgColor mt-1">
-      ผลการจัดพื้นที่ในเขตปฏิรูปที่ดินในชุมชนสาธิต
+      ผลการจัดสรรที่ดินในเขตปฏิรูปที่ดินในชุมชนสาธิต
     </p>
     <div class="container my-3">
       <div class="column is-three-quarters-tablet is-full-desktop is-four-fifths-mobile">
         <!-- ปุ่มส่งออกข้อมูล -->
-        <div class="buttons">
-          <button class="button is-primary" @click="exportToExcel">ส่งออกเป็น Excel</button>
-          <button class="button is-info" @click="exportToCSV">ส่งออกเป็น CSV</button>
+        <div class="is-flex is-justify-content-flex-end mb-3">
+          <div class="buttons">
+            <button class="button is-primary" @click="exportToExcel"><span class="icon">
+                <i class="fas fa-file-excel"></i> <!-- ไอคอน Excel จาก Font Awesome -->
+              </span></button>
+            <button class="button is-info" @click="exportToCSV">
+              <span class="icon">
+                <i class="fas fa-file-csv"></i> <!-- ไอคอน CSV จาก Font Awesome -->
+              </span>
+            </button>
+          </div>
         </div>
         <div class="columns">
-          <div class="column is-1 card my-2" style="max-height: 500px; overflow: auto;">
+          <!-- control soi box -->
+          <div class="column is-1 card my-2" style="overflow: auto; height: 100%;">
             <p class="has-text-centered title is-5">ซอย</p>
+            <hr>
             <label class="checkbox">
               <input type="checkbox" @change="toggleAllVisibility" v-model="isAllVisible" checked />
             </label>
@@ -23,45 +33,46 @@
               </label>
             </div>
           </div>
-          <!-- table -->
+
+          <!-- table result -->
           <div class="column">
             <table class="table is-striped is-bordered is-hoverable is-fullwidth">
               <thead class="table-header">
                 <tr>
-                  <th>ซอย</th>
-                  <th>ที่ดิน</th>
+                  <th style="width: 5%;">ซอย</th>
                   <th>สปก</th>
-                  <th>การเกษตร</th>
+                  <th>เกษตร</th>
                   <th>บุกรุก</th>
-                  <th>ไม่มีผู้ถือครอง</th>
+                  <th>กำลังจัดสรร</th>
                   <th>จำนวนไร่</th>
+                  <th>ที่ดิน</th>
                 </tr>
               </thead>
               <tbody>
                 <transition-group name="slide-fade">
                   <tr v-for="(row, index) in rows" :key="row.id" v-show="isRowVisible(row)">
                     <td>{{ row.soi }}</td>
-                    <td>{{ row.land }}</td>
                     <td>{{ row.spaok }}</td>
                     <td>{{ row.agriculture_title }}</td>
                     <td>{{ row.occupied_area }}</td>
                     <td>{{ row.unclaimed_area }}</td>
-                    <td>{{ formatRai(row.rai) }}</td>
+                    <td>{{ formatRai(row.rai, row.ngan, row.square_wa) }}</td>
+                    <td>{{ row.land }}</td>
                   </tr>
                 </transition-group>
 
                 <!-- Result Row (Total) -->
-                <tr v-if="selectedRows.length != 0" key="result">
+                <tr v-if="selectedRows.length > 1" key="result">
                   <td>ผลลัพธ์</td>
-                  <td>{{ totalLand }}</td>
                   <td>{{ totalSpaok }}</td>
                   <td>{{ totalAgricultureTitle }}</td>
                   <td>{{ totalOccupiedArea }}</td>
                   <td>{{ totalUnclaimedArea }}</td>
-                  <td>{{ formatRai(totalRai) }}</td>
+                  <td>{{ totalsquare_wa }}</td>
+                  <td>{{ totalLand }}</td>
                 </tr>
-                <tr v-else>
-                  <td>กรุณาเลือกข้อมูล</td>
+                <tr v-if="selectedRows.length == 0">
+                  <td colspan="7" class="has-text-centered has-text-danger is-size-5">กรุณาเลือกซอย</td>
                 </tr>
               </tbody>
             </table>
@@ -74,6 +85,8 @@
 
 <script>
 import { fetchTableDashboard } from '@/api/apiLand';
+import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
+
 import * as XLSX from 'xlsx';
 export default {
   data() {
@@ -86,7 +99,7 @@ export default {
       totalAgricultureTitle: 0,
       totalOccupiedArea: 0,
       totalUnclaimedArea: 0,
-      totalRai: 0,
+      totalsquare_wa: 0,
     };
   },
   methods: {
@@ -96,23 +109,23 @@ export default {
         .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
         .map(row => [
           row.soi,
-          row.land,
           row.spaok,
           row.agriculture_title,
           row.occupied_area,
           row.unclaimed_area,
-          this.formatRai(row.rai)
+          this.formatRai(row.rai),
+          row.land,
         ]);
 
       // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
       const totals = [
         'ผลลัพธ์',
-        this.totalLand,
         this.totalSpaok,
         this.totalAgricultureTitle,
         this.totalOccupiedArea,
         this.totalUnclaimedArea,
-        this.formatRai(this.totalRai)
+        this.totalsquare_wa,
+        this.totalLand
       ];
       data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
 
@@ -138,23 +151,23 @@ export default {
         .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
         .map(row => ({
           ซอย: row.soi,
-          ที่ดิน: row.land,
           สปก: row.spaok,
           การเกษตร: row.agriculture_title,
           บุกรุก: row.occupied_area,
           ไม่มีผู้ถือครอง: row.unclaimed_area,
-          จำนวนไร่: this.formatRai(row.rai)
+          จำนวนไร่: this.formatRai(row.rai),
+          ที่ดิน: row.land
         }));
 
       // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
       const totals = {
         ซอย: 'ผลลัพธ์',
-        ที่ดิน: this.totalLand,
         สปก: this.totalSpaok,
         การเกษตร: this.totalAgricultureTitle,
         บุกรุก: this.totalOccupiedArea,
         ไม่มีผู้ถือครอง: this.totalUnclaimedArea,
-        จำนวนไร่: this.formatRai(this.totalRai)
+        จำนวนไร่: this.totalsquare_wa,
+        ที่ดิน: this.totalLand
       };
       data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
 
@@ -166,9 +179,18 @@ export default {
       // สร้างไฟล์ Excel และให้ผู้ใช้ดาวน์โหลด
       XLSX.writeFile(workbook, 'ข้อมูลที่ดิน.xlsx');
     },
-    formatRai(value) {
-      // แปลงเป็นทศนิยม 2 ตำแหน่งและไม่ปัดเศษ
-      return parseFloat(value.toFixed(2));
+    formatRai(landRai, landNgan, landSquareWa) {
+      const raiArea = landRai ? landRai * 400 : 0; // แปลงไร่เป็นตารางวา
+      const nganArea = landNgan ? landNgan * 100 : 0; // แปลงงานเป็นตารางวา
+      const squareWaArea = landSquareWa ? landSquareWa : 0; // ตารางวา
+
+
+      // รวมพื้นที่ทั้งหมดในตารางวา
+      const totalSquareWa = raiArea + nganArea + squareWaArea;
+
+
+      const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(totalSquareWa);
+      return `${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`;
     },
     toggleAllVisibility() {
       if (this.isAllVisible) {
@@ -189,31 +211,46 @@ export default {
       this.totalAgricultureTitle = 0;
       this.totalOccupiedArea = 0;
       this.totalUnclaimedArea = 0;
-      this.totalRai = 0;
+      this.totalsquare_wa = '';
 
+      let raiTotal = 0
+      let nganTotal = 0
+      let squareWaTotal = 0
       // Loop through each row and add up the values for rows that are selected (i.e., visible)
       this.rows.forEach(row => {
+        const raiArea = row.rai ? row.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+        const nganArea = row.ngan ? row.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+        const squareWaArea = row.square_wa ? row.square_wa : 0; // ตารางวา
+        const totalSquareWa = raiArea + nganArea + squareWaArea;
         if (this.selectedRows.includes(row.id)) {
           this.totalLand += row.land;
           this.totalSpaok += row.spaok;
           this.totalAgricultureTitle += row.agriculture_title;
           this.totalOccupiedArea += row.occupied_area;
           this.totalUnclaimedArea += row.unclaimed_area;
-          this.totalRai += row.rai;
+          raiTotal += row.rai,
+            nganTotal += row.ngan,
+            squareWaTotal += row.square_wa
         }
       });
+      this.totalsquare_wa = this.formatRai(raiTotal, nganTotal, squareWaTotal);
+      this.totalLand = this.totalLand + ' แปลง'
+      this.totalSpaok = this.totalSpaok + ' แปลง'
+      this.totalAgricultureTitle = this.totalAgricultureTitle + ' แปลง'
+      this.totalOccupiedArea =  this.totalOccupiedArea + ' แปลง'
+      this.totalUnclaimedArea =  this.totalUnclaimedArea + ' แปลง'
     }
   },
   watch: {
     selectedRows: 'calculateResults'
   },
   async created() {
-    // this.calculateResults();
     try {
       const res = await fetchTableDashboard();
-      console.log('res:', res)
+      // console.log('res:', res)
       this.selectedRows = res[0]
       this.rows = res[1]
+      console.log('res:', this.rows)
 
     } catch (error) {
       console.log('err:', error)

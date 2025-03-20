@@ -1,10 +1,9 @@
 import * as yup from 'yup'
 
-
 export const getHeirModel = {
   heir_fname: '',
   heir_lname: '',
-  prefix: '',
+  prefix: ''
 }
 
 export const getHeirPeopleModel = {
@@ -18,12 +17,20 @@ export const HeirValidSchema = {
     .string()
     .required('กรุณากรอกชื่อจริง')
     .min(3, 'ชื่อจริงต้องมีอย่างน้อย 3 ตัวอักษร')
-    .max(30, 'ชื่อจริงต้องไม่เกิน 30 ตัวอักษร'),
-    heir_lname: yup
+    .max(30, 'ชื่อจริงต้องไม่เกิน 30 ตัวอักษร')
+    .matches(
+      /^[ก-๏]+$/,
+      'ชื่อจริงต้องเป็นภาษาไทยและไม่มีเว้นวรรคหรือตัวอักษรพิเศษ'
+    ),
+  heir_lname: yup
     .string()
     .required('กรุณากรอกนามสกุล')
     .min(3, 'นามสกุลต้องมีอย่างน้อย 3 ตัวอักษร')
-    .max(30, 'นามสกุลต้องไม่เกิน 30 ตัวอักษร'),
+    .max(30, 'นามสกุลต้องไม่เกิน 30 ตัวอักษร')
+    .matches(
+      /^[ก-๏]+$/,
+      'นามสกุลต้องเป็นภาษาไทยและไม่มีเว้นวรรคหรือตัวอักษรพิเศษ'
+    )
 }
 
 export const HeirFullnameValidSchema = {

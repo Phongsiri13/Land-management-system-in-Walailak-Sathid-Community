@@ -1,25 +1,27 @@
 <template>
     <div>
-        <p class="py-1 is-size-4 is-size-6-mobile has-text-centered titleBgColor">
-            สรุปสถานะราษฎรในพื้นที่ชุมชนสาธิตวลัยลักษณ์
+        <p class="py-1 is-size-4 is-size-6-mobile py-2 has-text-centered titleBgColor">
+            สรุปผลราษฎรในพื้นที่ชุมชนสาธิตวลัยลักษณ์
         </p>
         <div class="container my-3">
             <div class="column is-three-quarters-tablet is-full-desktop is-four-fifths-mobile">
                 <!-- ปุ่มส่งออกข้อมูล -->
-                <div class="buttons">
-                    <!-- ปุ่มส่งออกเป็น Excel -->
-                    <button class="button is-primary" @click="exportToExcel" title="ส่งออกเป็น Excel">
-                        <span class="icon">
-                            <i class="fas fa-file-excel"></i> <!-- ไอคอน Excel จาก Font Awesome -->
-                        </span>
-                    </button>
+                <div class="is-flex is-justify-content-flex-end mb-3">
+                    <div class="buttons">
+                        <!-- ปุ่มส่งออกเป็น Excel -->
+                        <button class="button is-primary" @click="exportToExcel" title="ส่งออกเป็น Excel">
+                            <span class="icon">
+                                <i class="fas fa-file-excel"></i> <!-- ไอคอน Excel จาก Font Awesome -->
+                            </span>
+                        </button>
 
-                    <!-- ปุ่มส่งออกเป็น CSV -->
-                    <button class="button is-info" @click="exportToCSV" title="ส่งออกเป็น CSV">
-                        <span class="icon">
-                            <i class="fas fa-file-csv"></i> <!-- ไอคอน CSV จาก Font Awesome -->
-                        </span>
-                    </button>
+                        <!-- ปุ่มส่งออกเป็น CSV -->
+                        <button class="button is-info" @click="exportToCSV" title="ส่งออกเป็น CSV">
+                            <span class="icon">
+                                <i class="fas fa-file-csv"></i> <!-- ไอคอน CSV จาก Font Awesome -->
+                            </span>
+                        </button>
+                    </div>
                 </div>
                 <div class="columns">
                     <div class="column is-1 card my-2" style="max-height: 500px; overflow: auto;">
@@ -40,33 +42,33 @@
                             <thead class="table-header">
                                 <tr>
                                     <th>ซอย</th>
-                                    <th>ราษฎร</th>
                                     <th>หัวตะพาน</th>
-                                    <th>ไทรบุรี</th>
+                                    <th>ไทยบุรี</th>
                                     <th>ชาย</th>
                                     <th>หญิง</th>
+                                    <th>ราษฎร</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <transition-group name="slide-fade">
                                     <tr v-for="(row, index) in rows" :key="row.id" v-show="isRowVisible(row)">
                                         <td>{{ row.soi }}</td>
-                                        <td>{{ row.total_citizen }}</td>
                                         <td>{{ row.huataphan }}</td>
                                         <td>{{ row.taiburi }}</td>
                                         <td>{{ row.male }}</td>
                                         <td>{{ row.female }}</td>
+                                        <td>{{ row.total_citizen }} </td>
                                     </tr>
                                 </transition-group>
 
                                 <!-- Result Row (Total) -->
                                 <tr v-if="selectedRows.length != 0" key="result">
                                     <td>ผลลัพธ์</td>
-                                    <td>{{ totalCitizen }}</td>
                                     <td>{{ totalHuataphan }}</td>
                                     <td>{{ totalTaiburi }}</td>
                                     <td>{{ totalMale }}</td>
                                     <td>{{ totalFemale }}</td>
+                                    <td>{{ totalCitizen }} คน</td>
                                 </tr>
                                 <tr v-else>
                                     <td colspan="7" class="has-text-centered is-4 has-text-danger">กรุณาเลือกข้อมูล</td>
@@ -102,7 +104,7 @@ export default {
     },
     methods: {
         exportToCSV() {
-            const headers = ['ซอย', 'ราษฎร', 'หัวตะพาน', 'ไทรบุรี', 'ชาย', 'หญิง'];
+            const headers = ['ซอย', 'ราษฎร', 'หัวตะพาน', 'ไทยบุรี', 'ชาย', 'หญิง'];
             const data = this.rows
                 .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
                 .map(row => [
@@ -149,7 +151,7 @@ export default {
                     ซอย: row.soi,
                     ราษฎร: row.total_citizen,
                     หัวตะพาน: row.huataphan,
-                    ไทรบุรี: row.taiburi,
+                    ไทยบุรี: row.taiburi,
                     ชาย: row.male,
                     หญิง: row.female
                 }));
@@ -159,7 +161,7 @@ export default {
                 ซอย: 'ผลลัพธ์',
                 ราษฎร: this.totalCitizen,
                 หัวตะพาน: this.totalHuataphan,
-                ไทรบุรี: this.totalTaiburi,
+                ไทยบุรี: this.totalTaiburi,
                 ชาย: this.totalMale,
                 หญิง: this.totalFemale,
             };
@@ -220,6 +222,7 @@ export default {
             console.log('res:', res)
             this.selectedRows = res[0]
             this.rows = res[1]
+            console.log('this.rows:', this.rows)
             this.totalSelected = res[0].length
 
         } catch (error) {

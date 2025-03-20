@@ -15,21 +15,31 @@ export const userEditSchema = yup.object({
 
   password: yup
     .string()
-    .min(8, 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร')
-    .max(30, 'รหัสผ่านต้องมีความยาวไม่เกิน 30 ตัวอักษร')
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, 'รหัสผ่านต้องมีทั้งตัวอักษรภาษาอังกฤษและตัวเลข')
     .nullable()
     .notRequired()
+    .test(
+      'password-validation',
+      'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร และมีทั้งตัวอักษรภาษาอังกฤษและตัวเลข',
+      (value) => {
+        if (!value) return true // ถ้าเป็นค่าว่าง ให้ผ่านการตรวจสอบ
+        return (
+          value.length >= 8 &&
+          value.length <= 30 &&
+          /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/.test(value)
+        )
+      }
+    )
     .label('รหัสผ่าน'),
 
   confirm_password: yup
     .string()
-    .min(8, 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร')
-    .max(30, 'รหัสผ่านต้องมีความยาวไม่เกิน 30 ตัวอักษร')
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, 'รหัสผ่านต้องมีทั้งตัวอักษรภาษาอังกฤษและตัวเลข')
     .nullable()
     .notRequired()
-    .oneOf([yup.ref('password'), null], 'รหัสผ่านยืนยันไม่ตรงกัน')
+    .test('confirm-password-validation', 'รหัสผ่านยืนยันไม่ตรงกัน', function (value) {
+      const { password } = this.parent
+      if (!password) return true // ถ้า password เป็นค่าว่าง ให้ confirm_password ผ่านได้
+      return value === password
+    })
     .label('ยืนยันรหัสผ่าน'),
 
   user_prefix: yup
@@ -54,12 +64,12 @@ export const userEditSchema = yup.object({
 
   phone_number: yup
     .string()
+    .nullable() // อนุญาตให้เป็น null ได้
     .test(
       'length',
       'เบอร์โทรศัพท์ต้องมีความยาว 10 ตัวอักษร',
-      (value) => value === '' || value?.length === 10
+      (value) => !value || value.length === 10 // ถ้ามีค่า ต้องมีความยาว 10 ตัวอักษร
     )
-    .nullable()
     .label('เบอร์โทรศัพท์'),
 
   id_role: yup
@@ -94,8 +104,7 @@ export const userCreateSchema = yup.object({
     .min(8, 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร')
     .max(30, 'รหัสผ่านต้องมีความยาวไม่เกิน 30 ตัวอักษร')
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, 'รหัสผ่านต้องมีทั้งตัวอักษรภาษาอังกฤษและตัวเลข')
-    .nullable()
-    .notRequired()
+    .required('กรุณากรอกรหัสผ่าน')
     .label('รหัสผ่าน'),
 
   confirm_password: yup
@@ -103,8 +112,7 @@ export const userCreateSchema = yup.object({
     .min(8, 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร')
     .max(30, 'รหัสผ่านต้องมีความยาวไม่เกิน 30 ตัวอักษร')
     .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, 'รหัสผ่านต้องมีทั้งตัวอักษรภาษาอังกฤษและตัวเลข')
-    .nullable()
-    .notRequired()
+    .required('กรุณากรอกรหัสผ่าน')
     .oneOf([yup.ref('password'), null], 'รหัสผ่านยืนยันไม่ตรงกัน')
     .label('ยืนยันรหัสผ่าน'),
 

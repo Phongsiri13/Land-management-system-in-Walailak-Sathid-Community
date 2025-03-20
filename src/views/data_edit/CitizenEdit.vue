@@ -4,8 +4,8 @@
             <div class="box column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <h1 class="title has-text-centered has-text-link">แก้ไขรายละเอียดของราษฎร</h1>
                 <!-- 🔹 ปุ่มกลับหน้าแรก (มุมขวาบน) -->
-                <div class="is-flex is-justify-content-flex-end">
-                    <button class="button is-danger is-small" @click="goHome">
+                <div class="is-flex is-justify-content-flex-start my-2">
+                    <button class="button is-primary is-small" @click="goHome">
                         <span class="icon">
                             <i class="fas fa-home"></i>
                         </span>
@@ -17,7 +17,7 @@
                         <!-- prefix -->
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> คำนำหน้าชื่อ</label>
+                                <label class="label">คำนำหน้าชื่อ <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select v-model="formPeopleData.prefix" @change="validateField('prefix')">
@@ -37,7 +37,7 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> ชื่อจริง</label>
+                                <label class="label">ชื่อจริง <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <input class="input" type="text" @input="validateField('firstName')"
                                         v-model="formPeopleData.firstName" placeholder="กรุณากรอกชื่อจริง"
@@ -50,7 +50,7 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> นามสกุล</label>
+                                <label class="label">นามสกุล <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <input class="input" type="text" @input="validateField('lastName')"
                                         :class="{ 'is-danger': errors.lastName }" v-model="formPeopleData.lastName"
@@ -62,7 +62,7 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> เลขบัตรประชาชน</label>
+                                <label class="label">เลขบัตรประชาชน <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <input class="input" disabled type="text" @input="validateField('citizenId')"
                                         :class="{ 'is-danger': errors.citizenId }" v-model="formPeopleData.citizenId"
@@ -74,8 +74,8 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label has-text-weight-bold"><strong class="has-text-danger">*</strong>
-                                    เลือกเพศ</label>
+                                <label class="label has-text-weight-bold">
+                                    เลือกเพศ <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <div class="radio-group">
                                         <label class="radio has-border-radius-4 p-2 mb-2 is-size-6">
@@ -96,7 +96,7 @@
 
                         <div class="column is-half">
                             <div class="birthDate">
-                                <label class="label"><strong class="has-text-danger">*</strong> วันเดือนปีเกิด</label>
+                                <label class="label">วันเดือนปีเกิด <strong class="has-text-danger">*</strong></label>
                                 <input class="input" type="date" :class="{ 'is-danger': errors.birthDate }"
                                     v-model="formPeopleData.birthDate" @change="validateField('birthDate')" />
                                 <DisplayError v-if="errors.birthDate" :err_text="errors.birthDate" />
@@ -105,7 +105,7 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> เบอร์โทรศัพท์</label>
+                                <label class="label">เบอร์โทรศัพท์ <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <input class="input" type="tel" v-model="formPeopleData.phone"
                                         @input="validateField('phone')" :class="{ 'is-danger': errors.phone }"
@@ -117,24 +117,26 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label">บ้านเลขที่</label>
+                                <label class="label">บ้านเลขที่ <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <input class="input" type="text" placeholder="กรุณากรอกบ้านเลขที่"
-                                        v-model="formPeopleData.houseNumber" />
+                                        :class="{ 'is-danger': errors.houseNumber }"
+                                        @input="validateField('houseNumber')" v-model="formPeopleData.houseNumber" />
+                                    <DisplayError v-if="errors.houseNumber" :err_text="errors.houseNumber" />
                                 </div>
                             </div>
                         </div>
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> ตำบล</label>
+                                <label class="label">ตำบล <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select v-model="formPeopleData.subdistrict"
                                             :class="{ 'is-danger': errors.subdistrict }" @change="updateVillageOptions">
                                             <option value="" selected>เลือกตำบล</option>
                                             <option value="หัวตะพาน">หัวตะพาน</option>
-                                            <option value="ไทรบุรี">ไทรบุรี</option>
+                                            <option value="ไทยบุรี">ไทยบุรี</option>
                                         </select>
                                     </div>
                                     <DisplayError v-if="errors.subdistrict" :err_text="errors.subdistrict" />
@@ -144,7 +146,7 @@
 
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> หมู่ที่</label>
+                                <label class="label">หมู่ที่ <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select @change="validateField('village')" v-model="formPeopleData.village">
@@ -161,7 +163,7 @@
                         <!-- sois -->
                         <div class="column is-half">
                             <div class="field">
-                                <label class="label"><strong class="has-text-danger">*</strong> อาศัยอยู่ในซอยใด</label>
+                                <label class="label">ซอย <strong class="has-text-danger">*</strong></label>
                                 <div class="control">
                                     <div class="select is-fullwidth">
                                         <select v-model="formPeopleData.selectedSoi"
@@ -232,7 +234,7 @@ export default {
                     { value: '8', label: 'หมู่ที่ 8 บ้านสวนหมาก' },
                     { value: '9', label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
                 ],
-                'ไทรบุรี': [
+                'ไทยบุรี': [
                     { value: '1', label: 'หมู่ที่ 1 บ้านโพธิ์' },
                     { value: '2', label: 'หมู่ที่ 2 บ้านคูเถร' },
                     { value: '3', label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
@@ -314,18 +316,9 @@ export default {
             const isValid = await this.validateForm();
             if (!isValid) return;
 
-            // Compare form data with old data
-            const hasChanges = this.compareData(this.formPeopleData, this.oldData);
-
-            if (!hasChanges) {
-                await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
-                return; // No changes to submit
-            }
-
-            // console.log("p-data:", JSON.stringify(this.formPeopleData))
-
             // ส่งข้อมูลไปที่ API
             try {
+                // 
                 const response = await axios.put(`http://localhost:3000/citizen/${this.id_card}`, {
                     dataUpdate: this.formPeopleData
                 });
@@ -337,13 +330,16 @@ export default {
                     await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
                     return;
                 }
+                console.log('resRefresh:', resRefresh.data)
                 this.formPeopleData = { ...getPeopleModel }
                 const originalData = resRefresh.data[0]
                 this.formPeopleData = {
                     prefix: originalData.prefix_table_id || "",
                     firstName: originalData.first_name || "",
                     lastName: originalData.last_name || "",
-                    birthDate: originalData.birthday ? new Date(originalData.birthday).toISOString().split("T")[0] : "",
+                    birthDate: originalData.birthday
+                        ? new Date(originalData.birthday).toLocaleDateString('en-CA')
+                        : "",
                     phone: originalData.phone_number || "",
                     citizenId: originalData.ID_CARD,
                     gender: originalData.gender || "",
@@ -353,21 +349,28 @@ export default {
                     houseNumber: originalData.house_number
                 };
                 this.id_card = originalData.ID_CARD;
-                this.oldData = { ...this.formPeopleData };
             } catch (error) {
-                console.error('Error:', error);
-                showErrorAlert('การอัพเดทราษฎร', error.message);
+                console.error('Error:', error.response);
+                let errorMessage = 'ไม่สำเร็จ';
+
+                // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+                    } else if (error.response.status === 500) {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์';
+                    } else {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+                    }
+                } else if (error.request) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                } else {
+                    errorMessage = error.message || 'เกิดข้อผิดพลาดในการดำเนินการ';
+                }
+
+                await showErrorAlert('การอัพเดทข้อมูลไม่สำเร็จ!', errorMessage);
             }
         },
-        // Utility method to compare current data with old data
-        compareData(newData, oldData) {
-            for (const key in newData) {
-                if (newData[key] !== oldData[key]) {
-                    return true; // If any field is different, return true (indicating a change)
-                }
-            }
-            return false; // No changes detected
-        }
     },
     async created() {
         try {
@@ -384,6 +387,7 @@ export default {
 
             if (response.data.length <= 0) {
                 await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
+                this.goHome();
                 return;
             }
 
@@ -393,7 +397,9 @@ export default {
                 prefix: originalData.prefix_table_id || "",
                 firstName: originalData.first_name || "",
                 lastName: originalData.last_name || "",
-                birthDate: originalData.birthday ? new Date(originalData.birthday).toISOString().split("T")[0] : "",
+                birthDate: originalData.birthday
+                    ? new Date(originalData.birthday).toLocaleDateString('en-CA')
+                    : "",
                 phone: originalData.phone_number || "",
                 citizenId: originalData.ID_CARD,
                 gender: originalData.gender || "",
@@ -403,8 +409,6 @@ export default {
                 houseNumber: originalData.house_number
             };
             this.id_card = originalData.ID_CARD;
-            this.oldData = { ...this.formPeopleData };
-
         } catch (error) {
             console.error('Error fetching person data:', error);
         }
@@ -423,7 +427,7 @@ export default {
 
 </script>
 <style scoped>
-.button{
+.button {
     border-radius: 5px;
 }
 </style>

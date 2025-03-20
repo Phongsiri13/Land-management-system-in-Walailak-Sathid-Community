@@ -9,8 +9,7 @@
                             สรุปผลการใช้ประโยชน์จากที่ดินในชุมชนสาธิต</h2>
                     </div>
                     <!-- filter sois -->
-                    <div v-if="userRole === roles[3].role_id || userRole === roles[1].role_id"
-                        class="select ">
+                    <div v-if="userRole === roles[3].role_id || userRole === roles[1].role_id" class="select ">
                         <select v-model="selectedSoi" @change="selectOption">
                             <option value="" selected>ทั้งหมด</option>
                             <option v-for="soi in sois" :key="soi.value" :value="soi.value" @change="selectOption">
@@ -30,13 +29,12 @@
                         <div class="card">
                             <div class="card-content">
                                 <h4 class="title is-4 has-text-centered has-text-dark">
-                                    <img width="28" height="28" :src="getDefaultPhoto(landUsage.value)"
-                                        alt="">
+                                    <img width="28" height="28" :src="getDefaultPhoto(landUsage.value)" alt="">
                                     {{ landUsage.label }}
                                 </h4>
                                 <h4 class="title is-4 has-text-centered has-text-dark">
                                     <!-- Dynamically bind the correct key for each landUsage value -->
-                                    {{ getTotalLandUsage(landUsage.value) }}
+                                    {{ getTotalLandUsage(landUsage.value) }} <span style="font-size: 16px;">แปลง</span>
                                 </h4>
                             </div>
                         </div>
@@ -99,10 +97,9 @@ import {
     LinearScale,
     ArcElement
 } from 'chart.js'
-import { fetchLandUseDashboard, fetchSois, fetchOneLandUseDashboard } from '@/api/apiLand';
+import { fetchSois, fetchOneLandUseDashboard } from '@/api/apiLand';
 import { fetchLandUsageActive } from '@/api/apiHeir';
 import { useUserStore } from '@/stores/useUserStore';
-import { store } from '@/store';
 import roles from '@/role_config';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
@@ -131,7 +128,13 @@ export default defineComponent({
                     },
                     y: {
                         stacked: true,
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return Number.isInteger(value) ? value : null; // แสดงเฉพาะจำนวนเต็ม
+                            },
+                            precision: 0
+                        }
                     }
                 },
                 layout: {
@@ -173,7 +176,7 @@ export default defineComponent({
                 photo: item.photo || this.getDefaultPhoto(item.usage_id) // ใช้รูป default ถ้าไม่มี photo
             }));
         },
-        // Define chartData2 as a computed property so it always reflects summariesLandUse values.
+        // bar chart
         chartData2() {
             return {
                 labels: this.titleLandUsage.map(landUsage => landUsage.label), // Dynamically set labels
@@ -189,6 +192,7 @@ export default defineComponent({
                 ]
             };
         },
+        // circle chart
         chartDataPie() {
             return {
                 labels: this.titleLandUsage.map(landUsage => landUsage.label), // Dynamically set labels
@@ -203,8 +207,7 @@ export default defineComponent({
                     }
                 ]
             };
-        }
-        ,
+        },
         userRole() {
             const userStore = useUserStore();
             return userStore.userRole;
@@ -272,7 +275,7 @@ export default defineComponent({
             console.log('reload')
             this.reload = true;
             try {
-                const res_dash = await fetchOneLandUseDashboard(this.selectedSoi == ''? -1:this.selectedSoi);
+                const res_dash = await fetchOneLandUseDashboard(this.selectedSoi == '' ? -1 : this.selectedSoi);
                 this.summariesLandUse = res_dash;
                 this.isActive = true
             } catch (error) {
@@ -285,7 +288,7 @@ export default defineComponent({
             this.isActive = !this.isActive;
         },
         async selectOption() {
-            console.log(`Selected: `, this.selectedSoi);
+            // console.log(`Selected: `, this.selectedSoi);
             try {
                 const res_dash = await fetchOneLandUseDashboard(typeof this.selectedSoi === 'string' && this.selectedSoi.trim() === '' ? '-1' : this.selectedSoi);
                 this.summariesLandUse = res_dash;

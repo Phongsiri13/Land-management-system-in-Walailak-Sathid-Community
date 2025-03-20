@@ -124,7 +124,7 @@ export const fetchOneLandUseDashboard = async (soi_id='-1') => {
 export const fetchTableDashboard = async () => {
   try {
     const response = await axios.get('http://localhost:3000/dashboard/summary')
-    console.log('res-land:', response.data)
+    // console.log('res-land:', response.data)
     const status_land = []
     const selectedControl = []
     for (let ls of response.data) {
@@ -137,7 +137,9 @@ export const fetchTableDashboard = async () => {
         agriculture_title: parseInt(ls.current_land_status02),
         occupied_area: parseInt(ls.current_land_status03),
         unclaimed_area: parseInt(ls.current_land_status04),
-        rai: ls.total_area_in_rai
+        rai: ls.rai || 0,
+        ngan: ls.ngan || 0,
+        square_wa: ls.square_wa || 0
       })
     }
     return [selectedControl ,status_land]

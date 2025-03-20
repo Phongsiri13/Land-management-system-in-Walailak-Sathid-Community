@@ -36,8 +36,8 @@
         </div>
 
         <div class="form-group">
-          <label for="confirm_password">ยืนยันรหัสผ่าน <strong v-if="isAddMode"
-              class="has-text-danger">*</strong></label>
+          <label for="confirm_password">ยืนยันรหัสผ่าน 
+            <strong v-if="isAddMode" class="has-text-danger">*</strong></label>
           <input type="password" id="confirm_password" v-model="formData.confirm_password"
             placeholder="กรุณากรอกยืนยันรหัสผ่าน" :class="{ 'is-danger': errors.confirm_password }"
             @input="validateField('confirm_password')">

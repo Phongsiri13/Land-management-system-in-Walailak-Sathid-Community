@@ -38,11 +38,7 @@ export const checkFullnameMatchHeir = async (fname, lname) => {
       `http://localhost:3000/heir/fullname?fname=${encodeURIComponent(fname)}&lname=${encodeURIComponent(lname)}`
     )
     console.log('send:', response.data)
-    if (response.data) {
-      return true
-    } else {
-      return false
-    }
+    return response
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
@@ -85,20 +81,16 @@ export const fullCheckMatchCitizen = async (citizenFullname) => {
 export const getHeirUsingFullName = async (split_name) => {
   try {
     // แปลงค่าที่เป็นภาษาไทยให้เป็น URL-safe
-    // const encodedFname = encodeURIComponent(split_name.firstname)
-    // const encodedLname = encodeURIComponent(split_name.lastname)
-    const response = await axios.get(`${DOMAIN_NAME}/heir/fullname/`, {
+    const encodedFname = encodeURIComponent(split_name.firstname)
+    const encodedLname = encodeURIComponent(split_name.lastname)
+    const response = await axios.get(`${DOMAIN_NAME}/heir/fullname`, {
       params: {
-        fname: split_name.firstname,
-        lname: split_name.lastname
+        fname: encodedFname || '',
+        lname: encodedLname || ''
       }
     })
     console.log('send:', response)
-    if (response.data.length > 0) {
-      return response.data
-    } else {
-      return []
-    }
+    return response
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }
@@ -110,7 +102,7 @@ export const fetchRelationActive = async (active) => {
     console.log('res-land:', response.data)
     const status_land = []
     for (let ls of response.data.data) {
-      status_land.push({ value: ls.id, label: `${ls.label}`, gender: ls.gender })
+      status_land.push({ value: ls.id, label: `${ls.label}`})
     }
     return status_land
   } catch (error) {
@@ -120,13 +112,23 @@ export const fetchRelationActive = async (active) => {
 
 export const fetchLandUsageActive = async (active) => {
   try {
-    const response = await axios.get(`http://localhost:3000/manage_land_usages_info/`)
+    const response = await axios.get(`http://localhost:3000/manage_land_usages_info/active/${active}`)
     console.log('res-land:', response.data)
     const status_land = []
     for (let ls of response.data) {
       status_land.push({ value: ls.id_usage, label: `${ls.land_usage_name}` })
     }
     return status_land
+  } catch (error) {
+    throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
+  }
+}
+
+export const citizenRelatedHeir = async (card_id) => {
+  try {
+    const response = await axios.get(`${DOMAIN_NAME}/heir/citizen/related/heir/${card_id}`);
+    console.log('send:', response.data)
+    return response.data
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
   }

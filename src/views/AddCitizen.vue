@@ -107,10 +107,12 @@
 
             <div class="column is-half">
               <div class="field">
-                <label class="label">บ้านเลขที่</label>
+                <label class="label">บ้านเลขที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input" type="text" placeholder="กรุณากรอกบ้านเลขที่"
+                    :class="{ 'is-danger': errors.houseNumber }" @input="validateField('houseNumber')"
                     v-model="formPeopleData.houseNumber" />
+                  <DisplayError v-if="errors.houseNumber" :err_text="errors.houseNumber" />
                 </div>
               </div>
             </div>
@@ -124,7 +126,7 @@
                       @change="updateVillageOptions">
                       <option value="" selected>เลือกตำบล</option>
                       <option value="หัวตะพาน">หัวตะพาน</option>
-                      <option value="ไทรบุรี">ไทรบุรี</option>
+                      <option value="ไทยบุรี">ไทยบุรี</option>
                     </select>
                   </div>
                   <DisplayError v-if="errors.subdistrict" :err_text="errors.subdistrict" />
@@ -171,14 +173,12 @@
           <!-- Submit -->
           <div class="field is-grouped is-grouped-centered py-3 is-flex is-justify-content-center">
             <!-- Reset Button -->
-            <button type="button" class="button is-medium is-size-5 px-5" @click="resetForm"
-              style="min-width: 150px;">
+            <button type="button" class="button is-medium is-size-5 px-5" @click="resetForm" style="min-width: 150px;">
               <span>ยกเลิก</span>
             </button>
 
             <!-- Submit Button -->
-            <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3"
-              style="min-width: 150px;">
+            <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3" style="min-width: 150px;">
               <span>บันทึก</span>
             </button>
           </div>
@@ -196,6 +196,7 @@ import * as yup from "yup";
 import { getPeopleModel } from '@/model/citizenModel';
 import { CitizenValidSchema } from '@/model/citizenModel';
 import DisplayError from '@/components/form_valid/DisplayError.vue';
+import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 
 export default {
   components: {
@@ -218,27 +219,27 @@ export default {
       village: [], // เพื่อเก็บหมู่ที่ตามตำบลที่เลือก
       villageOptions: {
         'หัวตะพาน': [
-          { value: 1, label: 'หมู่ที่ 1 บ้านคลองดิน' },
-          { value: 2, label: 'หมู่ที่ 2 บ้านฉิมพลี' },
-          { value: 3, label: 'หมู่ที่ 3 บ้านคลองขุด' },
-          { value: 4, label: 'หมู่ที่ 4 บ้านทุ่งตก' },
-          { value: 5, label: 'หมู่ที่ 5 บ้านดอนยาง' },
-          { value: 6, label: 'หมู่ที่ 6 บ้านทุ่งชน' },
-          { value: 7, label: 'หมู่ที่ 7 บ้านวัดประดู่' },
-          { value: 8, label: 'หมู่ที่ 8 บ้านสวนหมาก' },
-          { value: 9, label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
+          { value: '1', label: 'หมู่ที่ 1 บ้านคลองดิน' },
+          { value: '2', label: 'หมู่ที่ 2 บ้านฉิมพลี' },
+          { value: '3', label: 'หมู่ที่ 3 บ้านคลองขุด' },
+          { value: '4', label: 'หมู่ที่ 4 บ้านทุ่งตก' },
+          { value: '5', label: 'หมู่ที่ 5 บ้านดอนยาง' },
+          { value: '6', label: 'หมู่ที่ 6 บ้านทุ่งชน' },
+          { value: '7', label: 'หมู่ที่ 7 บ้านวัดประดู่' },
+          { value: '8', label: 'หมู่ที่ 8 บ้านสวนหมาก' },
+          { value: '9', label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
         ],
-        'ไทรบุรี': [
-          { value: 1, label: 'หมู่ที่ 1 บ้านโพธิ์' },
-          { value: 2, label: 'หมู่ที่ 2 บ้านคูเถร' },
-          { value: 3, label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
-          { value: 4, label: 'หมู่ที่ 4 บ้านในหัน' },
-          { value: 5, label: 'หมู่ที่ 5 บ้านไม้มูก' },
-          { value: 6, label: 'หมู่ที่ 6 บ้านปลักจอก' },
-          { value: 7, label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
-          { value: 8, label: 'หมู่ที่ 8 บ้านลุ่มนา' },
-          { value: 9, label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
-          { value: 10, label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
+        'ไทยบุรี': [
+          { value: '1', label: 'หมู่ที่ 1 บ้านโพธิ์' },
+          { value: '2', label: 'หมู่ที่ 2 บ้านคูเถร' },
+          { value: '3', label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
+          { value: '4', label: 'หมู่ที่ 4 บ้านในหัน' },
+          { value: '5', label: 'หมู่ที่ 5 บ้านไม้มูก' },
+          { value: '6', label: 'หมู่ที่ 6 บ้านปลักจอก' },
+          { value: '7', label: 'หมู่ที่ 7 บ้านศาลาต้นท้อน' },
+          { value: '8', label: 'หมู่ที่ 8 บ้านลุ่มนา' },
+          { value: '9', label: 'หมู่ที่ 9 บ้านโคกเหล็ก' },
+          { value: '10', label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
         ]
       },
     };
@@ -255,22 +256,6 @@ export default {
       } else if (this.formPeopleData.prefix == 3) {
         this.formPeopleData.gender = '0'
       }
-    },
-    showSuccessAlert() {
-      Swal.fire({
-        title: 'เพิ่มข้อมูลสำเร็จ!',
-        text: 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว',
-        icon: 'success', // ใช้ 'success' เพื่อแสดงไอคอนสีเขียว
-        confirmButtonText: 'ตกลง'
-      });
-    },
-    showErrorAlert() {
-      Swal.fire({
-        title: 'เพิ่มข้อมูลไม่สำเร็จ!',
-        text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง',
-        icon: 'error', // ใช้ 'error' เพื่อแสดงไอคอนสีแดง
-        confirmButtonText: 'ตกลง'
-      });
     },
     // Validate individual fields
     async validateField(field) {
@@ -300,7 +285,7 @@ export default {
       }
     },
     async updateVillageOptions() {
-      if (this.formPeopleData.subdistrict === 'หัวตะพาน' || this.formPeopleData.subdistrict === 'ไทรบุรี') {
+      if (this.formPeopleData.subdistrict === 'หัวตะพาน' || this.formPeopleData.subdistrict === 'ไทยบุรี') {
         this.village = this.villageOptions[this.formPeopleData.subdistrict];
       } else {
         this.village = [];
@@ -315,23 +300,41 @@ export default {
     getValidationSchema() {
       return yup.object().shape({ ...CitizenValidSchema });
     },
-    // เปลี่ยนอำเภอและตำบล
     async submitCitizen() {
       // ตรวจสอบข้อมูลที่กรอก
       const isValid = await this.validateForm();
       if (!isValid) return;
 
-      console.log("p-data:", JSON.stringify(this.formPeopleData))
+      // console.log("p-data:", JSON.stringify(this.formPeopleData))
 
       // ส่งข้อมูลไปที่ API
       try {
         const response = await axios.post('http://localhost:3000/citizen', this.formPeopleData);
-        console.log('Response:', response.data);
-        this.showSuccessAlert();
+        console.log('Response:', response);
+        await showSuccessAlert('การเพิ่มข้อมูลสำเร็จ!', response.data.message);
         this.resetForm();
       } catch (error) {
-        console.error('Error:', error);
-        this.showErrorAlert();
+        console.error('Error:', error.response);
+        let errorMessage = 'ไม่สำเร็จ';
+
+        // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+        if (error.response) {
+          if (error.response.status === 409) {
+            errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+          } else if (error.response.status === 500) {
+            errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์';
+          } else {
+            errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+          }
+        } else if (error.request) {
+          errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+        } else {
+          errorMessage = error.message || 'เกิดข้อผิดพลาดในการดำเนินการ';
+        }
+
+        await showErrorAlert('การเพิ่มข้อมูลไม่สำเร็จ!', errorMessage);
+      } finally {
+        this.errors = {}
       }
     },
     resetForm() {
@@ -378,12 +381,11 @@ export default {
       this.validateField('prefix'); // ตรวจสอบฟิลด์
     }
   }
-
 };
 </script>
 
 <style scoped>
-.button{
+.button {
   border-radius: 5px;
 }
 

@@ -146,8 +146,6 @@ export default {
   pointer-events: none; /* ไม่ให้มีผลต่อการคลิก */
 }
 
-
-
 .land-info {
   background: #fff;
   display: flex;

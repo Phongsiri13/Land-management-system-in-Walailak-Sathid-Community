@@ -54,7 +54,7 @@ export function calTotalLandArea(raiV, nganV, squareWaV) {
   return totalRai
 }
 
-// return rai Ngan wa
+// return rai Ngan squareWa
 export function convertSquareWaToRaiNganWa(totalSquareWa) {
   if (!totalSquareWa || totalSquareWa < 0) return { rai: 0, ngan: 0, squareWa: 0 }
 

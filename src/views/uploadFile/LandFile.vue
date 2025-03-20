@@ -190,21 +190,31 @@ export default {
       }
     },
     downloadLink(filePath) {
-      const downloadUrl = `http://localhost:3000/upload_file/download_document/${filePath}`;
+      const downloadUrl = `http://localhost:3000/upload_file/download_land_document/${filePath}`;
       window.open(downloadUrl, '_blank');
     },
     openDeleteModal(file) {
       this.fileToDelete = file;
       this.showModal = true;
     },
-    confirmDelete() {
+    async confirmDelete(file_id) {
       this.isDeleting = true;
-      setTimeout(() => {
-        this.files = this.files.filter(f => f.id !== this.fileToDelete.id);
-        this.showModal = false;
-        this.fileToDelete = null;
-        this.isDeleting = false;
-      }, 2000);
+      // console.log('files:', file_id)
+      try {
+        const response = await axios.delete(`http://localhost:3000/upload_file/land/document/${file_id}`);
+        // console.log('res:', response);
+        setTimeout(async () => {
+          this.isDeleting = false;
+          await this.getLandFiles(this.LAND_ID)
+        }, 1000);
+      } catch (error) {
+        console.error("❌ Error deleting land:", error);
+      } finally {
+        setTimeout(() => {
+          this.isDeleting = false;
+          this.showModal = false;
+        }, 1000);
+      }
     },
     showImage(filePath, index) {
       this.lightboxIndex = index;

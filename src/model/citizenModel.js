@@ -36,6 +36,11 @@ export const CitizenValidSchema = {
       (value, originalValue) => (originalValue === '' ? null : value) // Convert empty string to null
     ),
   gender: yup.string().required('กรุณาเลือกเพศ'),
+  houseNumber: yup
+    .string()
+    .matches(/^\d+(\/\d+)?$/, 'บ้านเลขที่ต้องเป็นตัวเลข หรือมี / และตามด้วยตัวเลขเท่านั้น')
+    .required('กรุณากรอกบ้านเลขที่')
+    .max(10, 'บ้านเลขที่ต้องไม่เกิน 10 ตัวอักษร'),
   phone: yup
     .string()
     .matches(/^\d{10}$/, 'กรอกเบอร์โทรศัพท์ให้ครบ 10 หลัก')

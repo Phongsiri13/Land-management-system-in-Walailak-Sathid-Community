@@ -13,9 +13,9 @@
           <LoadingSpinner :isLoading="!exitFileLoading" textTitle="กำลังโหลดไฟล์ที่เกี่ยวข้อง..." />
         </div>
         <div v-else class="column is-three-fifths-tablet is-full-mobile is-three-fifths-desktop">
-          <UploadList :titleFile="'ไฟล์ที่อัปโหลดเอกสารที่เกี่ยวข้องกับราษฎร'" :iconImage="'fas fa-file-pdf'" :files="files"
-            :userRole="userRole" :roles="roles" @show-image="showImage" @open-delete-modal="openDeleteModal"
-            @download-link="downloadLink" />
+          <UploadList :titleFile="'ไฟล์ที่อัปโหลดเอกสารที่เกี่ยวข้องกับราษฎร'" :iconImage="'fas fa-file-pdf'"
+            :files="files" :userRole="userRole" :roles="roles" @show-image="showImage"
+            @open-delete-modal="openDeleteModal" @download-link="downloadLink" />
         </div>
       </div>
     </div>
@@ -195,14 +195,24 @@ export default {
       this.fileToDelete = file;
       this.showModal = true;
     },
-    confirmDelete() {
+    async confirmDelete(file_id) {
       this.isDeleting = true;
-      setTimeout(() => {
-        this.files = this.files.filter(f => f.id !== this.fileToDelete.id);
-        this.showModal = false;
-        this.fileToDelete = null;
-        this.isDeleting = false;
-      }, 2000);
+      // console.log('files:', file_id)
+      try {
+        const response = await axios.delete(`http://localhost:3000/upload_file/citizen/${file_id}`);
+        // console.log('res:', response);
+        setTimeout(async () => {
+          this.isDeleting = false;
+          await this.getLandFiles(this.LAND_ID);
+        }, 1000);
+      } catch (error) {
+        console.error("❌ Error deleting land:", error);
+      } finally {
+        setTimeout(() => {
+          this.isDeleting = false;
+          this.showModal = false;
+        }, 1000);
+      }
     },
     showImage(filePath, index) {
       this.lightboxIndex = index;

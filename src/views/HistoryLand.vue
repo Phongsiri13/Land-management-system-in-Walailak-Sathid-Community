@@ -6,57 +6,80 @@
                 <div class="modal-background" @click="closeModal"></div>
                 <div class="modal-content">
                     <div class="box">
-                        <h3 class="title">ข้อมูลปัจจุบัน</h3>
-                        <p :class="highlightDiff('tf_number')" class="my-1"><strong>แปลงเลขที่:</strong> {{ land_data.tf_number }}
+                        <div class="is-flex is-justify-content-space-between">
+                            <h3 class="title">ข้อมูลปัจจุบัน</h3>
+                            <p>วันที่แก้ไข: {{ ToThaiDate(history_data.updated_at) }}</p>
+                        </div>
+                        <p :class="highlightDiff('tf_number')" class="my-1"><strong>แปลงเลขที่:</strong> {{
+                            land_data.tf_number }}
                         </p>
-                        <p :class="highlightDiff('spk_area')" class="my-1"><strong>ระวาง:</strong> {{ land_data.spk_area }}</p>
-                        <p :class="highlightDiff('number')" class="my-1"><strong>เลขที่ดิน:</strong> {{ land_data.number }}</p>
-                        <p :class="highlightDiff('volume')" class="my-1"><strong>เล่ม:</strong> {{ land_data.volume }}</p>
-                        <p :class="highlightDiff('current_soi')" class="my-1"><strong>ซอย:</strong> {{ land_data.current_soi }}</p>
+                        <p :class="highlightDiff('spk_area')" class="my-1"><strong>ระวาง:</strong> {{ land_data.spk_area
+                            }}</p>
+                        <p :class="highlightDiff('number')" class="my-1"><strong>เลขที่ดิน:</strong> {{ land_data.number
+                            }}</p>
+                        <p :class="highlightDiff('volume')" class="my-1"><strong>เล่ม:</strong> {{ land_data.volume }}
+                        </p>
+                        <p :class="highlightDiff('current_soi')" class="my-1"><strong>ซอย:</strong> {{
+                            land_data.current_soi }}</p>
                         <p :class="highlightDiff('id_card')"><strong>บัตรประชาชน:</strong> {{ land_data.id_card }}</p>
-                        <p :class="highlightDiff('land_status_name')" class="my-1"><strong>สถานะการใช้ที่ดิน:</strong> {{
-                            land_data.land_status_name }}</p>
+                        <p :class="highlightDiff('land_status_name')" class="my-1"><strong>สถานะการใช้ที่ดิน:</strong>
+                            {{
+                                land_data.land_status_name }}</p>
                         <p :class="highlightDiff('l_house_number')" class="my-1"><strong>บ้านเลขที่:</strong> {{
                             land_data.l_house_number }}</p>
                         <p :class="highlightDiff('l_village_number')" class="my-1"><strong>หมู่ที่:</strong> {{
                             land_data.l_village_number }}</p>
-                        <p :class="highlightDiff('l_district')" class="my-1"><strong>ตำบล:</strong> {{ land_data.l_district }}</p>
+                        <p :class="highlightDiff('l_district')" class="my-1"><strong>ตำบล:</strong> {{
+                            land_data.l_district }}</p>
                         <p :class="highlightDiff('rai')" class="my-1"><strong>ไร่:</strong> {{ land_data.rai }}</p>
                         <p :class="highlightDiff('ngan')" class="my-1"><strong>งาน:</strong> {{ land_data.ngan }}</p>
-                        <p :class="highlightDiff('square_wa')" class="my-1"><strong>ตารางวา:</strong> {{ land_data.square_wa }}</p>
+                        <p :class="highlightDiff('square_wa')" class="my-1"><strong>ตารางวา:</strong> {{
+                            land_data.square_wa }}</p>
                         <p :class="highlightDiff('lat')" class="my-1"><strong>lat:</strong> {{ land_data.lat }}</p>
                         <p :class="highlightDiff('long')" class="my-1"><strong>long:</strong> {{ land_data.long }}</p>
-                        <p :class="highlightDiff('notation')" class="my-1"><strong>หมายเหตุ:</strong> {{ land_data.notation }}</p>
-                        <p :class="highlightDiff('active')" class="my-1"><strong>กำลังใช้งาน:</strong> {{ land_data.active == '1' ? "ใช้สิทธิ์อยู่" : "ถูกยกเลิก" }}</p>
+                        <p :class="highlightDiff('notation')" class="my-1"><strong>หมายเหตุ:</strong> {{
+                            land_data.notation }}</p>
+                        <p :class="highlightDiff('active')" class="my-1"><strong>กำลังใช้งาน:</strong> {{
+                            land_data.active == '1' ? "ใช้สิทธิ์อยู่" : "ถูกยกเลิก" }}</p>
 
                         <hr>
 
                         <h3 class="title">ข้อมูลที่แก้ไข</h3>
-                        <p :class="highlightDiff('tf_number')" class="my-1"><strong>แปลงเลขที่:</strong> {{ history_data.tf_number }}
+                        <p :class="highlightDiff('tf_number')" class="my-1"><strong>แปลงเลขที่:</strong> {{
+                            history_data.tf_number }}
                         </p>
-                        <p :class="highlightDiff('spk_area')" class="my-1"><strong>ระวาง:</strong> {{ history_data.spk_area }}</p>
-                        <p :class="highlightDiff('number')" class="my-1"><strong>เลขที่ดิน:</strong> {{ history_data.number }}</p>
-                        <p :class="highlightDiff('volume')" class="my-1"><strong>เล่ม:</strong> {{ history_data.volume }}</p>
-                        <p :class="highlightDiff('current_soi')" class="my-1"><strong>ซอย:</strong> {{ history_data.current_soi }}
+                        <p :class="highlightDiff('spk_area')" class="my-1"><strong>ระวาง:</strong> {{
+                            history_data.spk_area }}</p>
+                        <p :class="highlightDiff('number')" class="my-1"><strong>เลขที่ดิน:</strong> {{
+                            history_data.number }}</p>
+                        <p :class="highlightDiff('volume')" class="my-1"><strong>เล่ม:</strong> {{ history_data.volume
+                            }}</p>
+                        <p :class="highlightDiff('current_soi')" class="my-1"><strong>ซอย:</strong> {{
+                            history_data.current_soi }}
                         </p>
-                        <p :class="highlightDiff('id_card')" class="my-1"><strong>บัตรประชาชน:</strong> {{ history_data.id_card }}</p>
-                        <p :class="highlightDiff('land_status_name')" class="my-1"><strong>สถานะการใช้ที่ดิน:</strong> {{
-                            history_data.land_status_name }}</p>
+                        <p :class="highlightDiff('id_card')" class="my-1"><strong>บัตรประชาชน:</strong> {{
+                            history_data.id_card }}</p>
+                        <p :class="highlightDiff('land_status_name')" class="my-1"><strong>สถานะการใช้ที่ดิน:</strong>
+                            {{
+                                history_data.land_status_name }}</p>
                         <p :class="highlightDiff('l_house_number')" class="my-1"><strong>บ้านเลขที่:</strong> {{
                             history_data.l_house_number }}</p>
                         <p :class="highlightDiff('l_village_number')" class="my-1"><strong>หมู่ที่:</strong> {{
                             history_data.l_village_number }}</p>
-                        <p :class="highlightDiff('l_district')" class="my-1"><strong>ตำบล:</strong> {{ history_data.l_district }}</p>
+                        <p :class="highlightDiff('l_district')" class="my-1"><strong>ตำบล:</strong> {{
+                            history_data.l_district }}</p>
                         <p :class="highlightDiff('rai')" class="my-1"><strong>ไร่:</strong> {{ history_data.rai }}</p>
                         <p :class="highlightDiff('ngan')" class="my-1"><strong>งาน:</strong> {{ history_data.ngan }}</p>
-                        <p :class="highlightDiff('square_wa')" class="my-1"><strong>ตารางวา:</strong> {{ history_data.square_wa }}
+                        <p :class="highlightDiff('square_wa')" class="my-1"><strong>ตารางวา:</strong> {{
+                            history_data.square_wa }}
                         </p>
                         <p :class="highlightDiff('lat')"><strong>lat:</strong> {{ history_data.lat }}</p>
                         <p :class="highlightDiff('long')"><strong>long:</strong> {{ history_data.long }}</p>
                         <p :class="highlightDiff('notation')"><strong>หมายเหตุ:</strong> {{ history_data.notation }}</p>
-                        <p :class="highlightDiff('active')"><strong>กำลังใช้งาน:</strong> {{ history_data.active == '1' ? "ใช้สิทธิ์อยู่" : "ถูกยกเลิก"  }}</p>
+                        <p :class="highlightDiff('active')"><strong>กำลังใช้งาน:</strong> {{ history_data.active == '1'
+                            ? "ใช้สิทธิ์อยู่" : "ถูกยกเลิก" }}</p>
 
-                        <button class="button is-primary is-dark my-2" @click="closeModal">ปิด</button>
+                        <button class="button is-link my-2" @click="closeModal">ปิด</button>
                     </div>
 
                 </div>
@@ -67,26 +90,25 @@
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <h1 class="is-size-4 has-text-centered">ประวัติการแก้ไขที่ดิน</h1>
+                        <h1 class="is-size-4 has-text-centered has-text-link">ประวัติการแก้ไขที่ดิน</h1>
                         <!-- f1 -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
                                 <div class="field">
                                     <div class="control" id="mySelect">
                                         <div class="select is-fullwidth">
-                                            <select>
-                                                <option selected>ชื่อ</option>
-                                                <option>แปลงเลขที่</option>
-                                                <option>สถานะ</option>
+                                            <select v-model="searchType">
+                                                <option value="LAND">แปลงเลขที่</option>
+                                                <option value="NAME">ชื่อ</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="control">
-                                    <input class="input" type="text" placeholder="ค้นหา...">
+                                    <input v-model="searchQuery" class="input" type="text" placeholder="ค้นหา...">
                                 </div>
                                 <div class="control">
-                                    <button class="button ">
+                                    <button class="button " @click="searchData">
                                         ค้นหา
                                     </button>
                                 </div>
@@ -116,7 +138,7 @@
                                 </thead>
                                 <tbody>
                                     <LandDataRow v-for="(land, index) in land_values" :key="land.id_land" :land="land"
-                                        :index="index + 1" @view-detail="goToDetail" />
+                                        :index="(currentPage - 1) * selectedLimit + index + 1" @view-detail="goToDetail(land.id_h_land)" />
                                 </tbody>
                                 <!-- <td>{{ formatPhoneNumber(land.phone_number) || '-'.repeat(10) }}</td> -->
                             </table>
@@ -127,10 +149,15 @@
                             </div>
                         </div>
                         <!-- pages -->
-                        <nav class="pagination" role="navigation" aria-label="pagination">
+                        <!-- pages -->
+                        <nav v-if="land_values.length != 0" class="pagination" role="navigation"
+                            aria-label="pagination">
                             <ul class="pagination-list">
-                                <li>
-                                    <a class="pagination-link is-current" aria-label="Page 1" aria-current="page">1</a>
+                                <li v-for="page in totalPages" :key="page">
+                                    <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
+                                        @click="setPage(page)">
+                                        {{ page }}
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
@@ -145,6 +172,7 @@
 
 import axios from 'axios';
 import LandDataRow from '@/components/display_table/LandDataRow.vue';
+import { convertToThaiDate } from '@/utils/commonFunc';
 
 export default {
     components: { LandDataRow },
@@ -160,6 +188,8 @@ export default {
     },
     data() {
         return {
+            searchQuery: '',
+            searchType: 'LAND',
             searchResult: [],
             land_values: [],
             server_failed: false,
@@ -167,7 +197,9 @@ export default {
             selectedLimit: 50,
             isModalActive: false, // สำหรับเปิด/ปิด modal
             history_data: {},
-            land_data: {}
+            land_data: {},
+            totalPages: 1,
+            currentPage: Number(this.$route.params.page) || 1,
         }
     },
     async mounted() {
@@ -178,12 +210,23 @@ export default {
         }
     },
     watch: {
+        '$route.params': {
+            handler() {
+                this.selectedLimit = Number(this.$route.params.limit) || 50;
+                this.currentPage = Number(this.$route.params.page) || 1;
+                this.fetchCompleteLandData();
+            },
+            immediate: true
+        },
         // อัปเดตค่า `selectedLimit` เมื่อ URL เปลี่ยน
         limit(newLimit) {
             this.selectedLimit = newLimit;
         }
     },
     methods: {
+        ToThaiDate(date) {
+            return convertToThaiDate(date)
+        },
         highlightDiff(field) {
             if (this.land_data[field] !== this.history_data[field]) {
                 return "has-background-danger-light"; // ใช้ class ของ Bulma เพื่อ highlight สีแดง
@@ -194,21 +237,30 @@ export default {
             // อัปเดต URL ให้ตรงกับค่าที่ผู้ใช้เลือก
             this.$router.push(`/history_land/${this.selectedLimit}/${this.page}`);
         },
+        setPage(page) {
+            if (page !== this.currentPage) {
+                this.$router.push({ params: { limit: this.selectedLimit, page } });
+            }
+        },
         async fetchCompleteLandData() {
             try {
                 const page = this.page;
                 // Send GET request to the endpoint /land/complete_land
-                const response = await axios.get(`http://localhost:3000/land/history_land/${this.selectedLimit}/${page}`);
+                const response = await axios.get(`http://localhost:3000/land/history_land/${this.selectedLimit}/${page}`, {
+                    params: {
+                        searchType: this.searchType,
+                        searchQuery: this.searchQuery,
+                    },
+                });
+
+                console.log("res:", response.data.data)
 
                 // Handle the response data
-                if (response.data) {
-                    const landList = response.data.data;
-                    if (response.data.data.length > 0) {
-                        this.land_values = [...landList]
-                        console.log(this.land_values)
-                        console.log(this.land_values[0].land_id)
-                        console.log(this.land_values.length)
-                    }
+                if (response.data.data.results.length > 0) {
+                    const landList = response.data.data.results;
+                    this.land_values = [...landList]
+                    this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
+                    console.log('this.totalPages:', this.totalPages)
                 } else {
                     this.land_values = []
                 }
@@ -231,11 +283,11 @@ export default {
             }
         },
         async goToDetail(id_land) {
-            // console.log('id:', id_land)
+            console.log('id:', id_land)
             this.isModalActive = true; // เปิด modal
             try {
                 const response = await axios.get(`http://localhost:3000/land/history_land/${id_land}`);
-                console.log(response.data)
+                // console.log(response.data)
                 this.history_data = response.data.results_history[0]
                 this.land_data = response.data.results_land[0]
                 console.log('history_data:', this.history_data)
@@ -247,6 +299,32 @@ export default {
         },
         closeModal() {
             this.isModalActive = false; // ปิด modal
+        },
+        async searchData() {
+            if (this.searchQuery == '') {
+                this.searchQuery = '',
+                    this.searchType = 'LAND',
+                    this.$router.replace({
+                        path: '/history_land/50/1',
+                    });
+                try {
+                    await this.fetchCompleteLandData();
+                } catch (error) {
+
+                } finally {
+
+                }
+            }
+            try {
+                this.currentPage = 1;
+                await this.fetchCompleteLandData();
+                // หลังจาก fetch ข้อมูลเสร็จแล้ว
+                this.$router.replace({
+                    path: `/history_land/${this.selectedLimit}/${this.currentPage}`, // เปลี่ยน URL หลังจาก fetch ข้อมูลเสร็จ
+                });
+            } catch (error) {
+                console.error('Error applying filters:', error);
+            }
         }
     },
 }

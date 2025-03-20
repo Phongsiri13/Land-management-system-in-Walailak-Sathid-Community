@@ -34,7 +34,7 @@
                   <label class="label is-size-5">
                     ชื่อจริง <strong class="has-text-danger">*</strong></label>
                   <div class="control">
-                    <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
+                    <input class="input is-normal is-size-5" @input="validateField('heir_fname')"
                       v-model="formHeirData.heir_fname" type="text" placeholder="กรุณากรอกชื่อจริงทายาท" />
                   </div>
                   <DisplayError v-if="errors.heir_fname" :err_text="errors.heir_fname" />
@@ -48,7 +48,7 @@
                   <label class="label is-size-5">
                     นามสกุล <strong class="has-text-danger">*</strong></label>
                   <div class="control">
-                    <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
+                    <input class="input is-normal is-size-5" @input="validateField('heir_lname')"
                       v-model="formHeirData.heir_lname" type="text" placeholder="กรุณากรอกนามสกุลทายาท" />
                   </div>
                   <DisplayError v-if="errors.heir_lname" :err_text="errors.heir_lname" />
@@ -91,7 +91,6 @@ export default {
     return {
       errors: {},
       formHeirData: {},
-      oldFormHeirData: {},
       HEIR_ID: '',
       btnLoad: false,
       prefixList: [
@@ -140,16 +139,6 @@ export default {
 
       console.log("Heir-length:", this.formHeirData.heir_fname.length)
 
-      // Compare form data with old data
-      // const hasChanges = this.compareData(this.formHeirData, this.oldFormHeirData);
-
-      // if (!hasChanges) {
-      //   await showWarningAlert('ข้อมูลไม่มีการเปลี่ยน', 'กรุณาเปลี่ยนแปลงข้อมูลก่อนแก้ไข');
-      //   this.btnLoad = false;
-      //   store.status_path_change = false;
-      //   return; // No changes to submit
-      // }
-      // return;
       const form_data = {
         // relation_select: this.
         prefix_id: this.formHeirData.prefix || null,
@@ -159,8 +148,8 @@ export default {
 
       try {
         const response = await axios.get(`http://localhost:3000/heir/fullname?fname=${encodeURIComponent(form_data.first_name)}&lname=${encodeURIComponent(form_data.last_name)}`);
-        console.log('send:', response.data)
-        if (response.data) {
+        console.log('send:', response.data.length)
+        if (response.data.length >= 1) {
           await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
           this.btnLoad = false;
           store.status_path_change = false;
@@ -215,8 +204,6 @@ export default {
         heir_lname: resHeir[0].last_name,
         prefix: resHeir[0].prefix_id
       }
-      this.oldFormHeirData = { ...this.formHeirData }
-
     } catch (error) {
 
     }

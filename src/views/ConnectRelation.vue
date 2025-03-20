@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         <!-- ปุ่มเพิ่มฟิลด์ -->
-                        <div class="columns pt-1">
+                        <!-- <div class="columns pt-1">
                             <div class="column is-full">
                                 <button type="button" class="button is-primary is-medium is-size-5"
                                     @click="addHeirField" :disabled="formHeirData.heirs.length > 2">
@@ -38,7 +38,8 @@
                                     <span>เพิ่ม</span>
                                 </button>
                             </div>
-                        </div>
+                        </div> -->
+                        <hr>
                         <!-- ฟิลด์ input ที่เพิ่มเข้ามา dynamically -->
                         <transition-group name="fade" tag="div">
                             <div v-for="(heir, index) in formHeirData.heirs" :key="index"
@@ -47,13 +48,13 @@
                                 <div class="column is-7">
                                     <div class="field">
                                         <label class="label is-size-5 has-text-weight-semibold">
-                                            ชื่อจริง - นามสกุล (ทายาท {{ index + 1 }})
+                                            ชื่อจริง - นามสกุล (ทายาท)
                                             <strong class="has-text-danger">*</strong>
                                         </label>
                                         <div class="control has-icons-left">
                                             <input class="input is-medium is-size-5" v-model="heir.fullname" type="text"
-                                                :placeholder="`กรุณากรอกชื่อจริงทายาท ${index + 1}`"
-                                                @blur="handleBlur(heir.fullname)" required />
+                                                :placeholder="`กรุณากรอกชื่อจริงทายาท`"
+                                                @blur="checkPrefix(heir.fullname)" required />
                                             <span class="icon is-small is-left">
                                                 <i class="fas fa-user"></i>
                                             </span>
@@ -92,14 +93,14 @@
                                     <label class="label has-text-weight-semibold">
                                         <strong class="has-text-danger">&nbsp;</strong>
                                     </label>
-                                    <button type="button" class="button is-danger is-medium"
+                                    <!-- <button type="button" class="button is-danger is-medium"
                                         @click="removeHeirField(index)" :disabled="formHeirData.heirs.length === 1">
                                         <div class="field">
                                             <span class="icon">
                                                 <i class="fas fa-user-minus"></i>
                                             </span>
                                         </div>
-                                    </button>
+                                    </button> -->
                                 </div>
                             </div>
                         </transition-group>
@@ -127,7 +128,7 @@
 </template>
 
 <script>
-import { fetchRelationActive, fullCheckMatchHeir, checkFullnameMatchHeir, getHeirUsingFullName } from '@/api/apiHeir';
+import { fetchRelationActive, fullCheckMatchHeir, citizenRelatedHeir, getHeirUsingFullName } from '@/api/apiHeir';
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 import { personModel, heirListValidSchema } from '@/model/connectModel';
@@ -155,7 +156,37 @@ export default {
                 { value: "ไม่พบข้อมูล", label: "ไม่พบข้อมูล" },
             ],
             maxHeir: 3,
-            isRelationListVisible: false // ควบคุมการแสดงผลของ relationList
+            isRelationListVisible: false, // ควบคุมการแสดงผลของ relationList
+            familyRelations: {
+                male: {
+                    father: "บิดา",
+                    son: "ลูกชาย",
+                    olderBrother: "พี่ชาย",
+                    youngerBrother: "น้องชาย",
+                    grandfather: "ปู่",
+                    paternalGrandfather: "ตา",
+                    grandson: "หลานชาย",
+                    uncle: "อา",
+                    spouse: {
+                        husband: "สามี"
+                    }
+                },
+                female: {
+                    mother: "มารดา",
+                    daughter: "ลูกสาว",
+                    olderSister: "พี่สาว",
+                    youngerSister: "น้องสาว",
+                    grandmother: "ย่า",
+                    maternalGrandmother: "ยาย",
+                    granddaughter: "หลานสาว",
+                    auntFatherSide: "ป้า",
+                    auntMotherSide: "น้า",
+                    cousin: "ลูกพี่ลูกน้อง",
+                    spouse: {
+                        wife: "ภรรยา"
+                    }
+                }
+            }
         }
     },
     computed: {
@@ -173,7 +204,8 @@ export default {
         }
     },
     methods: {
-        async handleBlur(value) {
+        // valid in form
+        async checkPrefix(value) {
             const fullname = value.trim();
             if (fullname === '') {
                 alert('กรุณากรอกชื่อจริงทายาท');
@@ -191,52 +223,35 @@ export default {
 
                     // ส่งข้อมูลชื่อทายาทไปยังเซิร์ฟเวอร์เพื่อตรวจสอบ
                     const response = await getHeirUsingFullName(split_name);
-                    console.log('res:', response)
+                    console.log('res-full:', response.data)
 
-                    if (response.length > 0) {
-                        // ตรวจสอบ prefix_id และกรอง relationList ตามเงื่อนไข
-                        if (response[0].prefix_id == 1) {
-                            // loop relations
-                            this.relationList = []
-                            this.relationListClone.forEach((item) => {
-                                console.log('item:', item)
-                                if (item.gender === "1") {
-                                    this.relationList.push(item)
-                                }
-                            })
-
-                            console.log("::", this.relationList);
-                        } else if (response[0].prefix_id == 2 || response[0].prefix_id == 3) {
-                            this.relationList = []
-                            this.relationListClone.forEach((item) => {
-                                console.log('item:', item)
-                                if (item.gender === "0") {
-                                    this.relationList.push(item)
-                                }
-                            })
-                        }
-
-                        // แสดง relationList ที่กรองแล้ว
-                        this.isRelationListVisible = true;
+                    if (response.data.length == 0) {
+                        this.isRelationListVisible = false;
+                        alert('ไม่พบทายาทชื่อนี้')
                     } else {
-                        // ถ้าไม่มีข้อมูลใน response ให้แสดงค่า default
-                        this.relationList = [
-                            { value: "ไม่พบข้อมูล", label: "ไม่พบข้อมูล" },
-                        ];
-                        this.isRelationListVisible = false; // ซ่อน relationList
+                        if (response.data.length > 0 && response.data[0].prefix_id == 1) {
+                            console.log('res-pre:', response.data[0]);
+                            console.log('related:', this.relationListClone);
+
+                            // กรองข้อมูลสำหรับเพศชาย โดยใช้ข้อมูลจาก familyRelations.male
+                            this.relationList = this.relationListClone.filter(item =>
+                                Object.values(this.familyRelations.male).includes(item.label)
+                            );
+                            this.isRelationListVisible = true;
+                            console.log('Filtered relationList (Male):', this.relationList);
+                        } else if (response.data.length > 0 && (response.data[0].prefix_id == 2 || response.data[0].prefix_id == 3)) {
+                            console.log('res-pre:', response.data[0]);
+
+                            // กรองข้อมูลสำหรับเพศหญิง โดยใช้ข้อมูลจาก familyRelations.female
+                            this.relationList = this.relationListClone.filter(item =>
+                                Object.values(this.familyRelations.female).includes(item.label)
+                            );
+                            this.isRelationListVisible = true;
+                            console.log('Filtered relationList (Female):', this.relationList);
+                        }
                     }
-
-                    // console.log('res:', response)
-                    // if (response == true) {
-                    // กรอง relationList ตามคำนำหน้าชื่อ
-
-                    // แสดง relationList ที่กรองแล้ว
-                    // this.isRelationListVisible = true;
-                    // } else {
-                    //     // not found
-                    // }
                 } catch (error) {
-                    console.error('Error checking heir name:', error);
+                    console.log('Error checking heir name:', error);
                     alert('เกิดข้อผิดพลาดในการตรวจสอบชื่อทายาท');
                     this.isRelationListVisible = false; // ซ่อน relationList
                 }
@@ -261,6 +276,12 @@ export default {
         },
         // บันทึกข้อมูลเข้า db
         async submitHeirRelation() {
+
+            if (!this.formHeirData.heirs[0].relationSlected) {
+                await showErrorAlert('เพิ่มข้อมูลไม่สำเร็จ!', 'กรุณาเลือกความสัมพันธ์');
+                return;
+            }
+
             this.btnLoad = true
 
             let Citizen = []
@@ -294,20 +315,65 @@ export default {
                 // Call function to check if the citizen matches
                 const resHeirs = await fullCheckMatchHeir(this.formHeirData);
 
-                // console.log('resHeirs.notFound:',resHeirs)
+                // step 3 check citizen and heir are together.
+                const resCitizenRelatedHeirs = await citizenRelatedHeir(Citizen[0].ID_CARD);
+
+                console.log('resCitizenRelatedHeirs', resCitizenRelatedHeirs)
+                console.log('resHeirs', resHeirs)
+
                 // If citizen is not found, handle the case
-                // if (!resHeirs.success) {
-                //     await showErrorAlert("ไม่พบข้อมูลทายาทดังต่อไปนี้", resHeirs.notFound.map(heir => `${heir.fname} ${heir.lname}`).join(","));
-                //     return
-                // } else {
-                //     dataFrom = resHeirs.heirs
-                // }
-                return
+                if (!resHeirs.success) {
+                    await showErrorAlert("ไม่พบข้อมูลทายาทดังต่อไปนี้", resHeirs.notFound.map(heir => `${heir.fname} ${heir.lname}`).join(","));
+                    return
+                } else {
+                    dataFrom = resHeirs.heirs
+                }
+
+                let mother_father = {
+                    relation_father: false,
+                    relation_mother: false
+                }
+
+                if (resCitizenRelatedHeirs.length > 0) {
+                    let found = false;
+                    for (let i = 0; i < resCitizenRelatedHeirs.length; i++) {
+                        if (resCitizenRelatedHeirs[i].relationship_id === 'relo01') {
+                            mother_father.relation_father = true
+                        }
+                        if (resCitizenRelatedHeirs[i].relationship_id === 'relo02') {
+                            mother_father.relation_mother = true
+                        }
+                        console.log(resCitizenRelatedHeirs[i])
+                        if (resCitizenRelatedHeirs[i].heir_id === resHeirs.heirs[0].heir_id) {
+                            found = true
+                            break
+                        }
+                    }
+                    if (found) {
+                        await showErrorAlert('เพิ่มข้อมูลไม่สำเร็จ!', 'ทายาทมีความสัมพันธ์กับราษฎรแล้ว');
+                        return
+                    }
+                }
+
+                if (resHeirs.heirs[0].relationSlected === 'relo01') {
+                    if (mother_father.relation_father === true) {
+                        await showErrorAlert('เพิ่มข้อมูลไม่สำเร็จ!', 'ทายาทคนนี้มีบิดาอยู่แล้ว');
+                        return
+                    }
+                }
+
+                if (resHeirs.heirs[0].relationSlected === 'relo02') {
+                    if (mother_father.relation_mother === true) {
+                        await showErrorAlert('เพิ่มข้อมูลไม่สำเร็จ!', 'ทายาทคนนี้มีมารดาอยู่แล้ว!');
+                        return
+                    }
+                }
+
                 const response = await axios.post('http://localhost:3000/heir/all', {
                     heirsRelation: dataFrom,
                     citizenIDCARD: Citizen[0].ID_CARD
                 });
-                console.log('Response:', response.data);
+                // console.log('Response:', response.data);
                 await showSuccessAlert("เชื่อมความสัมพันธ์", response.data.message)
                 this.resetForm();
             } catch (error) {
@@ -321,10 +387,7 @@ export default {
                     console.error("Error:", error);
                     await showErrorAlert("เกิดข้อผิดพลาดในการค้นหาราษฎร");
                 }
-            } finally {
-
             }
-
         },
         async validateField(field) {
             try {

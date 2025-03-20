@@ -2,7 +2,7 @@
     <div class="primary_content">
         <div class="is-flex is-justify-content-center is-align-items-center py-5">
             <div class="box column is-three-quarters-tablet is-half-desktop is-four-fifths-mobile">
-                <h1 class="title has-text-centered is-size-2 has-text-link ">รายละเอียดของทายาท</h1>
+                <h1 class="title has-text-centered is-size-2 has-text-link mt-2">เพิ่มข้อมูลทายาท</h1>
                 <form @submit.prevent="submitHeir">
                     <div class="container px-5">
                         <!-- People's name -->
@@ -35,7 +35,7 @@
                                     <label class="label is-size-5">ชื่อจริง <strong
                                             class="has-text-danger">*</strong></label>
                                     <div class="control">
-                                        <input class="input is-normal is-size-5" @change="validateField('heir_fname')"
+                                        <input class="input is-normal is-size-5" @input="validateField('heir_fname')"
                                             v-model="formHeirData.heir_fname" type="text"
                                             placeholder="กรุณากรอกชื่อจริง" />
                                     </div>
@@ -50,7 +50,7 @@
                                     <label class="label is-size-5">นามสกุล <strong
                                             class="has-text-danger">*</strong></label>
                                     <div class="control">
-                                        <input class="input is-normal is-size-5" @change="validateField('heir_lname')"
+                                        <input class="input is-normal is-size-5" @input="validateField('heir_lname')"
                                             v-model="formHeirData.heir_lname" type="text"
                                             placeholder="กรุณากรอกนามสกุล" />
                                     </div>
@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import { store } from '@/store'
 import { fetchPrefix } from '@/api/apiPeople';
 import axios from 'axios';
 import { getHeirModel } from '@/model/heirModel';
@@ -148,22 +147,21 @@ export default {
             const isValid = await this.validateForm();
             if (!isValid) return;
             this.btnLoad = true
-            store.status_path_change = true
 
             console.log("Heir-length:", this.formHeirData.heir_fname.length)
             // return;
             const form_data = {
                 // relation_select: this.
                 prefix_id: this.formHeirData.prefix || null,
-                first_name: this.formHeirData.heir_fname || null,
-                last_name: this.formHeirData.heir_lname || null,
+                first_name: this.formHeirData.heir_fname.trim() || null,
+                last_name: this.formHeirData.heir_lname.trim() || null,
             };
 
             const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
-            if (matchName) {
+            console.log('match-name:', matchName.data)
+            if (matchName.data.length > 0) {
                 await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
                 this.btnLoad = false;
-                store.status_path_change = false;
                 return
             }
 
@@ -180,10 +178,8 @@ export default {
                 showErrorAlert('การเพิ่มข้อมูลทายาท', response.data.message);
             } finally {
                 this.btnLoad = false;
-                store.status_path_change = false;
             }
             this.btnLoad = false;
-            store.status_path_change = false;
         },
     },
     async mounted() {

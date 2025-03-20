@@ -69,7 +69,7 @@
                     <div class="column is-half">
                         <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">ซอย:</span>
-                            <span class="ml-3 is-size-5">{{ formPeopleData.selectedSoi || '-' }}</span>
+                            <span class="ml-3 is-size-5">{{ formPeopleData.selectedSoi == 0 ? '0': formPeopleData.selectedSoi }}</span>
                         </div>
                     </div>
 
@@ -94,11 +94,20 @@
                             </span>
                         </button>
                         <div>
-                            <span class="has-text-weight-bold is-size-6">ลำดับ: {{ index + 1 }}, </span>
-                            <span class="has-text-weight-bold is-size-6"> แปลงเลขที่: {{ ct.tf_number }}, </span>
-                            <span class="has-text-weight-bold is-size-6">
+                            <span class="has-text-weight-bold is-size-5">ลำดับ: {{ index + 1 }}, </span>
+                            <span class="has-text-weight-bold is-size-5"> แปลงเลขที่: {{ ct.tf_number }}, </span>
+                            <span class="has-text-weight-bold is-size-5">
                                 จำนวนที่ใช้: {{ ct.rai || 0 }} ไร่ {{ ct.ngan || 0 }} งาน {{ ct.square_wa || 0 }}
                                 ตารางวา
+                            </span>
+                        </div>
+                    </div>
+
+                    <div v-if="formPeopleLandHold.length > 1" class="box is-flex is-align-items-center">
+                        <div>
+                            <span class="has-text-weight-bold is-size-5 has-text-link">
+                                ผลรวมจำนวนที่ใช้ : {{ Total_used.rai || 0 }} ไร่ {{ Total_used.ngan || 0 }} งาน
+                                {{ Total_used.squareWa || 0 }} ตารางวา
                             </span>
                         </div>
                     </div>
@@ -111,9 +120,10 @@
                 </div>
 
                 <!-- heir -->
+                 <!-- roles -->
                 <!-- ข้อมูลทายาท -->
                 <hr>
-                <div class="is-flex is-justify-content-space-between is-align-content-center mb-1">
+                <div v-if="userRole === roles[3].role_id" class="is-flex is-justify-content-space-between is-align-content-center mb-1">
                     <h2 class="has-text-dark my-3 px-3 is-size-4">ทายาทของราษฎรผู้นี้</h2>
                     <button class="button is-success mb-3" style="width: 50px;" @click="goToConnectHeir">
                         <span class="icon">
@@ -124,9 +134,9 @@
                 <div v-if="formHeirData.length > 0">
                     <div v-for="(heir, index) in formHeirData" :key="heir.heir_id" class="box">
                         <p class="has-text-weight-bold">ทายาทคนที่: {{ ++index }}</p>
-                        <p class="has-text-weight-bold s-4">ความสัมพันธ์: {{ formPeopleData.firstName || '-' }}
-                            {{ formPeopleData.lastName || '-' }}
-                            เป็น{{ heir.label }} ของทายาทผู้นี้</p>
+                        <p class="has-text-weight-bold s-4">ความสัมพันธ์: ทายาทผู้นี้ เป็น{{ heir.label }}ของ
+                            {{ formPeopleData.firstName || '-' }} {{ formPeopleData.lastName || '-' }}
+                        </p>
                         <p class="title is-4">{{ heir.heir_first_name }} {{ heir.heir_last_name }}</p>
                     </div>
                 </div>
@@ -148,13 +158,16 @@ import { fetchPrefix } from '@/api/apiPeople';
 import { showErrorAlert } from '@/utils/alertFunc';
 import { useUserStore } from '@/stores/useUserStore';
 
+import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
+
 export default {
     data() {
         return {
             roles,
             formPeopleData: [],
             formPeopleLandHold: [],
-            formHeirData: []
+            formHeirData: [],
+            Total_used: {}
         }
     },
     computed: {
@@ -174,8 +187,10 @@ export default {
             // props: true,
             this.$router.push({
                 name: 'ConnectHeirRelation',
-                query: { firstName: this.formPeopleData.firstName, 
-                    lastName: this.formPeopleData.lastName }
+                query: {
+                    firstName: this.formPeopleData.firstName,
+                    lastName: this.formPeopleData.lastName
+                }
             });
         },
         formatPhoneNumber(format) {
@@ -217,7 +232,9 @@ export default {
                 prefix: originalData.prefix_name || "",
                 firstName: originalData.first_name || "",
                 lastName: originalData.last_name || "",
-                birthDate: originalData.birthday ? new Date(originalData.birthday).toISOString().split("T")[0] : "",
+                birthDate: originalData.birthday
+                    ? new Date(originalData.birthday).toLocaleDateString('en-CA')
+                    : "",
                 phone: originalData.phone_number || "",
                 citizenId: originalData.ID_CARD || "",
                 gender: originalData.gender === '1' ? "ชาย" : originalData.gender === '0' ? "หญิง" : "-",
@@ -236,8 +253,17 @@ export default {
             // holding lands
             const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${personId}`);
             console.log('res-hold:', resLandHold.data)
-            if (resLandHold.data.length > 0) {
-
+            if (resLandHold.data.length > 1) {
+                let totalArea = resLandHold.data.reduce((sum, land) => {
+                    const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
+                    const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
+                    const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
+                    return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
+                }, 0);
+                const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(totalArea);
+                this.Total_used.rai = rai;
+                this.Total_used.ngan = ngan;
+                this.Total_used.squareWa = squareWa;
             }
             this.formPeopleLandHold = resLandHold.data
             console.log(':::', this.formPeopleLandHold)

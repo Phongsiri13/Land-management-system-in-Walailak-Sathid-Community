@@ -6,7 +6,10 @@
                 <div class="modal-background" @click="closeModal"></div>
                 <div class="modal-content">
                     <div class="box">
-                        <h3 class="title">ข้อมูลปัจจุบัน</h3>
+                        <div class="is-flex is-justify-content-space-between">
+                            <h3 class="title">ข้อมูลปัจจุบัน</h3>
+                            <p>วันที่แก้ไข: {{ ToThaiDate(history_data.update_created) }}</p>
+                        </div>
                         <p :class="highlightDiff('id_card')" class="my-1"><strong>บัตรประชาชน:</strong> {{
                             formatIDCARD(citizen_data.ID_CARD) }}</p>
                         <p :class="highlightDiff('prefix_name')" class="my-1"><strong>คำนำหน้า:</strong> {{
@@ -24,7 +27,8 @@
                             citizen_data.village_number }}</p>
                         <p :class="highlightDiff('district')" class="my-1"><strong>ตำบล:</strong> {{
                             citizen_data.district }}</p>
-                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ citizen_data.gender == '1' ? "ชาย" : "หญิง" }}
+                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ citizen_data.gender ==
+                            '1' ? "ชาย" : "หญิง" }}
                         </p>
 
                         <hr>
@@ -46,20 +50,22 @@
                             history_data.village_number }}</p>
                         <p :class="highlightDiff('district')" class="my-1"><strong>ตำบล:</strong> {{
                             history_data.district }}</p>
-                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ history_data.gender == '1' ? "ชาย" : "หญิง" }}
+                        <p :class="highlightDiff('gender')" class="my-1"><strong>เพศ:</strong> {{ history_data.gender ==
+                            '1' ? "ชาย" : "หญิง" }}
                         </p>
 
-                        <button class="button is-primary is-dark my-2" @click="closeModal">ปิด</button>
+                        <button class="button is-link my-2" @click="closeModal">ปิด</button>
                     </div>
 
 
                 </div>
                 <button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
             </div>
+            <!-- content -->
             <div class="column is-three-quarters-tablet is-four-fifths-desktop is-four-fifths-mobile">
                 <div class="card">
                     <div class="card-content">
-                        <h1 class="is-size-4 has-text-centered">ประวัติการแก้ไขราษฎร</h1>
+                        <h1 class="is-size-4 has-text-centered has-text-link">ประวัติการแก้ไขราษฎร</h1>
                         <!-- Search -->
                         <div class="is-flex is-justify-content-space-between my-2">
                             <div class="field has-addons full-screen-card">
@@ -67,9 +73,9 @@
                                     <div class="control" id="mySelect">
                                         <div class="select is-fullwidth">
                                             <select v-model="searchFilter">
-                                                <option value="name">ชื่อ</option>
-                                                <option value="plotNumber">แปลงเลขที่</option>
-                                                <option value="status">สถานะ</option>
+                                                <option value="NAME">ชื่อ</option>
+                                                <option value="PHONE">เบอร์โทรศัพท์</option>
+                                                <option value="IDCARD">บัตรประชาชน</option>
                                             </select>
                                         </div>
                                     </div>
@@ -78,23 +84,12 @@
                                     <input v-model="searchQuery" class="input" type="text" placeholder="ค้นหา...">
                                 </div>
                                 <div class="control">
-                                    <button class="button" @click="fetchCitizenData">ค้นหา</button>
+                                    <button class="button" @click="searchData">ค้นหา</button>
                                 </div>
                             </div>
                             <div class="is-flex is-align-items-center is-justify-content-center">
-                                <span class="px-2">แสดง</span>
-                                <div class="field">
-                                    <div class="control">
-                                        <div class="select is-fullwidth">
-                                            <select v-model="selectedLimit" @change="updateLimit">
-                                                <option value="50" selected>50</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span class="px-2">ตาราง</span>
+                                <span class="px-2">แสดง 50 ตาราง</span>
                             </div>
-
                         </div>
                         <!-- Content -->
                         <div class="table-container">
@@ -120,7 +115,7 @@
                             </table>
                             <div v-else>
                                 <hr class="navbar-divider" />
-                                ไม่พบข้อมูล
+                                <span class="has-text-danger">ไม่พบข้อมูล</span>
                             </div>
                         </div>
 
@@ -153,8 +148,8 @@ export default {
         return {
             citizen_values: [],
             searchQuery: '',
-            searchFilter: 'name',
-            selectedLimit: Number(this.$route.params.limit) || 10,
+            searchFilter: 'NAME',
+            selectedLimit: Number(this.$route.params.limit) || 50,
             currentPage: Number(this.$route.params.page) || 1,
             totalPages: 1,
             isModalActive: false, // สำหรับเปิด/ปิด modal
@@ -165,7 +160,7 @@ export default {
     watch: {
         '$route.params': {
             handler() {
-                this.selectedLimit = Number(this.$route.params.limit) || 10;
+                this.selectedLimit = Number(this.$route.params.limit) || 50;
                 this.currentPage = Number(this.$route.params.page) || 1;
                 this.fetchCitizenData();
             },
@@ -179,9 +174,41 @@ export default {
         ToThaiDate(date) {
             return convertToThaiDate(date)
         },
+        async searchData() {
+            if (this.searchQuery == '') {
+                this.searchQuery = '',
+                    this.searchFilter = 'NAME',
+                    this.$router.replace({
+                        path: '/history_citizen/50/1',
+                    });
+                try {
+                    await this.fetchCitizenData();
+                } catch (error) {
+
+                } finally {
+
+                }
+            }
+            try {
+                this.currentPage = 1;
+                await this.fetchCitizenData();
+                // หลังจาก fetch ข้อมูลเสร็จแล้ว
+                this.$router.replace({
+                    path: `/history_citizen/${this.selectedLimit}/${this.currentPage}`, // เปลี่ยน URL หลังจาก fetch ข้อมูลเสร็จ
+                });
+            } catch (error) {
+                console.error('Error applying filters:', error);
+            }
+        },
         async fetchCitizenData() {
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`);
+                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`, {
+                    params: {
+                        searchType: this.searchFilter,
+                        searchQuery: this.searchQuery,
+                    },
+                });
+                console.log(response.data.data.totalCount)
                 this.citizen_values = response.data.data.results || [];
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
                 // console.log(response.data.data.results)

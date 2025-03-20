@@ -41,7 +41,7 @@
                     <button class="delete" aria-label="close" @click="closeConfirmModal"></button>
                 </header>
                 <section class="modal-card-body">
-                    <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
+                    <p class="is-size-5">{{ statusActive ? 'ปิดการใช้งานสถานะนี้?' : 'เปิดการใช้งานสถานะนี้?' }}</p>
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button" @click="closeConfirmModal">ยกเลิก</button>
@@ -91,17 +91,17 @@
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
-                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
+                    <th class="has-text-white" style="width: 10%;">ลำดับ</th>
                     <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
-                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อสถานะที่ดิน</th>
-                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
+                    <th class="has-text-white" style="width: 60%;">ชื่อสถานะที่ดิน</th>
+                    <th class="has-text-white" ></th>
                 </tr>
             </thead>
             <tbody v-if="!page_loading">
+                <!-- ใช้งานสถานะ -->
                 <tr v-if="statusActive == true" v-for="(item, index) in statusFiles" :key="item.value"
-                    class="has-text-centered">
+                    class="has-text-left">
                     <td>{{ index + 1 }}</td>
-                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
@@ -116,10 +116,10 @@
                         </button>
                     </td>
                 </tr>
+                <!-- ไม่ใช้งานสถานะ -->
                 <tr v-if="statusActive == false" v-for="(item, index) in statusFiles" :key="item.value"
-                    class="has-text-centered">
+                    class="has-text-left">
                     <td>{{ index + 1 }}</td>
-                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
@@ -131,7 +131,6 @@
                             <span class="icon">
                                 <i class="fas fa-check-circle"></i>
                             </span>
-                            <!-- <span>ใช้งาน</span> -->
                         </button>
                     </td>
                 </tr>
@@ -143,6 +142,7 @@
         </table>
     </div>
 </template>
+
 <script>
 import { fetchLandStatus, fetchLandStatusActive } from '@/api/apiLand';
 import axios from 'axios';
@@ -172,6 +172,62 @@ export default {
         };
     },
     methods: {
+        // for edit detection form
+        async validateNewStatusLabel() {
+            // ตรวจสอบค่าว่าง
+            if (!this.newStatus.label || this.newStatus.label.trim() === '') {
+                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'กรุณากรอกชื่อสถานะที่ดิน!');
+                return false;
+            }
+
+            // ตรวจสอบความยาว ต้องมีอย่างน้อย 3 ตัวอักษร และไม่เกิน 30 ตัว
+            const textWithoutSpaces = this.newStatus.label.replace(/\s/g, ''); // ตัดช่องว่างออก
+            if (textWithoutSpaces.length < 3) {
+                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'ชื่อสถานะที่ดินต้องมีตัวอักษรอย่างน้อย 3 ตัว!');
+                return false;
+            }
+            if (this.newStatus.label.length > 30) {
+                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'ชื่อสถานะที่ดินต้องไม่เกิน 30 ตัวอักษร!');
+                return false;
+            }
+
+            // ตรวจสอบว่าอนุญาตเฉพาะตัวอักษรไทย, อังกฤษ, ตัวเลข และอักขระพิเศษที่กำหนด (. , / -) + เว้นวรรค
+            const validPattern = /^[a-zA-Z0-9\u0E00-\u0E7F.,/\-\s]+$/;
+            if (!validPattern.test(this.newStatus.label)) {
+                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'ชื่อสถานะที่ดินสามารถมีเฉพาะตัวอักษรไทย อังกฤษ ตัวเลข เว้นวรรค และอักขระพิเศษ . , / - เท่านั้น!');
+                return false;
+            }
+
+            return true; // ผ่านการตรวจสอบ
+        },
+        // for create detection form
+        async validateLandStatusName() {
+            // ตรวจสอบค่าว่าง
+            if (!this.newNameStatus || this.newNameStatus.trim() === '') {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'กรุณากรอกชื่อสถานะที่ดิน!');
+                return false;
+            }
+
+            // ตรวจสอบความยาว ต้องมีอย่างน้อย 3 ตัวอักษร และไม่เกิน 30 ตัว
+            const textWithoutSpaces = this.newNameStatus.replace(/\s/g, ''); // ตัดช่องว่างออก
+            if (textWithoutSpaces.length < 3) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องมีตัวอักษรอย่างน้อย 3 ตัว!');
+                return false;
+            }
+            if (this.newNameStatus.length > 30) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องไม่เกิน 30 ตัวอักษร!');
+                return false;
+            }
+
+            // ตรวจสอบว่าอนุญาตเฉพาะตัวอักษรไทย, อังกฤษ, ตัวเลข และอักขระพิเศษที่กำหนด (. , / -) + เว้นวรรค
+            const validPattern = /^[a-zA-Z0-9\u0E00-\u0E7F.,/\-\s]+$/;
+            if (!validPattern.test(this.newNameStatus)) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินสามารถมีเฉพาะตัวอักษรไทย อังกฤษ ตัวเลข เว้นวรรค และอักขระพิเศษ . , / - เท่านั้น!');
+                return false;
+            }
+
+            return true; // ผ่านการตรวจสอบ
+        },
         async activePage(act) {
             // Ensure statusActive is defined in your component's data
             this.statusActive = act;
@@ -193,20 +249,18 @@ export default {
                 // Optional: Any cleanup operations can be performed here
             }
         },
-        // 
+        // Create new
         async saveNewStatus() {
-            console.log('save status')
+            // console.log('save status')
             const active = this.statusActive ? '1' : '0';
 
             const createData = {
                 newNameStatus: this.newNameStatus
             }
 
-            // valid
-            if (this.newNameStatus.length == '' || this.newNameStatus == null) {
-                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'กรุณากรอกชื่อสถานะที่ดิน!');
-                return
-            }
+            // เรียกใช้ฟังก์ชันตรวจสอบก่อนดำเนินการต่อ
+            const isValid = await this.validateLandStatusName();
+            if (!isValid) return;
 
             // Close the modal after saving
             this.loadingCreate = true;
@@ -222,10 +276,30 @@ export default {
                     }
                 }
             } catch (error) {
-                await showErrorAlert('การเพิ่มข้อมูลสถานะที่ดิน', 'ไม่สำเร็จ');
+                // console.error('error:', error);
+
+                let errorMessage = 'ไม่สำเร็จ';
+
+                // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+                    } else if (error.response.status === 500) {
+                        errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล';
+                    } else {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+                    }
+                } else if (error.request) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                await showErrorAlert('การเพิ่มข้อมูลสถานะที่ดิน', errorMessage);
             } finally {
                 this.loadingCreate = false;
                 this.newNameStatus = '';
+                
                 this.closeCreateModal();
             }
         },
@@ -259,15 +333,14 @@ export default {
         },
         // Edit status name
         async saveEdit() {
-            console.log('edit com:', this.editData)
-            console.log('edit-v:', this.newStatus.label)
+            // console.log('edit com:', this.editData)
+            // console.log('edit-v:', this.newStatus.label)
             const active = this.statusActive == true ? '0' : '1';
 
             // newStatus.label
-            if (this.newStatus.label.length == '' || this.newStatus.label == null) {
-                await showWarningAlert('⚠️ การอัพเดทข้อมูลสถานะ', 'กรุณากรอกชื่อสถานะที่ดิน');
-                return
-            }
+            // ตรวจสอบค่าก่อนส่งไป Backend
+            const isValid = await this.validateNewStatusLabel();
+            if (!isValid) return;
             this.loadingEdit = true;
 
             try {
@@ -284,7 +357,26 @@ export default {
                     }
                 }
             } catch (error) {
-                await showErrorAlert('การอัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
+                // console.error('error:', error);
+
+                let errorMessage = 'ไม่สำเร็จ';
+
+                // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+                    } else if (error.response.status === 500) {
+                        errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล';
+                    } else {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+                    }
+                } else if (error.request) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                await showErrorAlert('การอัพเดทข้อมูลสถานะ', errorMessage);
             } finally {
                 this.newStatus = { value: null, label: '' };
                 this.loadingEdit = false;
@@ -297,6 +389,7 @@ export default {
         },
         closeCreateModal() {
             this.isCreateModalOpen = false; // Close modal for creating a new status
+            this.newNameStatus = '';
         },
         prepareRemove(item) {
             this.deleteItem = item;
@@ -337,8 +430,8 @@ export default {
             this.statusFiles = await fetchLandStatusActive('1');
             console.log("statusFile:", this.statusFiles)
         } catch (error) {
-            
-        }finally{
+
+        } finally {
             setTimeout(() => {
                 this.page_loading = false;
             }, 500);
@@ -346,6 +439,7 @@ export default {
     }
 }
 </script>
+
 <style scoped>
 .table-header {
     background-color: #454B1B;

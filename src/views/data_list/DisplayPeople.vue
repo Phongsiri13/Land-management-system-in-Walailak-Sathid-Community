@@ -68,7 +68,6 @@
                                     </div>
                                     <input v-model="searchQuery" v-else class="input" type="text"
                                         placeholder="ค้นหา...">
-                                    <!-- searchType -->
                                 </div>
                                 <div class="control">
                                     <button class="button " @click="searchData">

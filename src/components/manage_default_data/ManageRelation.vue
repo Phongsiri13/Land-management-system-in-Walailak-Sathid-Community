@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <!-- Confirmation Modal for Remove -->
+        <!-- MODAL Remove -->
         <div v-if="isConfirmModalOpen" class="modal" :class="{ 'is-active': isConfirmModalOpen }">
             <div class="modal-background" @click="closeConfirmModal"></div>
             <div class="modal-card">
@@ -41,7 +41,8 @@
                     <button class="delete" aria-label="close" @click="closeConfirmModal"></button>
                 </header>
                 <section class="modal-card-body">
-                    <p>คุณแน่ใจหรือไม่ว่าจะเปลี่ยนสถานะที่ดินนี้?</p>
+                    <p class="is-size-5">{{ statusActive ? 'ปิดการใช้งานความสัมพันธ์นี้?' :
+                        'เปิดการใช้งานความสัมพันธ์นี้?' }}</p>
                 </section>
                 <footer class="modal-card-foot">
                     <button class="button" @click="closeConfirmModal">ยกเลิก</button>
@@ -91,16 +92,15 @@
         <table class="table is-striped is-bordered is-hoverable is-fullwidth">
             <thead class="table-header">
                 <tr>
-                    <th class="has-text-centered has-text-white" style="width: 25%;">ลำดับ</th>
-                    <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
-                    <th class="has-text-centered has-text-white" style="width: 50%;">ชื่อความสัมพันธ์</th>
-                    <th class="has-text-centered has-text-white" style="width: 25%;"></th>
+                    <th class="has-text-left has-text-white" style="width: 10%;">ลำดับ</th>
+                    <th class="has-text-left has-text-white" style="width: 60%;">ชื่อความสัมพันธ์</th>
+                    <th class="has-text-left has-text-white"></th>
                 </tr>
             </thead>
             <tbody v-if="!page_loading">
-                <tr v-if="statusActive == true" v-for="(item, index) in relationFiles" :key="item.value" class="has-text-centered">
+                <tr v-if="statusActive == true" v-for="(item, index) in relationFiles" :key="item.value"
+                    class="has-text-left">
                     <td>{{ index + 1 }}</td>
-                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
@@ -116,9 +116,8 @@
                     </td>
                 </tr>
                 <tr v-if="statusActive == false" v-for="(item, index) in relationFiles" :key="item.value"
-                    class="has-text-centered">
+                    class="has-text-left">
                     <td>{{ index + 1 }}</td>
-                    <!-- <td>{{ item.value }}</td> -->
                     <td>{{ item.label }}</td>
                     <td>
                         <button class="button is-rounded is-normal is-warning" @click="openEditModal(item.value)">
@@ -130,23 +129,21 @@
                             <span class="icon">
                                 <i class="fas fa-check-circle"></i>
                             </span>
-                            <!-- <span>ใช้งาน</span> -->
                         </button>
                     </td>
                 </tr>
                 <tr v-if="relationFiles.length === 0">
-                    <td colspan="5" class="has-text-centered has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
+                    <td colspan="5" class="has-text-left has-text-danger title is-4">ไม่มีรายการข้อมูล</td>
                 </tr>
             </tbody>
             <LoadingSpinner :isLoading="page_loading" fontSize="22px" v-else />
-
         </table>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
+import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
 import { getOneRelation } from '@/api/apiManageInformation';
 import { fetchRelationActive } from '@/api/apiHeir';
 import LoadingSpinner from '../LoadingSpinner.vue';
@@ -168,27 +165,104 @@ export default {
             loadingRemove: false,
             new_Relation: '',
             deleteItem: null,
-            page_loading: true
+            page_loading: true,
         };
     },
     methods: {
+        async validateRelationAdd() {
+            // ตรวจสอบค่าว่าง
+            if (!this.new_Relation || this.new_Relation.trim() === '') {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'กรุณากรอกชื่อสถานะที่ดิน!');
+                return false;
+            }
+
+            // ตรวจสอบความยาว ต้องมีอย่างน้อย 3 ตัวอักษร และไม่เกิน 30 ตัว
+            const textWithoutSpaces = this.new_Relation.replace(/\s/g, ''); // ตัดช่องว่างออก
+            if (textWithoutSpaces.length < 3) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องมีตัวอักษรอย่างน้อย 3 ตัว!');
+                return false;
+            }
+            if (this.new_Relation.length > 30) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องไม่เกิน 30 ตัวอักษร!');
+                return false;
+            }
+
+            // ตรวจสอบว่าอนุญาตเฉพาะตัวอักษรภาษาไทยเท่านั้น
+            const validPattern = /^[\u0E00-\u0E7F]+$/;
+            if (!validPattern.test(this.new_Relation)) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินสามารถมีเฉพาะตัวอักษรภาษาไทยเท่านั้น!');
+                return false;
+            }
+
+            return true; // ผ่านการตรวจสอบ
+        },
+        async validateRelationEdit() {
+            // ตรวจสอบค่าว่าง
+            if (!this.updateRelation.label || this.updateRelation.label.trim() === '') {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'กรุณากรอกชื่อสถานะที่ดิน!');
+                return false;
+            }
+
+            // ตรวจสอบความยาว ต้องมีอย่างน้อย 3 ตัวอักษร และไม่เกิน 30 ตัว
+            const textWithoutSpaces = this.updateRelation.label.replace(/\s/g, ''); // ตัดช่องว่างออก
+            if (textWithoutSpaces.length < 3) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องมีตัวอักษรอย่างน้อย 3 ตัว!');
+                return false;
+            }
+            if (this.updateRelation.label.length > 30) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินต้องไม่เกิน 30 ตัวอักษร!');
+                return false;
+            }
+
+            // ตรวจสอบว่าอนุญาตเฉพาะตัวอักษรภาษาไทยเท่านั้น
+            const validPattern = /^[\u0E00-\u0E7F]+$/;
+            if (!validPattern.test(this.updateRelation.label)) {
+                await showWarningAlert('⚠️ การเพิ่มข้อมูลสถานะที่ดิน', 'ชื่อสถานะที่ดินสามารถมีเฉพาะตัวอักษรภาษาไทยเท่านั้น!');
+                return false;
+            }
+
+            return true; // ผ่านการตรวจสอบ
+        },
         async saveNewDCLandType() {
             const createData = {
-                label: this.new_Relation
+                label: this.new_Relation,
             }
+            // ตรวจสอบค่าก่อนส่งไป Backend
+            const isValid = await this.validateRelationAdd();
+            if (!isValid) return;
+
             // Close the modal after saving
             this.loadingCreate = true;
             try {
                 const response = await axios.post('http://localhost:3000/manage_relation/create', createData);
+                // console.log('response:', response.data)
                 await showSuccessAlert('เพิ่มข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
                     this.relationFiles = [];
-                    this.relationFiles = await fetchRelation();
+                    this.relationFiles = await fetchRelationActive('1');
                 }
             } catch (error) {
-                await showErrorAlert('เพิ่มข้อมูลความสัมพันธ์', 'ไม่สำเร็จ');
+                let errorMessage = 'ไม่สำเร็จ';
+
+                // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+                    } else if (error.response.status === 500) {
+                        errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล';
+                    } else {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+                    }
+                } else if (error.request) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                await showErrorAlert('การเพิ่มข้อมูลความสัมพันธ์', errorMessage);
             } finally {
                 this.loadingCreate = false;
+                this.new_Relation = '';
                 this.closeCreateModal();
             }
         },
@@ -204,6 +278,11 @@ export default {
                     this.relationFiles = [];
                     this.relationFiles = await fetchRelationActive(active)
                     await showSuccessAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
+                    if (this.statusActive) {
+                        this.activePage(false)
+                    } else {
+                        this.activePage(true)
+                    }
                 }
             } catch (error) {
                 await showErrorAlert('เปลี่ยนข้อมูลความสัมพันธ์', response.data.message);
@@ -212,14 +291,16 @@ export default {
                 this.closeConfirmModal(); // Close the modal after deletion
             }
         },
+        // for edit
         async saveEdit() {
+            const isValid = await this.validateRelationEdit();
+            if (!isValid) return;
             this.loadingEdit = true;
-            console.log('edit-v:', this.updateRelation.label)
-            console.log('edit-v:', this.updateRelation.value)
+
             const active = this.statusActive == true ? '0' : '1';
             try {
                 const response = await axios.put(`http://localhost:3000/manage_relation/${this.updateRelation.value}`, {
-                    label: this.updateRelation.label
+                    label: this.updateRelation.label,
                 });
                 await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
                 this.relationFiles = []
@@ -230,9 +311,31 @@ export default {
                         this.relationFiles = await fetchRelationActive('0')
                     }
                 }
+                if (active) {
+                    this.activePage(active)
+                } else {
+                    this.activePage(active)
+                }
                 console.log('Response:', response.data);
             } catch (error) {
-                await showErrorAlert('อัพเดทข้อมูลสถานะ', 'ไม่สำเร็จ');
+                let errorMessage = 'ไม่สำเร็จ';
+
+                // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
+                if (error.response) {
+                    if (error.response.status === 409) {
+                        errorMessage = error.response.data.message || 'ข้อมูลซ้ำในระบบ กรุณาตรวจสอบ';
+                    } else if (error.response.status === 500) {
+                        errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล';
+                    } else {
+                        errorMessage = error.response.data.message || 'เกิดข้อผิดพลาดที่ไม่คาดคิด';
+                    }
+                } else if (error.request) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                } else {
+                    errorMessage = error.message;
+                }
+
+                await showErrorAlert('อัพเดทข้อมูลสถานะ!', errorMessage);
             } finally {
                 this.updateRelation = { value: null, label: '' };
                 this.isEditModalOpen = false;
@@ -263,8 +366,9 @@ export default {
                 }
             } catch (error) {
 
+            } finally {
+                this.isEditModalOpen = true;
             }
-            this.isEditModalOpen = true;
         },
         closeEditModal() {
             this.isEditModalOpen = false;
@@ -282,9 +386,8 @@ export default {
 
             try {
                 // Await the asynchronous function call
-                const ko = await fetchRelationActive(active);
-                // console.log('ko:', ko[0])
-                this.relationFiles = [...ko]
+                const getRelation = await fetchRelationActive(active);
+                this.relationFiles = [...getRelation]
             } catch (error) {
                 // Ensure showErrorAlert is an asynchronous function returning a Promise
                 if (typeof showErrorAlert === 'function') {
@@ -302,7 +405,7 @@ export default {
             this.relationFiles = await fetchRelationActive('1');
         } catch (error) {
 
-        }finally{
+        } finally {
             setTimeout(() => {
                 this.page_loading = false;
             }, 500);

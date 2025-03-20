@@ -17,7 +17,7 @@ export function updateVillageOptions(form_village) {
       { value: '8', label: 'หมู่ที่ 8 บ้านสวนหมาก' },
       { value: '9', label: 'หมู่ที่ 9 บ้านคลองเกียบ' }
     ],
-    ไทรบุรี: [
+    ไทยบุรี: [
       { value: '1', label: 'หมู่ที่ 1 บ้านโพธิ์' },
       { value: '2', label: 'หมู่ที่ 2 บ้านคูเถร' },
       { value: '3', label: 'หมู่ที่ 3 บ้านประตูช้างออก' },
@@ -30,7 +30,7 @@ export function updateVillageOptions(form_village) {
       { value: '10', label: 'หมู่ที่ 10 บ้านประตูช้างตก' }
     ]
   }
-  if (form_village === 'หัวตะพาน' || form_village === 'ไทรบุรี') {
+  if (form_village === 'หัวตะพาน' || form_village === 'ไทยบุรี') {
     return villages[form_village]
   } else {
     return []
