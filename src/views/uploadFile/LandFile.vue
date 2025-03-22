@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import ConfirmDeleteModal from '@/components/upload_files/ConfirmDeleteModal.vue';
 import FileDropArea from '@/components/upload_files/FileDropArea.vue';
 import UploadList from '@/components/upload_files/UploadList.vue';
@@ -80,7 +81,9 @@ export default {
   methods: {
     async getLandFiles(land_id) {
       try {
-        const response = await axios.get(`http://localhost:3000/upload_file/document_files?land_id=${land_id}`);
+        const response = await axios.get(`${DOMAIN_NAME}/upload_file/document_files?land_id=${land_id}`, {
+          withCredentials: true
+        });
         if (response.status === 200) {
           // ปรับโครงสร้างข้อมูลให้สอดคล้องกับ uploadFile
           this.files = response.data.map(file => ({
@@ -162,10 +165,11 @@ export default {
       console.log('position:', this.files[0].isFailed)
       try {
         // ตัวอย่างการส่งไฟล์ไปยังเซิร์ฟเวอร์
-        const response = await axios.post("http://localhost:3000/upload_file/land/documents", formData, {
+        const response = await axios.post(`${DOMAIN_NAME}/upload_file/land/documents`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true
         });
 
         // ตรวจสอบ status code
@@ -190,7 +194,7 @@ export default {
       }
     },
     downloadLink(filePath) {
-      const downloadUrl = `http://localhost:3000/upload_file/download_land_document/${filePath}`;
+      const downloadUrl = `${DOMAIN_NAME}/upload_file/download_land_document/${filePath}`;
       window.open(downloadUrl, '_blank');
     },
     openDeleteModal(file) {
@@ -201,7 +205,9 @@ export default {
       this.isDeleting = true;
       // console.log('files:', file_id)
       try {
-        const response = await axios.delete(`http://localhost:3000/upload_file/land/document/${file_id}`);
+        const response = await axios.delete(`${DOMAIN_NAME}/upload_file/land/document/${file_id}`,{
+          withCredentials: true
+        });
         // console.log('res:', response);
         setTimeout(async () => {
           this.isDeleting = false;
@@ -219,7 +225,7 @@ export default {
     showImage(filePath, index) {
       this.lightboxIndex = index;
       this.lightboxVisible = true;
-      const pdfUrl = `http://localhost:3000/uploads/documents/${filePath}`;
+      const pdfUrl = `${DOMAIN_NAME}/uploads/documents/${filePath}`;
       window.open(pdfUrl, "_blank");
     },
     closeLightbox() {

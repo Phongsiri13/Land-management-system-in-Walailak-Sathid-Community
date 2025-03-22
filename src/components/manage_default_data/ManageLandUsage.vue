@@ -95,7 +95,7 @@
                     <th class="has-text-left has-text-white" style="width: 10%;">ลำดับ</th>
                     <!-- <th class="has-text-left has-text-white" style="width: 15%;">รหัส</th> -->
                     <th class="has-text-left has-text-white" style="width: 60%;">ชื่อการใช้ประโยชน์ที่ดิน</th>
-                    <th class="has-text-left has-text-white" ></th>
+                    <th class="has-text-left has-text-white"></th>
                 </tr>
             </thead>
             <tbody v-if="!page_loading">
@@ -143,6 +143,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
 import { getOneLandUsage } from '@/api/apiManageInformation';
@@ -237,18 +238,18 @@ export default {
             // Close the modal after saving
             this.loadingCreate = true;
             try {
-                const response = await axios.post('http://localhost:3000/manage_land_usages_info/create',
-                    createData);
-                console.log('res:', response)
+                const response = await axios.post(`${DOMAIN_NAME}/manage_land_usages_info/create`,
+                    createData, {
+                    withCredentials: true
+                });
+                // console.log('res:', response)
                 if (response.data.success === true) {
                     await showSuccessAlert('การเพิ่มข้อมูลการใช้ประโยชน์ที่ดิน!', response.data.message);
                     this.landUsageFiles = await fetchLandUsageActive('1');
                 }
             } catch (error) {
                 // console.error('error:', error);
-
                 let errorMessage = 'ไม่สำเร็จ';
-
                 // ตรวจสอบว่ามี response กลับมาหรือไม่ (จาก backend)
                 if (error.response) {
                     if (error.response.status === 409) {
@@ -277,8 +278,9 @@ export default {
             const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.put(`http://localhost:3000/manage_land_usages_info/active/${item}`,
-                    { actived: active }
+                const response = await axios.put(`${DOMAIN_NAME}/manage_land_usages_info/active/${item}`,
+                    { actived: active },
+                    {withCredentials: true}
                 );
                 // console.log('res:',response)
                 await showSuccessAlert('ลบข้อมูลการใช้ประโยชน์ที่ดิน', response.data.message);
@@ -324,16 +326,16 @@ export default {
             // console.log('edit-v:', this.updateLandUsage.label)
             // console.log('edit-v:', this.updateLandUsage.value)
             const active = this.statusActive == true ? '0' : '1';
-            
+
             const isValid = await this.validateRelationEdit();
             if (!isValid) return;
-            
+
             this.loadingEdit = true;
 
             try {
-                const response = await axios.put(`http://localhost:3000/manage_land_usages_info/${this.updateLandUsage.value}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/manage_land_usages_info/${this.updateLandUsage.value}`, {
                     label: this.updateLandUsage.label
-                });
+                },{withCredentials: true});
                 await showSuccessAlert('การใช้ประโยชน์ที่ดิน', response.data.message);
                 this.landUsageFiles = []
                 if (response.data.success) {

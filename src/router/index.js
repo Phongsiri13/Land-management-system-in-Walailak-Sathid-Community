@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Form from '@/views/AddLand.vue'
-import Simmulate from '@/views/Simmulate.vue'
 import { store } from '@/store'
 import AddCitizen from '@/views/AddCitizen.vue'
 import Search from '@/views/Search.vue'
@@ -30,7 +29,7 @@ import CitizenFiles from '@/views/uploadFile/CitizenFiles.vue'
 import CitizenDash from '@/views/dashboard/CitizenDash.vue'
 
 // URL
-import { url_citizen, url_land, URL_LAND, url_connect_relation, url_heir } from './url_list'
+import { url_citizen, url_land, url_heir } from './url_list'
 
 import CitizenDisplay from '@/views/data_list/CitizenDisplay.vue'
 
@@ -82,8 +81,8 @@ const router = createRouter({
       name: 'fillPeople',
       component: AddCitizen,
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | add heir'
+        requiredRole: officer.role_id,
+        title: 'เพิ่มข้อมูลราษฎร'
       }
     },
     {
@@ -91,8 +90,8 @@ const router = createRouter({
       name: 'fillHeir',
       component: AddHeir,
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'เพิ่มข้อมูลราษฎร'
+        requiredRole: officer.role_id,
+        title: 'เพิ่มทายาท'
       }
     },
     {
@@ -100,7 +99,7 @@ const router = createRouter({
       name: 'ConnectHeirRelation',
       component: ConnectRelation,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: officer.role_id,
         title: 'เชื่อมต่อความสัมพันธ์'
       },
       beforeEnter(to, from, next) {
@@ -132,7 +131,7 @@ const router = createRouter({
       props: true,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'รายละเอียดราษฎรทั้งหมด'
       }
     },
     {
@@ -150,7 +149,7 @@ const router = createRouter({
       props: true,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | citizen'
+        title: 'รายละเอียดราษฎรทั้งหมด'
       }
     },
     {
@@ -160,7 +159,7 @@ const router = createRouter({
       props: true,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | ประวัติการแก้ไขที่ดิน'
+        title: 'รายละเอียดข้อมูลที่ดินทั้งหมด'
       }
     },
     {
@@ -183,7 +182,7 @@ const router = createRouter({
       props: true,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'ประวัติการแก้ไขข้อมูลที่ดิน'
       }
     },
     {
@@ -198,7 +197,7 @@ const router = createRouter({
       props: true,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'รายละเอียดทายาททั้งหมด'
       }
     },
     {
@@ -207,7 +206,7 @@ const router = createRouter({
       component: PersonDetail,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'รายละเอียด'
       }
     },
     {
@@ -225,7 +224,7 @@ const router = createRouter({
       component: CitizenDetail,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'รายละเอียดราษฎร'
       }
     },
     {
@@ -234,7 +233,7 @@ const router = createRouter({
       component: LandEdit,
       meta: {
         requiredRole: officer.role_id,
-        title: 'Admin | '
+        title: 'แก้ไขที่ดิน'
       }
     },
     {
@@ -242,8 +241,8 @@ const router = createRouter({
       name: 'CitizenEdit',
       component: CitizenEdit, // Create this component
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | Edit'
+        requiredRole: officer.role_id,
+        title: 'แก้ไขที่ดิน'
       }
     },
     {
@@ -251,8 +250,8 @@ const router = createRouter({
       name: 'HeirEdit',
       component: HeirEdit, // Create this component
       meta: {
-        requiredRole: roles[3].role_id,
-        title: 'Admin | Edit'
+        requiredRole: officer.role_id,
+        title: 'แก้ไขทายาท'
       }
     },
     {
@@ -279,7 +278,7 @@ const router = createRouter({
       component: CitizenFiles,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | '
+        title: 'ไฟล์ราษฎร'
       }
     },
     {
@@ -287,7 +286,7 @@ const router = createRouter({
       name: 'ManageDefaultData', // You can keep this name if needed, but it's not necessary for child routing
       component: ManageDefaultData,
       meta: {
-        requiredRole: roles[3].role_id,
+        requiredRole: officer.role_id,
         name: 'ManageDefaultData',
         title: 'จัดการสถานะที่ดิน | ข้อมูลพื้นฐาน'
       },
@@ -344,7 +343,7 @@ const router = createRouter({
       component: TableDash,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | Home'
+        title: 'สรุปผลการจัดสรรที่ดิน'
       }
     },
     {
@@ -353,7 +352,7 @@ const router = createRouter({
       component: CitizenDash,
       meta: {
         requiredRole: [officer.role_id, Land_reform_officer.role_id],
-        title: 'Admin | Home'
+        title: 'สรุปผลราษฎรในพื้นที่'
       }
     },
     {
@@ -382,34 +381,43 @@ const router = createRouter({
   ]
 })
 
-let t1 = 0
-// guard router
+// HomeView
+// Guard router
 router.beforeEach(async (to, from, next) => {
-  store.status_path_change = true
+  store.status_path_change = true // ตั้งค่า status_path_change เป็น true
   const userStore = useUserStore()
-  console.log('router guard is working')
-  // console.log('userStore:',userStore.userRole)
+  // ฟังก์ชันตรวจสอบคุกกี้
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`
+    const parts = value.split(`; ${name}=`)
+    if (parts.length === 2) return parts.pop().split(';').shift()
+  }
 
-  // Fetch role if not available
-  if (!userStore.userRole) {
-    const user_checking = await userStore.fetchUserRole()
-    // console.log('user:', user_checking)
+  // ตรวจสอบคุกกี้ `token`
+  const token = getCookie('token')
+  console.log('token:', token)
+  console.log('router guard is working')
+
+  if (!token) {
+    console.log('Notoken:', token)
+    userStore.setUserRole(null)
+  }else{
+    await userStore.fetchUserRole()
   }
 
   // ตรวจสอบสิทธิ์การเข้าถึง
   if (to.meta.requiredRole) {
+    await userStore.fetchUserRole()
     if (!Array.isArray(to.meta.requiredRole)) {
       to.meta.requiredRole = [to.meta.requiredRole] // แปลงเป็น array
     }
 
     if (!to.meta.requiredRole.includes(userStore.userRole)) {
       console.log('Access Denied:', userStore.userRole)
-      store.status_path_change = false
+      store.status_path_change = false // ตั้งค่า status_path_change เป็น false
       return next({ name: 'NotFound' }) // ไปหน้า 404
     }
   }
-
-  store.status_path_change = false
 
   // ตั้งค่า title
   if (to.meta.title) {
@@ -418,7 +426,10 @@ router.beforeEach(async (to, from, next) => {
     document.title = 'default title'
   }
 
+  // เลื่อนหน้าเว็บไปด้านบน
   window.scrollTo(0, 0)
+
+  store.status_path_change = false // ตั้งค่า status_path_change เป็น false
   next()
 })
 

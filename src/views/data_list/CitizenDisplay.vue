@@ -90,28 +90,32 @@
                         </div>
                         <!-- Content -->
                         <div class="table-container">
-                            <table v-if="citizen_values.length"
-                                class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th>ลำดับ</th>
-                                        <th>เลขบัตรประชาชน</th>
-                                        <th>ซอย</th>
-                                        <th>ชื่อ - นามสกุล</th>
-                                        <th>เบอร์โทรศัพท์</th>
-                                        <th>ที่อยู่</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <CitizenDataRow v-for="(citizen, index) in citizen_values" :key="citizen.ID_CARD"
-                                        :ct="citizen" :index="(currentPage - 1) * selectedLimit + index + 1"
-                                        @view-detail="goToDetail(citizen.ID_CARD)" />
-                                </tbody>
-                            </table>
+                            <LoadingSpinner v-if="loading_citizen" :isLoading="loading_citizen" fontSize="22px" />
                             <div v-else>
-                                <hr class="navbar-divider" />
-                                <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                <table v-if="citizen_values.length"
+                                    class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th>ลำดับ</th>
+                                            <th>เลขบัตรประชาชน</th>
+                                            <th>ซอย</th>
+                                            <th>ชื่อ - นามสกุล</th>
+                                            <th>เบอร์โทรศัพท์</th>
+                                            <th>ที่อยู่</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <CitizenDataRow v-for="(citizen, index) in citizen_values"
+                                            :key="citizen.ID_CARD" :ct="citizen"
+                                            :index="(currentPage - 1) * selectedLimit + index + 1"
+                                            @view-detail="goToDetail(citizen.ID_CARD)" />
+                                    </tbody>
+                                </table>
+                                <div v-else>
+                                    <hr class="navbar-divider" />
+                                    <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                </div>
                             </div>
                         </div>
 
@@ -136,11 +140,14 @@
 <script>
 import axios from 'axios';
 import CitizenDataRow from '@/components/display_table/CitizenDataRow.vue';
+import DOMAIN_NAME from '@/config/domain_setup';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
-    components: { CitizenDataRow },
+    components: { LoadingSpinner, CitizenDataRow },
     data() {
         return {
+            loading_citizen: true,
             isFilterModalActive: false, // ควบคุมการแสดง modal
             filteredCitizens: [], // เก็บข้อมูลราษฎรหลังการกรอง
             selectedSoi: '', // เก็บค่าซอยที่เลือก
@@ -168,7 +175,7 @@ export default {
             this.$router.replace({
                 path: '/citizen_data/10/1',
             });
-            console.log('selectedSoi changed from', oldVal, 'to', newVal);
+            // console.log('selectedSoi changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCitizenData(); // ดึงข้อมูลใหม่
         },
@@ -176,7 +183,7 @@ export default {
             this.$router.replace({
                 path: '/citizen_data/10/1',
             });
-            console.log('selectedDistrict changed from', oldVal, 'to', newVal);
+            // console.log('selectedDistrict changed from', oldVal, 'to', newVal);
             this.currentPage = 1; // รีเซ็ตหน้าเป็น 1 เมื่อมีการกรอง
             this.fetchCitizenData(); // ดึงข้อมูลใหม่
         },
@@ -219,20 +226,26 @@ export default {
             this.isFilterModalActive = true;
         },
         async fetchCitizenData() {
+            this.loading_citizen = true;
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/${this.selectedLimit}/${this.currentPage}`, {
+                const response = await axios.get(`${DOMAIN_NAME}/citizen/${this.selectedLimit}/${this.currentPage}`, {
+                    withCredentials: true,
                     params: {
                         searchType: this.searchFilter,
                         searchQuery: this.searchQuery,
                         soi: this.selectedSoi,
                         district: this.selectedDistrict,
-                    },
+                    }
                 });
                 this.citizen_values = response.data.data.results || [];
-                console.log('response.data.data.results:', response.data.data.results)
+                // console.log('response.data.data.results:', response.data.data.results)
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setTimeout(() => {
+                    this.loading_citizen = false;
+                }, 500);
             }
         },
         setPage(page) {

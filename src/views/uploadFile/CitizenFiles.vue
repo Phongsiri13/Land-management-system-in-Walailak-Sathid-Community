@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import ConfirmDeleteModal from '@/components/upload_files/ConfirmDeleteModal.vue';
 import FileDropArea from '@/components/upload_files/FileDropArea.vue';
 import UploadList from '@/components/upload_files/UploadList.vue';
@@ -80,7 +81,9 @@ export default {
   methods: {
     async getLandFiles(citizen_id) {
       try {
-        const response = await axios.get(`http://localhost:3000/upload_file/citizen/document_files?citizen_id=${this.CITIZEN_ID}`);
+        const response = await axios.get(`${DOMAIN_NAME}/upload_file/citizen/document_files?citizen_id=${this.CITIZEN_ID}`,{
+          withCredentials: true
+        });
         if (response.status === 200) {
           // ปรับโครงสร้างข้อมูลให้สอดคล้องกับ uploadFile
           this.files = response.data.map(file => ({
@@ -90,7 +93,7 @@ export default {
             isFailed: false, // เพิ่มสถานะการอัปโหลดไม่สำเร็จ
           }));
 
-          console.log("::", this.files)
+          // console.log("::", this.files)
         } else {
           console.error("ไม่สามารถดึงข้อมูลไฟล์ได้");
         }
@@ -160,10 +163,11 @@ export default {
       console.log('position:', this.files[0].isFailed)
       try {
         // ตัวอย่างการส่งไฟล์ไปยังเซิร์ฟเวอร์
-        const response = await axios.post("http://localhost:3000/upload_file/citizen/documents", formData, {
+        const response = await axios.post(`${DOMAIN_NAME}/upload_file/citizen/documents`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true
         });
 
         // ตรวจสอบ status code
@@ -188,7 +192,7 @@ export default {
       }
     },
     downloadLink(filePath) {
-      const downloadUrl = `http://localhost:3000/upload_file/download_document/${filePath}`;
+      const downloadUrl = `${DOMAIN_NAME}/upload_file/download_document/${filePath}`;
       window.open(downloadUrl, '_blank');
     },
     openDeleteModal(file) {
@@ -199,7 +203,9 @@ export default {
       this.isDeleting = true;
       // console.log('files:', file_id)
       try {
-        const response = await axios.delete(`http://localhost:3000/upload_file/citizen/${file_id}`);
+        const response = await axios.delete(`${DOMAIN_NAME}/upload_file/citizen/${file_id}`, {
+          withCredentials: true
+        });
         // console.log('res:', response);
         setTimeout(async () => {
           this.isDeleting = false;
@@ -217,7 +223,7 @@ export default {
     showImage(filePath, index) {
       this.lightboxIndex = index;
       this.lightboxVisible = true;
-      const pdfUrl = `http://localhost:3000/uploads/citizen_documents/${filePath}`;
+      const pdfUrl = `${DOMAIN_NAME}/uploads/citizen_documents/${filePath}`;
       window.open(pdfUrl, "_blank");
     },
     closeLightbox() {

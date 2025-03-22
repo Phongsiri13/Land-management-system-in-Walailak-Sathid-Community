@@ -2,6 +2,14 @@
     <div class="primary_content">
         <div class="mx-5 py-5 is-flex is-justify-content-center">
             <div class="box column is-three-quarters-tablet is-two-thirds-desktop is-full-mobile">
+                <div class="is-flex is-justify-content-flex-start my-2">
+                    <button class="button is-primary is-small" @click="goHome">
+                        <span class="icon">
+                            <i class="fas fa-step-backward"></i>
+                        </span>
+                        <span>ย้อนกลับ</span>
+                    </button>
+                </div>
                 <div class="py-2 is-flex 
                 is-justify-content-space-between">
                     <h2 class="title has-text-link px-3 is-size-3">ข้อมูลราษฎร</h2>
@@ -69,7 +77,8 @@
                     <div class="column is-half">
                         <div class="box  py-3 px-4 is-flex is-align-items-center">
                             <span class="has-text-weight-semibold is-size-5">ซอย:</span>
-                            <span class="ml-3 is-size-5">{{ formPeopleData.selectedSoi == 0 ? '0': formPeopleData.selectedSoi }}</span>
+                            <span class="ml-3 is-size-5">{{ formPeopleData.selectedSoi == 0 ? '0' :
+                                formPeopleData.selectedSoi }}</span>
                         </div>
                     </div>
 
@@ -120,10 +129,11 @@
                 </div>
 
                 <!-- heir -->
-                 <!-- roles -->
+                <!-- roles -->
                 <!-- ข้อมูลทายาท -->
                 <hr>
-                <div v-if="userRole === roles[3].role_id" class="is-flex is-justify-content-space-between is-align-content-center mb-1">
+                <div v-if="userRole === roles[3].role_id"
+                    class="is-flex is-justify-content-space-between is-align-content-center mb-1">
                     <h2 class="has-text-dark my-3 px-3 is-size-4">ทายาทของราษฎรผู้นี้</h2>
                     <button class="button is-success mb-3" style="width: 50px;" @click="goToConnectHeir">
                         <span class="icon">
@@ -151,6 +161,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import roles from '@/role_config';
 import axios from 'axios';
 import { convertToThaiDate, formatIDCARD, formatPhoneNumber } from '@/utils/commonFunc';
@@ -178,6 +189,9 @@ export default {
         }
     },
     methods: {
+        goHome() {
+            this.$router.back();
+        },
         goToConnectHeir() {
             // move to
             console.log(
@@ -216,8 +230,10 @@ export default {
         try {
             const personId = this.$route.params.id;
             this.prefixList = await fetchPrefix();
-            console.log('prefixList:', this.prefixList);
-            const response = await axios.get(`http://localhost:3000/citizen/${personId}`);
+            // console.log('prefixList:', this.prefixList);
+            const response = await axios.get(`${DOMAIN_NAME}/citizen/${personId}`, {
+                withCredentials: true
+            });
             console.log('le:', response.data.length)
             if (response.data.length <= 0) {
                 await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
@@ -246,12 +262,16 @@ export default {
             };
 
             // getHeirs
-            const resHeir = await axios.get(`http://localhost:3000/heir/related_citizen/${personId}`);
+            const resHeir = await axios.get(`${DOMAIN_NAME}/heir/related_citizen/${personId}`, {
+                withCredentials: true
+            });
             // console.log('le:', resHeir.data)
             this.formHeirData = resHeir.data;
 
             // holding lands
-            const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${personId}`);
+            const resLandHold = await axios.get(`${DOMAIN_NAME}/citizen/holding/${personId}`, {
+                withCredentials: true
+            });
             console.log('res-hold:', resLandHold.data)
             if (resLandHold.data.length > 1) {
                 let totalArea = resLandHold.data.reduce((sum, land) => {

@@ -219,9 +219,11 @@ export default {
           const { confirm_password, ...updateData } = formData;
           // console.log('adding-update:', updateData)
 
-          const user_update = await axios.post(`${DOMAIN_NAME}/register`, updateData);
+          const user_update = await axios.post(`${DOMAIN_NAME}/register`, updateData, {
+            withCredentials: true
+          });
 
-          console.log('user_uer:', user_update)
+          // console.log('user_uer:', user_update)
           this.table_loading = true;
           if (user_update.status == 201) {
             this.showNotification('การเพิ่มบัญชีผู้ใช้งานท่านนี้สำเร็จ!', 'success');
@@ -256,7 +258,9 @@ export default {
         try {
           const { user_id, username, ...updateData } = formData;
 
-          const user_update = await axios.put(`${DOMAIN_NAME}/admin/user/personal/${userID}`, formData);
+          const user_update = await axios.put(`${DOMAIN_NAME}/admin/user/personal/${userID}`, formData,{
+            withCredentials: true
+          });
 
           console.log('user_uer:', user_update)
           if (user_update.data.success == true) {
@@ -300,7 +304,7 @@ export default {
         const user_del = await axios.put(`${DOMAIN_NAME}/admin/user/del/${user_id}`, {
           username: username,
           user_actived: user_actived == '1' ? '0' : '1'
-        });
+        }, {withCredentials: true});
 
         console.log('status:', user_del)
         this.adminList = []
@@ -328,10 +332,10 @@ export default {
       // ดึงข้อมูลผู้ใช้งาน
       this.adminList = await getAllUsers();
 
-      console.log('user-data:', this.adminList)
+      // console.log('user-data:', this.adminList)
 
       // ดึงข้อมูลคำนำหน้า
-      const prefixResponse = await axios.get(`http://localhost:3000/citizen/prefix`);
+      const prefixResponse = await axios.get(`${DOMAIN_NAME}/citizen/prefix`);
       if (prefixResponse.data.length > 0) {
         this.prefixList = prefixResponse.data.map(prefix => ({
           value: prefix.prefix_id,
@@ -348,7 +352,7 @@ export default {
         }));
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      // console.error('Error fetching data:', error);
       this.showNotification('เกิดข้อผิดพลาดในการดึงข้อมูล', 'error');
     } finally {
       setTimeout(() => {

@@ -161,6 +161,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { fetchUserRoleActive, getOneUserRole } from '@/api/apiUser';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
@@ -227,7 +228,9 @@ export default {
             // Close the modal after saving
             this.loadingCreate = true;
             try {
-                const response = await axios.post('http://localhost:3000/admin/role/create', createData);
+                const response = await axios.post(`${DOMAIN_NAME}/admin/role/create`, createData, {
+                    withCredentials: true
+                });
                 console.log('Response:', response.data);
                 if (response.data.success == true) {
                     this.roleFiles = [];
@@ -260,8 +263,10 @@ export default {
             const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.put(`http://localhost:3000/admin/role/del/${item}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/admin/role/del/${item}`, {
                     id: active
+                },{
+                    withCredentials: true
                 });
                 console.log('Response:', response.data);
                 this.roleFiles = [];
@@ -305,9 +310,9 @@ export default {
             this.loadingEdit = true;
 
             try {
-                const response = await axios.put(`http://localhost:3000/admin/role/${this.newRole.value}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/admin/role/${this.newRole.value}`, {
                     role_name: this.newRole.label
-                });
+                },{withCredentials: true});
                 console.log('res:', response.data)
                 if (response.data.success == true) {
                     this.roleFiles = [];

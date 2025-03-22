@@ -1,57 +1,63 @@
-import { defineStore } from 'pinia'
-import axios from 'axios'
+import { defineStore } from 'pinia';
+import axios from 'axios';
+import DOMAIN_NAME from '@/config/domain_setup';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
     userRole: null,
-    userRoleName: null
+    userRoleName: null,
+    isLoading: false // เพิ่ม Loading State
   }),
   actions: {
     setDefaultRole() {
-      this.userRole = null
-      this.userRoleName = null
+      this.userRole = null;
+      this.userRoleName = null;
     },
     setUserRole(role) {
-      this.userRole = role // new role
+      this.userRole = role;
     },
     async fetchUserRole() {
+      this.isLoading = true; // ตั้งค่า Loading State
       try {
-        // ส่งคำขอไปยัง backend พร้อมกับ cookie (`connect.sid`) อัตโนมัติ
-        const response = await  axios.get('http://localhost:3000/login/profile', {
-          withCredentials: true // ส่ง cookie พร้อมคำขอ
-        })
+        // 🔍 ตรวจสอบว่า Cookie มี token หรือไม่
+        const hasToken = document.cookie
+          .split('; ')
+          .some(row => row.startsWith('token='));
 
-        console.log(':::', response.data.user.role)
-        console.log(':::', response.status)
-        this.userRole = response.data.user.role // กำหนดค่า role ที่ได้รับจาก API
+        if (!hasToken) {
+          // console.log('🔴 ไม่มี Token ใน Cookie -> ออกจากระบบทันที');
+          this.setDefaultRole();
+          return;
+        }
+
+        // 🔥 ถ้ามี Token -> ขอข้อมูล Role จาก API
+        const response = await axios.get(`${DOMAIN_NAME}/login/profile`, {
+          withCredentials: true
+        });
+
+        this.userRole = response.data.user.role;
       } catch (error) {
-        // console.log('err:',error.status)
-        this.userRole = null
-        return null
+        // console.error('❌ Fetch User Role Error:', error);
+        this.setDefaultRole(); // ลบ Role และออกจากระบบ
+      } finally {
+        this.isLoading = false; // ปิด Loading State
       }
     },
     async out_of_system() {
       try {
-        // ส่งคำขอแบบ POST ไปยัง backend พร้อมกับ cookie (`connect.sid`) อัตโนมัติ
-        const response = await axios.post(
-          'http://localhost:3000/login/logout',
-          {},
-          {
-            withCredentials: true // ส่ง cookie พร้อมคำขอ
-          }
-        )
-        console.log('message:', response.data)
-        this.userRole = null
-        this.userRoleName = null
+        await axios.post(`${DOMAIN_NAME}/login/logout`, {}, {
+          withCredentials: true
+        });
+
+        this.setDefaultRole(); // รีเซ็ต Role
       } catch (error) {
-        this.userRole = null
-        this.userRoleName = null
+        this.setDefaultRole(); // รีเซ็ต Role
       }
     }
   },
   getters: {
     isUser: (state) => state.userRole === null,
-    isAdmin: (state) => state.userRole === 'Admin',
-    isOfficer: (state) => state.userRole === 'Officer'
+    // isAdmin: (state) => state.userRole === 'Admin',
+    // isOfficer: (state) => state.userRole === 'Officer',
   }
-})
+});

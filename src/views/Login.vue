@@ -55,6 +55,7 @@
 <script>
 import axios from 'axios';
 import { useUserStore } from '@/stores/useUserStore';
+import DOMAIN_NAME from '@/config/domain_setup';
 
 export default {
     data() {
@@ -87,30 +88,24 @@ export default {
         async handleLogin() {
             this.btn_load = true
             if (this.validateForm()) {
-                console.log('username:', this.username)
-                console.log('password:', this.password)
+                // console.log('username:', this.username)
+                // console.log('password:', this.password)
                 // Add API call for login here if needed
             }
             this.userStore = useUserStore();
             const payload = { username: this.username, password: this.password };
             try {
-                const response = await axios.post('http://localhost:3000/login', payload, { withCredentials: true });
-                console.log("res:", response)
-                console.log("role:", response.data.role)
+                const response = await axios.post(`${DOMAIN_NAME}/login`, payload, { withCredentials: true });
                 if(response.data.role){
                     this.userStore.setUserRole(response.data.role); // กำหนดค่า userRole เป็น "Admin"
                 }
-                // console.log("state:", this.userStore.userRole)
-                // setTimeout(() => {
-                //     this.btn_load = false
-                // }, 2000);
                 alert('Logged in successfully!');
                 this.btn_load = false
                 this.goHome();
             } catch (error) {
                 console.error('Failed to fetch role', error);
                 useUserStore.userRole = null;
-                alert('Logged is failed!');
+                alert('บัญชี หรือ รหัสผ่านไม่ถูกต้อง!');
             } finally{
                 this.btn_load = false;
             }

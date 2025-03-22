@@ -3,6 +3,14 @@
     <div class="py-5 is-flex is-justify-content-center">
       <div class="box column is-three-quarters-tablet is-three-quarters-desktop is-four-fifths-mobile">
         <h1 class="title has-text-centered py-2 has-text-link">แก้ไขรายละเอียดที่ดิน</h1>
+        <div class="is-flex is-justify-content-flex-start my-2">
+          <button class="button is-primary is-small" @click="goHome">
+            <span class="icon">
+              <i class="fas fa-step-backward"></i>
+            </span>
+            <span>ย้อนกลับ</span>
+          </button>
+        </div>
         <form @submit.prevent="updateLand" class="px-3">
           <!-- ซอย -->
           <div class="columns">
@@ -87,8 +95,8 @@
                 <label class="label">เลขที่ <strong class="has-text-danger">*</strong></label>
                 <div class="control">
                   <input class="input is-normal custom-select" :class="{ 'is-danger': errors.number }"
-                    @input="validateField('number')" v-model="formLand.number" type="text" placeholder="กรุณากรอกเลขที่"
-                     />
+                    @input="validateField('number')" v-model="formLand.number" type="text"
+                    placeholder="กรุณากรอกเลขที่" />
                   <DisplayError v-if="errors.number" :err_text="errors.number" />
                 </div>
               </div>
@@ -267,6 +275,7 @@ import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea } from '@/utils/landFunc';
 import { showErrorAlert, showWarningAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { convertSquareWaToRaiNganWa } from '@/utils/landFunc';
+import DOMAIN_NAME from "@/config/domain_setup";
 
 export default {
   components: {
@@ -323,6 +332,9 @@ export default {
     }
   },
   methods: {
+    goHome() {
+      this.$router.back();
+    },
     async updateVillageOptions(district) {
       // Update the village list based on subdistrict
       if (district === 'หัวตะพาน' || district === 'ไทยบุรี') {
@@ -389,7 +401,9 @@ export default {
       try {
         let totalArea = 0
         const max_rai = 2000; // ตารางวา
-        const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${this.formLand.id_card}`);
+        const resLandHold = await axios.get(`${DOMAIN_NAME}/citizen/holding/${this.formLand.id_card}`, {
+          withCredentials: true
+        });
         console.log('res-hold:', resLandHold.data);
 
         // can edit without checking
@@ -441,7 +455,7 @@ export default {
             return
           }
         }
-        console.log('this.formLand:',this.formLand)
+        console.log('this.formLand:', this.formLand)
         const form_data = {
           tf_number: this.formLand.tf_number,
           spk_area: this.formLand.spk_area,
@@ -463,7 +477,9 @@ export default {
 
         console.log('Form submitted:', form_data);
         // this.resetForm();
-        const response = await axios.put(`http://localhost:3000/land/${this.ID_LAND}`, form_data);
+        const response = await axios.put(`${DOMAIN_NAME}/land/${this.ID_LAND}`, form_data, {
+          withCredentials: true
+        });
         console.log('Response:', response.data);
         // this.resetForm()
         await showSuccessAlert('การอัพเดทข้อมูลที่ดิน', 'อัพเดทข้อมูลสำเร็จ!');

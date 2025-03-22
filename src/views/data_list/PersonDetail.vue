@@ -105,8 +105,9 @@
                                     </span>
                                 </button>
                                 <!-- Remove land -->
-                                <button :class="landActive === '1' ? 'button is-normal is-danger':'button is-normal is-link'" 
-                                @click="showPermissionModal">
+                                <button
+                                    :class="landActive === '1' ? 'button is-normal is-danger' : 'button is-normal is-link'"
+                                    @click="showPermissionModal">
                                     <span class="icon" v-if="landActive === '0'">
                                         <i class="fas fa-check-circle"></i>
                                     </span>
@@ -229,7 +230,8 @@
                                 </span>
                             </p>
                         </div>
-                        <div class="column is-1" v-if="userRole === roles[3].role_id && (landStatusID !== 'LS03' && landStatusID !== 'LS04')">
+                        <div class="column is-1"
+                            v-if="userRole === roles[3].role_id && (landStatusID !== 'LS03' && landStatusID !== 'LS04')">
                             <!-- landStatusID -->
                             <div class="is-flex is-justify-content-flex-end">
                                 <!-- Edit people-->
@@ -383,12 +385,12 @@
                                         <div class="column">
                                             <p><strong>ชื่อ</strong></p>
                                             <p>{{ heir.full_name || '-'
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                         <div class="column">
                                             <p><strong>ความสัมพันธ์</strong></p>
                                             <p>{{ 'เป็น' + heir.relationship_label || '-'
-                                            }}</p>
+                                                }}</p>
                                         </div>
                                         <div v-if="userRole === roles[3].role_id"
                                             class="column is-inline-block is-flex is-justify-content-center is-align-items-center">
@@ -479,8 +481,8 @@ import { convertToThaiDate, formatPhoneNumber, formatIDCARD } from '@/utils/comm
 import { fetchOneLandStatus } from '@/api/apiLand';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
 import { useUserStore } from '@/stores/useUserStore';
-import { store } from '@/store';
 import roles from '@/role_config';
+import DOMAIN_NAME from '@/config/domain_setup';
 
 export default {
     data() {
@@ -531,13 +533,15 @@ export default {
         try {
             const landId = decodeURIComponent(this.$route.params.id);
             this.LAND_ID = landId;
-            const response_land = await axios.get(`http://localhost:3000/land/${landId}`);
-            console.log('land-data:', response_land.data[0])
+            const response_land = await axios.get(`${DOMAIN_NAME}/land/${landId}`, {
+                withCredentials: true
+            });
+            // console.log('land-data:', response_land.data[0])
             this.CITIZEN_ID = response_land.data[0].id_card || null;
             this.landSoi = response_land.data[0].current_soi;
             // console.log('land-soi:', this.landSoi)
             const getStatusName = await fetchOneLandStatus(response_land.data[0].current_land_status);
-            console.log('getStatusName:', getStatusName.data[0].land_status_name);
+            // console.log('getStatusName:', getStatusName.data[0].land_status_name);
             this.landStatusName = getStatusName.data[0].land_status_name
             this.landStatusID = getStatusName.data[0].ID_land_status
             this.create_land_at = response_land.data[0].created_at
@@ -548,14 +552,18 @@ export default {
 
                 this.landActive = ld[0].active
                 if (ld[0].id_card) {
-                    const resCitizen = await axios.get(`http://localhost:3000/citizen/${ld[0].id_card}`);
-                    console.log('citizen-data:', resCitizen.data[0].ID_CARD)
+                    const resCitizen = await axios.get(`${DOMAIN_NAME}/citizen/${ld[0].id_card}`, {
+                        withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+                    });
+                    // console.log('citizen-data:', resCitizen.data[0].ID_CARD)
                     if (resCitizen.data) {
                         const cz = resCitizen.data
                         this.person_information = [...cz]
                         this.person_name = (cz[0].first_name || '-') + " " + (cz[0].last_name || '-')
-                        const resHeir = await axios.get(`http://localhost:3000/manage_relation/citizen_relations/${resCitizen.data[0].ID_CARD}`);
-                        console.log('resHeir', resHeir.data.data)
+                        const resHeir = await axios.get(`${DOMAIN_NAME}/manage_relation/citizen_relations/${resCitizen.data[0].ID_CARD}`, {
+                            withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+                        });
+                        // console.log('resHeir', resHeir.data.data)
                         if (resHeir.data.data) {
                             this.heir_information = resHeir.data.data
                         }
@@ -564,13 +572,17 @@ export default {
             }
             // ✅ ดึงข้อมูลประเภทที่ดินทั้งหมด
             const res_land_usage = await axios.get(
-                `http://localhost:3000/manage_land_usages_info/active/1`
+                `${DOMAIN_NAME}/manage_land_usages_info/active/1`, {
+                withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+            }
             );
             this.landUsages = res_land_usage.data;
 
             // ✅ ดึงข้อมูลประเภทการใช้ที่ดินที่ใช้งานจริง
             const res_land_using = await axios.get(
-                `http://localhost:3000/land/v2/land_use/${this.LAND_ID}`
+                `${DOMAIN_NAME}/land/v2/land_use/${this.LAND_ID}`, {
+                withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+            }
             );
 
             // ✅ ดึง `usage_id` ทั้งหมดที่เกี่ยวข้องกับ landId
@@ -618,9 +630,11 @@ export default {
         // Shows the modal
         async showPermissionModal() {
             this.isEditModalOpen = true;
-            console.log('::',this.landActive)
+            // console.log('::', this.landActive)
             try {
-                const resActive = await axios.get(`http://localhost:3000/land/active/${this.land_information[0].id_land}`);
+                const resActive = await axios.get(`${DOMAIN_NAME}/land/active/${this.land_information[0].id_land}`, {
+                        withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+                    });
                 console.log('resActive:', resActive.data)
                 if (resActive.data.length > 0) {
                     this.selectedPermission = resActive.data[0].active
@@ -629,7 +643,6 @@ export default {
             } catch (error) {
                 console.log('has err')
             }
-
         },
         // Hides the modal
         hidePermissionModal() {
@@ -643,8 +656,9 @@ export default {
             const activeValue = this.selectedPermission;
             console.log('active-v:', activeValue)
             try {
-                const resActive = await axios.delete(`http://localhost:3000/land/active/${this.land_information[0].id_land}`, {
-                    data: { active: activeValue == '1' ? '0':'1' }
+                const resActive = await axios.delete(`${DOMAIN_NAME}/land/active/${this.land_information[0].id_land}`, {
+                    data: { active: activeValue == '1' ? '0' : '1' },
+                    withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
                 });
 
                 if (resActive.data.success) {
@@ -671,15 +685,19 @@ export default {
                     details: usageId === "LU04" ? this.tempLandUseDetails : null, // ✅ ตรวจสอบว่าเป็น "อื่นๆ" หรือไม่
                 }));
 
-                console.log('newLandUsage:', newLandUsage)
+                // console.log('newLandUsage:', newLandUsage)
 
                 // ✅ ส่งข้อมูลทั้งหมดไปยัง Backend
-                await axios.put(`http://localhost:3000/land/v2/update_land_use/${this.LAND_ID}`, newLandUsage);
+                await axios.put(`${DOMAIN_NAME}/land/v2/update_land_use/${this.LAND_ID}`, newLandUsage, {
+                    withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+                });
 
                 alert("บันทึกข้อมูลเรียบร้อย!"); // แจ้งเตือน
                 // ✅ ดึงข้อมูลประเภทการใช้ที่ดินที่ใช้งานจริง
                 const res_land_using = await axios.get(
-                    `http://localhost:3000/land/v2/land_use/${this.LAND_ID}`
+                    `${DOMAIN_NAME}/land/v2/land_use/${this.LAND_ID}`, {
+                    withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+                }
                 );
 
                 // ✅ ดึง `usage_id` ทั้งหมดที่เกี่ยวข้องกับ landId

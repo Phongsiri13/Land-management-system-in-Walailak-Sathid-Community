@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { fetchPrefix } from '@/api/apiPeople';
 import axios from 'axios';
 import { getHeirModel } from '@/model/heirModel';
@@ -148,7 +149,7 @@ export default {
             if (!isValid) return;
             this.btnLoad = true
 
-            console.log("Heir-length:", this.formHeirData.heir_fname.length)
+            // console.log("Heir-length:", this.formHeirData.heir_fname.length)
             // return;
             const form_data = {
                 // relation_select: this.
@@ -158,7 +159,7 @@ export default {
             };
 
             const matchName = await checkFullnameMatchHeir(form_data.first_name, form_data.last_name)
-            console.log('match-name:', matchName.data)
+            // console.log('match-name:', matchName.data)
             if (matchName.data.length > 0) {
                 await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
                 this.btnLoad = false;
@@ -169,7 +170,9 @@ export default {
             console.log("Heir-length:", form_data.last_name.length)
 
             try {
-                const response = await axios.post('http://localhost:3000/heir', form_data);
+                const response = await axios.post(`${DOMAIN_NAME}/heir`, form_data, {
+                    withCredentials: true
+                });
                 console.log('Response:', response.data);
                 await showSuccessAlert('การเพิ่มข้อมูลทายาท', response.data.message)
                 this.resetForm();

@@ -40,7 +40,7 @@
               <thead class="table-header">
                 <tr>
                   <th style="width: 5%;">ซอย</th>
-                  <th>สปก</th>
+                  <th>สปก 4-01.</th>
                   <th>เกษตร</th>
                   <th>บุกรุก</th>
                   <th>กำลังจัดสรร</th>
@@ -64,12 +64,12 @@
                 <!-- Result Row (Total) -->
                 <tr v-if="selectedRows.length > 1" key="result">
                   <td>ผลลัพธ์</td>
-                  <td>{{ totalSpaok }}</td>
-                  <td>{{ totalAgricultureTitle }}</td>
-                  <td>{{ totalOccupiedArea }}</td>
-                  <td>{{ totalUnclaimedArea }}</td>
+                  <td>{{ totalSpaok }} แปลง</td>
+                  <td>{{ totalAgricultureTitle }} แปลง</td>
+                  <td>{{ totalOccupiedArea }} แปลง</td>
+                  <td>{{ totalUnclaimedArea }} แปลง</td>
                   <td>{{ totalsquare_wa }}</td>
-                  <td>{{ totalLand }}</td>
+                  <td>{{ totalLand }} แปลง</td>
                 </tr>
                 <tr v-if="selectedRows.length == 0">
                   <td colspan="7" class="has-text-centered has-text-danger is-size-5">กรุณาเลือกซอย</td>
@@ -104,7 +104,7 @@ export default {
   },
   methods: {
     exportToCSV() {
-      const headers = ['ซอย', 'ที่ดิน', 'สปก', 'การเกษตร', 'บุกรุก', 'ไม่มีผู้ถือครอง', 'จำนวนไร่'];
+      const headers = ['ซอย', 'สปก 4-01.', 'การเกษตร', 'บุกรุก', 'ไม่มีผู้ถือครอง', 'จำนวนไร่', 'ที่ดิน'];
       const data = this.rows
         .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
         .map(row => [
@@ -234,11 +234,11 @@ export default {
         }
       });
       this.totalsquare_wa = this.formatRai(raiTotal, nganTotal, squareWaTotal);
-      this.totalLand = this.totalLand + ' แปลง'
-      this.totalSpaok = this.totalSpaok + ' แปลง'
-      this.totalAgricultureTitle = this.totalAgricultureTitle + ' แปลง'
-      this.totalOccupiedArea =  this.totalOccupiedArea + ' แปลง'
-      this.totalUnclaimedArea =  this.totalUnclaimedArea + ' แปลง'
+      this.totalLand = this.totalLand
+      this.totalSpaok = this.totalSpaok
+      this.totalAgricultureTitle = this.totalAgricultureTitle
+      this.totalOccupiedArea =  this.totalOccupiedArea
+      this.totalUnclaimedArea =  this.totalUnclaimedArea
     }
   },
   watch: {

@@ -7,9 +7,9 @@
                 <div class="is-flex is-justify-content-flex-start my-2">
                     <button class="button is-primary is-small" @click="goHome">
                         <span class="icon">
-                            <i class="fas fa-home"></i>
+                            <i class="fas fa-step-backward"></i>
                         </span>
-                        <span>กลับหน้าแรก</span>
+                        <span>ย้อนกลับ</span>
                     </button>
                 </div>
                 <form @submit.prevent="submitCitizen">
@@ -197,8 +197,9 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { getPeopleModel } from '@/model/citizenModel';
-import { showErrorAlert, showWarningAlert, showSuccessAlert } from '@/utils/alertFunc';
+import { showErrorAlert, showSuccessAlert } from '@/utils/alertFunc';
 import { fetchPrefix } from '@/api/apiPeople';
 import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { CitizenValidSchema } from '@/model/citizenModel';
@@ -319,13 +320,17 @@ export default {
             // ส่งข้อมูลไปที่ API
             try {
                 // 
-                const response = await axios.put(`http://localhost:3000/citizen/${this.id_card}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/citizen/${this.id_card}`, {
                     dataUpdate: this.formPeopleData
+                }, {
+                    withCredentials: true
                 });
                 console.log(response)
                 await showSuccessAlert('การอัพเดทราษฎร', response.data.message);
                 const personId = this.$route.params.id;
-                const resRefresh = await axios.get(`http://localhost:3000/citizen/${personId}`);
+                const resRefresh = await axios.get(`${DOMAIN_NAME}/citizen/${personId}`, {
+                    withCredentials: true
+                });
                 if (resRefresh.data.length <= 0) {
                     await showErrorAlert('ไม่พบราษฎรคนนี้', 'กรุณาใส่เลขบัตรประชาชนให้ถูกต้อง');
                     return;
@@ -376,8 +381,10 @@ export default {
         try {
             const personId = this.$route.params.id;
             this.prefixList = await fetchPrefix();
-            const response = await axios.get(`http://localhost:3000/citizen/${personId}`);
-            const sois = await axios.get('http://localhost:3000/land/sois');
+            const response = await axios.get(`${DOMAIN_NAME}/citizen/${personId}`, {
+                withCredentials: true
+            });
+            const sois = await axios.get(`${DOMAIN_NAME}/land/sois`);
 
             this.sois = [];
             for (let i = 0; i < sois.data.length; i++) {

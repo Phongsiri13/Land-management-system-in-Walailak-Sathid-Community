@@ -115,7 +115,7 @@
                             </table>
                             <div v-else>
                                 <hr class="navbar-divider" />
-                                <span class="has-text-danger">ไม่พบข้อมูล</span>
+                                <span class="is-size-4 has-text-danger">ไม่พบข้อมูล</span>
                             </div>
                         </div>
 
@@ -138,9 +138,11 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import HistoryCitizenDataRow from '@/components/display_table/HistoryCitizenDataRow.vue';
 import { convertToThaiDate, formatIDCARD } from '@/utils/commonFunc';
 import axios from 'axios';
+import { showErrorAlert } from '@/utils/alertFunc';
 
 export default {
     components: { HistoryCitizenDataRow },
@@ -184,9 +186,7 @@ export default {
                 try {
                     await this.fetchCitizenData();
                 } catch (error) {
-
-                } finally {
-
+                    await showErrorAlert('โหลดข้อมูลไม่สำเร็จ!', 'กรุณาลองใหม่อีกครั้ง');
                 }
             }
             try {
@@ -202,7 +202,8 @@ export default {
         },
         async fetchCitizenData() {
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`, {
+                const response = await axios.get(`${DOMAIN_NAME}/citizen/history_citizen/${this.selectedLimit}/${this.currentPage}`, {
+                    withCredentials: true,
                     params: {
                         searchType: this.searchFilter,
                         searchQuery: this.searchQuery,
@@ -213,7 +214,8 @@ export default {
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
                 // console.log(response.data.data.results)
             } catch (error) {
-                console.error('Error fetching data:', error);
+                // console.error('Error fetching data:', error);
+                await showErrorAlert('โหลดข้อมูลไม่สำเร็จ!', 'กรุณาลองใหม่อีกครั้ง');
             }
         },
         setPage(page) {
@@ -225,18 +227,20 @@ export default {
             this.$router.push({ params: { limit: this.selectedLimit, page: 1 } });
         },
         async goToDetail(ID_CARD) {
-            console.log('id:', ID_CARD)
+            // console.log('id:', ID_CARD)
             this.isModalActive = true; // เปิด modal
             try {
-                const response = await axios.get(`http://localhost:3000/citizen/history_citizen/${ID_CARD}`);
-                console.log(response.data)
+                const response = await axios.get(`${DOMAIN_NAME}/citizen/history_citizen/${ID_CARD}`,{
+                    withCredentials: true,
+                });
+                // console.log(response.data)
                 this.history_data = response.data.resultsHistoryCitizen[0]
                 this.citizen_data = response.data.resultsCitizen[0]
-                console.log('history_data:', this.history_data)
-                console.log('citizen_data:', this.citizen_data)
+                // console.log('history_data:', this.history_data)
+                // console.log('citizen_data:', this.citizen_data)
 
             } catch (error) {
-
+                // await showErrorAlert('โหลดข้อมูลไม่สำเร็จ!', 'กรุณาลองใหม่อีกครั้ง');
             }
         },
         highlightDiff(field) {

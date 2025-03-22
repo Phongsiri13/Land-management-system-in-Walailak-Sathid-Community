@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import ConfirmDeleteModal from '@/components/upload_files/ConfirmDeleteModal.vue';
 import FileDropArea from '@/components/upload_files/FileDropArea.vue';
 import UploadList from '@/components/upload_files/UploadList.vue';
@@ -81,7 +82,9 @@ export default {
   methods: {
     async getLandFiles(land_id) {
       try {
-        const response = await axios.get(`http://localhost:3000/upload_file/live_files?land_id=${land_id}`);
+        const response = await axios.get(`${DOMAIN_NAME}/upload_file/live_files?land_id=${land_id}`, {
+          withCredentials: true
+        });
         if (response.status === 200) {
           // ปรับโครงสร้างข้อมูลให้สอดคล้องกับ uploadFile
           this.files = response.data.map(file => ({
@@ -151,10 +154,11 @@ export default {
       // console.log('position:', this.files[0].isFailed)
       try {
         // ตัวอย่างการส่งไฟล์ไปยังเซิร์ฟเวอร์
-        const response = await axios.post("http://localhost:3000/upload_file/land/live", formData, {
+        const response = await axios.post(`${DOMAIN_NAME}/upload_file/land/live`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
+          withCredentials: true
         });
 
         // ตรวจสอบ status code
@@ -180,7 +184,7 @@ export default {
     },
     // 90213121
     downloadLink(filePath) {
-      const downloadUrl = `http://localhost:3000/upload_file/download_live/${filePath}`;
+      const downloadUrl = `${DOMAIN_NAME}/upload_file/download_live/${filePath}`;
       window.open(downloadUrl, '_blank');
     },
     openDeleteModal(file) {
@@ -193,7 +197,9 @@ export default {
       this.isDeleting = true;
       // console.log('files:', file_id)
       try {
-        const response = await axios.delete(`http://localhost:3000/upload_file/land/live/${file_id}`);
+        const response = await axios.delete(`${DOMAIN_NAME}/upload_file/land/live/${file_id}`,{
+          withCredentials: true
+        });
         // console.log('res:', response);
         setTimeout(async () => {
           this.isDeleting = false;
@@ -211,7 +217,7 @@ export default {
     ,
     showImage(filePath, index) {
       this.lightboxIndex = index;
-      this.lightboxImages = this.files.map(file => `http://localhost:3000/uploads/land_lives/${file.path_file}`);
+      this.lightboxImages = this.files.map(file => `${DOMAIN_NAME}/uploads/land_lives/${file.path_file}`);
       this.lightboxVisible = true;
     },
     closeLightbox() {

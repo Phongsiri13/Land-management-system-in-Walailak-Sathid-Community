@@ -1,8 +1,9 @@
 import axios from 'axios'
+import DOMAIN_NAME from '@/config/domain_setup'
 
 export const fetchSois = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/land/sois')
+    const response = await axios.get(`${DOMAIN_NAME}/land/sois`)
     // console.log('res:', response.data)
     const sois = []
     for (let i = 0; i < response.data.length; i++) {
@@ -18,7 +19,9 @@ export const fetchSois = async () => {
 
 export const fetchLandStatus = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/land/land_status')
+    const response = await axios.get(`${DOMAIN_NAME}/land/land_status`, {
+      withCredentials: true
+    })
     // console.log('res-land:', response.data)
     const status_land = []
     for (let ls of response.data) {
@@ -33,7 +36,9 @@ export const fetchLandStatus = async () => {
 
 export const fetchLandStatusActive = async (active = '1') => {
   try {
-    const response = await axios.get(`http://localhost:3000/manage_status_info/active/${active}`)
+    const response = await axios.get(`${DOMAIN_NAME}/manage_status_info/active/${active}`, {
+      withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+    })
     console.log('res-land:', response.data)
     const status_land = []
     if (response.data.data.length != 0) {
@@ -51,7 +56,9 @@ export const fetchLandStatusActive = async (active = '1') => {
 
 export const fetchOneLandStatus = async (landID) => {
   try {
-    const response = await axios.get(`http://localhost:3000/manage_status_info/${landID}`)
+    const response = await axios.get(`${DOMAIN_NAME}/manage_status_info/${landID}`, {
+      withCredentials: true // ส่งคุกกี้ไปพร้อมกับคำขอ
+    })
     console.log('res-land:', response.data)
     const status_land = response.data
     return status_land
@@ -62,7 +69,9 @@ export const fetchOneLandStatus = async (landID) => {
 
 export const fetchLandOne = async (landID) => {
   try {
-    const response = await axios.get(`http://localhost:3000/land/${landID}`)
+    const response = await axios.get(`${DOMAIN_NAME}/land/${landID}`, {
+      withCredentials: true
+    })
     console.log('res-land:', response.data)
     const status_land = response.data
     return status_land
@@ -73,7 +82,7 @@ export const fetchLandOne = async (landID) => {
 
 export const fetchDocumentLandType = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/manage_land_document_type')
+    const response = await axios.get(`${DOMAIN_NAME}/manage_land_document_type`)
     const documentLandType = []
     for (let ls of response.data) {
       documentLandType.push({ value: ls.ID_dc_type, label: `${ls.dc_type_name}` })
@@ -86,7 +95,7 @@ export const fetchDocumentLandType = async () => {
 
 export const fetchRelation = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/manage_relation')
+    const response = await axios.get(`${DOMAIN_NAME}/manage_relation`)
     // console.log('res-land:', response.data)
     const status_land = []
     for (let ls of response.data) {
@@ -101,7 +110,7 @@ export const fetchRelation = async () => {
 // ดึงข้อมูลจาก dashboard
 export const fetchLandUseDashboard = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/dashboard')
+    const response = await axios.get(`${DOMAIN_NAME}/dashboard`)
     console.log('res-land:', response.data)
     return response.data
   } catch (error) {
@@ -109,12 +118,11 @@ export const fetchLandUseDashboard = async () => {
   }
 }
 
-export const fetchOneLandUseDashboard = async (soi_id='-1') => {
+export const fetchOneLandUseDashboard = async (soi_id = '-1') => {
   try {
-    const response = await axios.get(`http://localhost:3000/dashboard/${soi_id}`)
-    console.log(response.data)
+    const response = await axios.get(`${DOMAIN_NAME}/dashboard/${soi_id}`)
+    // console.log(response.data)
     const status_land = response.data
-    // throw new Error("ค่าที่ส่งมาไม่ถูกต้อง");x
     return status_land
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
@@ -123,7 +131,9 @@ export const fetchOneLandUseDashboard = async (soi_id='-1') => {
 
 export const fetchTableDashboard = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/dashboard/summary')
+    const response = await axios.get(`${DOMAIN_NAME}/dashboard/summary`, {
+      withCredentials: true
+    })
     // console.log('res-land:', response.data)
     const status_land = []
     const selectedControl = []
@@ -142,7 +152,7 @@ export const fetchTableDashboard = async () => {
         square_wa: ls.square_wa || 0
       })
     }
-    return [selectedControl ,status_land]
+    return [selectedControl, status_land]
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อได้')
   }
@@ -150,8 +160,10 @@ export const fetchTableDashboard = async () => {
 
 export const fetchCitizenTableDashboard = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/dashboard/summary_citizen')
-    console.log('res-land:', response.data)
+    const response = await axios.get(`${DOMAIN_NAME}/dashboard/summary_citizen`, {
+      withCredentials: true
+    })
+    // console.log('res-land:', response.data)
     const status_land = []
     const selectedControl = []
     for (let ls of response.data) {
@@ -163,10 +175,10 @@ export const fetchCitizenTableDashboard = async () => {
         huataphan: parseInt(ls.huataphan),
         taiburi: parseInt(ls.taiburi),
         male: parseInt(ls.male),
-        female: parseInt(ls.female),
+        female: parseInt(ls.female)
       })
     }
-    return [selectedControl ,status_land]
+    return [selectedControl, status_land]
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อได้')
   }

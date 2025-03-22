@@ -259,6 +259,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from "@/config/domain_setup";
 import * as yup from "yup";
 import { getRai, updateVillageOptions } from '@/utils/addressFunc';
 import axios from 'axios';
@@ -268,6 +269,8 @@ import DisplayError from '@/components/form_valid/DisplayError.vue';
 import { getLandModel, LandValidSchema } from '@/model/landModel';
 import { calculateLandArea, convertSquareWaToRaiNganWa } from '@/utils/landFunc';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
+
+
 export default {
   // นำเข้า component
   components: {
@@ -382,16 +385,16 @@ export default {
 
       this.btnLoad = true
 
-      console.log(":::", this.formLand.ngan)
+      // console.log(":::", this.formLand.ngan)
       const cal_result = calculateLandArea(
         this.formLand.rai,
         this.formLand.ngan,
         this.formLand.square_wa);
-      console.log('cal-re:', cal_result);
-      console.log("full_name 1:", this.formLand.full_name.length);
-      console.log("full_name 2:", this.formLand.full_name);
+      // console.log('cal-re:', cal_result);
+      // console.log("full_name 1:", this.formLand.full_name.length);
+      // console.log("full_name 2:", this.formLand.full_name);
       const { firstName, lastName } = this.splitName(this.formLand.full_name);
-      console.log("full_name:", this.splitName(this.formLand.full_name));
+      // console.log("full_name:", this.splitName(this.formLand.full_name));
 
       try {
         const matchName = await checkFullnameMatchCitizen(firstName, lastName);
@@ -411,15 +414,16 @@ export default {
         console.error("จำนวนไร่ต้องไม่เกิน 5");
         await showErrorAlert("จำนวนเกิน 5 ไร่", "พื้นที่รวมเกิน 5 ไร่! โปรดตรวจสอบข้อมูลอีกครั้ง")
         return;
-      } else {
-        console.log("พื้นที่ที่คำนวณได้:", cal_result);
       }
+      // console.log("พื้นที่ที่คำนวณได้:", cal_result);
       // citizen holding
       try {
         const max_rai = 2000; // ตารางวา
         let totalArea = 0
-        const resLandHold = await axios.get(`http://localhost:3000/citizen/holding/${this.formLand.id_card}`);
-        console.log('res-hold:', resLandHold.data);
+        const resLandHold = await axios.get(`${DOMAIN_NAME}/citizen/holding/${this.formLand.id_card}`, {
+          withCredentials: true
+        });
+        // console.log('res-hold:', resLandHold.data);
 
         if (resLandHold.data.length == 1) {
           totalArea = resLandHold.data.reduce((sum, land) => {
@@ -430,7 +434,7 @@ export default {
           }, 0);
 
           const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
-          console.log('res-prepare-adding:', totalAreaPrepareAdding)
+          // console.log('res-prepare-adding:', totalAreaPrepareAdding)
           // new land checks total rai
           if (totalAreaPrepareAdding > max_rai) {
             const remainingLand = max_rai - parseInt(totalArea);
@@ -451,13 +455,13 @@ export default {
             const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
             return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
           }, 0);
-          console.log('totalArea:', totalArea)
+          // console.log('totalArea:', totalArea)
           // จำนวนที่สามารถใช้พื้นที่ได้
           const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
           // console.log('res-prepare-adding:', totalAreaPrepareAdding)
           // new land checks total rai
           if (totalAreaPrepareAdding > max_rai) {
-            console.log('rai-plus:', max_rai - totalArea);
+            // console.log('rai-plus:', max_rai - totalArea);
             const remainingLand = Math.abs(max_rai - totalArea);
             const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
             await showWarningAlert(
@@ -487,9 +491,11 @@ export default {
           square_wa: cal_result.squareWa,
           number: this.formLand.number
         };
-        console.log('Form submitted:', form_data);
+        // console.log('Form submitted:', form_data);
         try {
-          const response = await axios.post('http://localhost:3000/land', form_data);
+          const response = await axios.post(`${DOMAIN_NAME}/land`, form_data, {
+            withCredentials: true
+          });
           console.log('Response:', response);
           await showSuccessAlert('การเพิ่มข้อมูลที่ดิน', response.data.message)
           this.resetForm();

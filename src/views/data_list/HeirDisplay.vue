@@ -32,27 +32,31 @@
                                         <span class="px-2">แสดง 50 ตาราง</span>
                                     </div>
                                 </div>
-                                <table v-if="heir_values.length"
-                                    class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                    <thead class="table-header">
-                                        <tr>
-                                            <th>ลำดับ</th>
-                                            <!-- <th>รหัส</th> -->
-                                            <th>ชื่อ - นามสกุล</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <HeirDataRow v-for="(heir, index) in heir_values" :key="heir.heir_id"
-                                            :heirs="heir" :index="(currentPage - 1) * selectedLimit + index + 1"
-                                            @view-detail="goToDetail(heir.heir_id)" />
-                                    </tbody>
-                                </table>
+                                <LoadingSpinner v-if="loading_heir" :isLoading="loading_heir" fontSize="22px" />
                                 <div v-else>
-                                    <hr class="navbar-divider" />
-                                    <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                    <table v-if="heir_values.length"
+                                        class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                        <thead class="table-header">
+                                            <tr>
+                                                <th>ลำดับ</th>
+                                                <!-- <th>รหัส</th> -->
+                                                <th>ชื่อ - นามสกุล</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <HeirDataRow v-for="(heir, index) in heir_values" :key="heir.heir_id"
+                                                :heirs="heir" :index="(currentPage - 1) * selectedLimit + index + 1"
+                                                @view-detail="goToDetail(heir.heir_id)" />
+                                        </tbody>
+                                    </table>
+                                    <div v-else>
+                                        <hr class="navbar-divider" />
+                                        <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                    </div>
                                 </div>
-                                <nav class="pagination" role="navigation" aria-label="pagination">
+                                
+                                <nav class="pagination mt-3" role="navigation" aria-label="pagination">
                                     <ul class="pagination-list">
                                         <li v-for="page in totalPages" :key="page">
                                             <a class="pagination-link" :class="{ 'is-current': page === currentPage }"
@@ -72,12 +76,14 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
 import HeirDataRow from '@/components/display_table/HeirDataRow.vue';
 import ResponsiveContainer from '@/components/layout/ResponsiveContainer.vue';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
-    components: { HeirDataRow, ResponsiveContainer },
+    components: { HeirDataRow, ResponsiveContainer, LoadingSpinner },
     props: {
         limit: {
             type: String, // Vue Router params จะเป็น String เสมอ
@@ -90,6 +96,7 @@ export default {
     },
     data() {
         return {
+            loading_heir: true,
             search_status: false,
             heir_values: [],
             searchQuery: '',
@@ -111,10 +118,10 @@ export default {
     },
     methods: {
         async searchData() {
-            console.log('hihi:',this.searchQuery)
+            console.log('hihi:', this.searchQuery)
             if (this.searchQuery == '') {
                 this.searchQuery = '',
-                this.$router.replace({
+                    this.$router.replace({
                         path: '/heir_data/50/1',
                     });
                 try {
@@ -137,8 +144,10 @@ export default {
             }
         },
         async fetchHeirData() {
+            this.loading_heir = true;
             try {
-                const response = await axios.get(`http://localhost:3000/heir/${this.selectedLimit}/${this.currentPage}`,{
+                const response = await axios.get(`${DOMAIN_NAME}/heir/${this.selectedLimit}/${this.currentPage}`, {
+                    withCredentials: true,
                     params: {
                         searchQuery: this.searchQuery
                     },
@@ -147,6 +156,10 @@ export default {
                 this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setTimeout(() => {
+                    this.loading_heir = false;
+                }, 500);
             }
         },
         setPage(page) {
@@ -163,7 +176,6 @@ export default {
     }
 };
 </script>
-
 
 <style scoped>
 .header-size-1 {

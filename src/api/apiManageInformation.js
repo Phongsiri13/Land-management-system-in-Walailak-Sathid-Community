@@ -1,12 +1,15 @@
 import axios from 'axios'
-const url_status = "http://localhost:3000/manage_status_info/";
-const url_relation = "http://localhost:3000/manage_relation/";
-const url_land_use = "http://localhost:3000/manage_land_usages_info/";
-const url_document_land_type = "http://localhost:3000/manage_land_document_type/";
+import DOMAIN_NAME from '@/config/domain_setup'
+const url_status = `${DOMAIN_NAME}/manage_status_info/`
+const url_relation = `${DOMAIN_NAME}/manage_relation/`
+const url_land_use = `${DOMAIN_NAME}/manage_land_usages_info/`
+const url_document_land_type = `${DOMAIN_NAME}/manage_land_document_type/`
 
 export const getOneStatus = async (id) => {
   try {
-    const response = await axios.get(url_status+`${id}`)
+    const response = await axios.get(url_status + `${id}`, {
+      withCredentials: true
+    })
     return response.data
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
@@ -15,7 +18,9 @@ export const getOneStatus = async (id) => {
 
 export const getOneDocumentLandType = async (id) => {
   try {
-    const response = await axios.get(url_document_land_type+`${id}`)
+    const response = await axios.get(url_document_land_type + `${id}`, {
+      withCredentials: true
+    })
     return response.data
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
@@ -24,7 +29,9 @@ export const getOneDocumentLandType = async (id) => {
 
 export const getOneRelation = async (id) => {
   try {
-    const response = await axios.get(url_relation+`${id}`)
+    const response = await axios.get(url_relation + `${id}`, {
+      withCredentials: true
+    })
     return response.data
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')
@@ -33,8 +40,10 @@ export const getOneRelation = async (id) => {
 
 export const getOneLandUsage = async (id) => {
   try {
-    const response = await axios.get(url_land_use+`${id}`)
-    console.log('getOneLandUsage:',response.data)
+    const response = await axios.get(url_land_use + `${id}`, {
+      withCredentials: true
+    })
+    console.log('getOneLandUsage:', response.data)
     return response.data
   } catch (error) {
     throw new Error('ไม่สามารถดึงข้อมูลสถานะที่ดินได้')

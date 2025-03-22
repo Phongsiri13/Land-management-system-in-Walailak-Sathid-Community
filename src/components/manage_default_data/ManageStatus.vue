@@ -94,7 +94,7 @@
                     <th class="has-text-white" style="width: 10%;">ลำดับ</th>
                     <!-- <th class="has-text-centered has-text-white" style="width: 15%;">รหัส</th> -->
                     <th class="has-text-white" style="width: 60%;">ชื่อสถานะที่ดิน</th>
-                    <th class="has-text-white" ></th>
+                    <th class="has-text-white"></th>
                 </tr>
             </thead>
             <tbody v-if="!page_loading">
@@ -144,6 +144,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { fetchLandStatus, fetchLandStatusActive } from '@/api/apiLand';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
@@ -265,7 +266,9 @@ export default {
             // Close the modal after saving
             this.loadingCreate = true;
             try {
-                const response = await axios.post('http://localhost:3000/manage_status_info/create', createData);
+                const response = await axios.post(`${DOMAIN_NAME}/manage_status_info/create`, createData, {
+                    withCredentials: true
+                });
                 console.log('Response:', response.data);
                 await showSuccessAlert('การเพิ่มข้อมูลสถานะที่ดิน', response.data.message);
                 if (response.data.success) {
@@ -299,7 +302,7 @@ export default {
             } finally {
                 this.loadingCreate = false;
                 this.newNameStatus = '';
-                
+
                 this.closeCreateModal();
             }
         },
@@ -310,8 +313,10 @@ export default {
             const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.put(`http://localhost:3000/manage_status_info/active/${item}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/manage_status_info/active/${item}`, {
                     id: active
+                }, {
+                    withCredentials: true
                 });
                 console.log('Response:', response.data);
                 await showSuccessAlert('เปลี่ยนข้อมูลสถานะ', response.data.message);
@@ -334,7 +339,7 @@ export default {
         // Edit status name
         async saveEdit() {
             // console.log('edit com:', this.editData)
-            // console.log('edit-v:', this.newStatus.label)
+            console.log('edit-v:', this.newStatus.label)
             const active = this.statusActive == true ? '0' : '1';
 
             // newStatus.label
@@ -342,11 +347,11 @@ export default {
             const isValid = await this.validateNewStatusLabel();
             if (!isValid) return;
             this.loadingEdit = true;
-
+            // alert('dsadsa')
             try {
-                const response = await axios.put(`http://localhost:3000/manage_status_info/${this.newStatus.value}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/manage_status_info/${this.newStatus.value}`, {
                     land_status_name: this.newStatus.label
-                });
+                }, { withCredentials: true });
                 await showSuccessAlert('การอัพเดทข้อมูลสถานะ', response.data.message);
                 this.statusFiles = [];
                 if (response.data.success) {

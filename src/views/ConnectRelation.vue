@@ -5,7 +5,14 @@
                 <h1 class="title has-text-centered is-size-3 has-text-weight-bold py-3">
                     ระบุความสัมพันธ์ระหว่างราษฎรกับทายาท
                 </h1>
-
+                <div class="is-flex is-justify-content-flex-start my-2">
+                    <button class="button is-primary is-small" @click="goHome">
+                        <span class="icon">
+                            <i class="fas fa-step-backward"></i>
+                        </span>
+                        <span>ย้อนกลับ</span>
+                    </button>
+                </div>
                 <!-- Input -->
                 <form @submit.prevent="submitHeirRelation">
                     <div class="container px-5">
@@ -128,6 +135,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { fetchRelationActive, fullCheckMatchHeir, citizenRelatedHeir, getHeirUsingFullName } from '@/api/apiHeir';
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/alertFunc';
@@ -167,9 +175,7 @@ export default {
                     paternalGrandfather: "ตา",
                     grandson: "หลานชาย",
                     uncle: "อา",
-                    spouse: {
-                        husband: "สามี"
-                    }
+                    husband: "สามี"
                 },
                 female: {
                     mother: "มารดา",
@@ -182,9 +188,7 @@ export default {
                     auntFatherSide: "ป้า",
                     auntMotherSide: "น้า",
                     cousin: "ลูกพี่ลูกน้อง",
-                    spouse: {
-                        wife: "ภรรยา"
-                    }
+                    wife: "ภรรยา"
                 }
             }
         }
@@ -204,6 +208,9 @@ export default {
         }
     },
     methods: {
+        goHome() {
+            this.$router.back();
+        },
         // valid in form
         async checkPrefix(value) {
             const fullname = value.trim();
@@ -318,8 +325,8 @@ export default {
                 // step 3 check citizen and heir are together.
                 const resCitizenRelatedHeirs = await citizenRelatedHeir(Citizen[0].ID_CARD);
 
-                console.log('resCitizenRelatedHeirs', resCitizenRelatedHeirs)
-                console.log('resHeirs', resHeirs)
+                // console.log('resCitizenRelatedHeirs', resCitizenRelatedHeirs)
+                // console.log('resHeirs', resHeirs)
 
                 // If citizen is not found, handle the case
                 if (!resHeirs.success) {
@@ -369,10 +376,10 @@ export default {
                     }
                 }
 
-                const response = await axios.post('http://localhost:3000/heir/all', {
+                const response = await axios.post(`${DOMAIN_NAME}/heir/all`, {
                     heirsRelation: dataFrom,
                     citizenIDCARD: Citizen[0].ID_CARD
-                });
+                }, { withCredentials: true });
                 // console.log('Response:', response.data);
                 await showSuccessAlert("เชื่อมความสัมพันธ์", response.data.message)
                 this.resetForm();

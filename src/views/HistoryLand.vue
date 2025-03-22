@@ -145,7 +145,7 @@
                             <!-- load first data -->
                             <div v-else>
                                 <hr class="navbar-divider" />
-                                ไม่พบข้อมูล
+                                <span class="is-size-4 has-text-danger">ไม่พบข้อมูล</span>
                             </div>
                         </div>
                         <!-- pages -->
@@ -169,7 +169,7 @@
 </template>
 
 <script>
-
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
 import LandDataRow from '@/components/display_table/LandDataRow.vue';
 import { convertToThaiDate } from '@/utils/commonFunc';
@@ -246,7 +246,8 @@ export default {
             try {
                 const page = this.page;
                 // Send GET request to the endpoint /land/complete_land
-                const response = await axios.get(`http://localhost:3000/land/history_land/${this.selectedLimit}/${page}`, {
+                const response = await axios.get(`${DOMAIN_NAME}/land/history_land/${this.selectedLimit}/${page}`, {
+                    withCredentials: true,
                     params: {
                         searchType: this.searchType,
                         searchQuery: this.searchQuery,
@@ -283,15 +284,17 @@ export default {
             }
         },
         async goToDetail(id_land) {
-            console.log('id:', id_land)
+            // console.log('id:', id_land)
             this.isModalActive = true; // เปิด modal
             try {
-                const response = await axios.get(`http://localhost:3000/land/history_land/${id_land}`);
+                const response = await axios.get(`${DOMAIN_NAME}/land/history_land/${id_land}`, {
+                    withCredentials: true
+                });
                 // console.log(response.data)
                 this.history_data = response.data.results_history[0]
                 this.land_data = response.data.results_land[0]
-                console.log('history_data:', this.history_data)
-                console.log('land_data:', this.land_data)
+                // console.log('history_data:', this.history_data)
+                // console.log('land_data:', this.land_data)
 
             } catch (error) {
 

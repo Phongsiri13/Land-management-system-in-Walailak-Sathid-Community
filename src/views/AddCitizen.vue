@@ -189,9 +189,9 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
-import Swal from 'sweetalert2';
-import { Form, Field, ErrorMessage, useForm, defineRule, configure } from "vee-validate";
+import { Form, Field, ErrorMessage} from "vee-validate";
 import * as yup from "yup";
 import { getPeopleModel } from '@/model/citizenModel';
 import { CitizenValidSchema } from '@/model/citizenModel';
@@ -309,7 +309,9 @@ export default {
 
       // ส่งข้อมูลไปที่ API
       try {
-        const response = await axios.post('http://localhost:3000/citizen', this.formPeopleData);
+        const response = await axios.post(`${DOMAIN_NAME}/citizen`, this.formPeopleData, {
+          withCredentials: true
+        });
         console.log('Response:', response);
         await showSuccessAlert('การเพิ่มข้อมูลสำเร็จ!', response.data.message);
         this.resetForm();
@@ -331,7 +333,6 @@ export default {
         } else {
           errorMessage = error.message || 'เกิดข้อผิดพลาดในการดำเนินการ';
         }
-
         await showErrorAlert('การเพิ่มข้อมูลไม่สำเร็จ!', errorMessage);
       } finally {
         this.errors = {}
@@ -346,7 +347,7 @@ export default {
   },
   async mounted() {
     try {
-      const sois = await axios.get('http://localhost:3000/land/sois');
+      const sois = await axios.get(`${DOMAIN_NAME}/land/sois`);
 
       this.sois = [];
       for (let i = 0; i < sois.data.length; i++) {
@@ -356,9 +357,8 @@ export default {
     } catch (err) {
       this.error = 'Error fetching sois: ' + err.message;
     }
-
     try {
-      const prefix = await axios.get(`http://localhost:3000/citizen/prefix`);
+      const prefix = await axios.get(`${DOMAIN_NAME}/citizen/prefix`);
       const data = prefix.data; // Handle the response data
 
       this.prefixList = []

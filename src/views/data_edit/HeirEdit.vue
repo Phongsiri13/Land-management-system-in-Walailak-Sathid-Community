@@ -59,8 +59,7 @@
             <!-- submit -->
             <div class="field is-grouped is-grouped-centered mt-4">
               <!-- Submit Button -->
-              <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3"
-                :disabled="btnLoad">
+              <button type="submit" class="button is-success is-medium is-size-5 px-5 ml-3" :disabled="btnLoad">
                 <span>{{ btnLoad ? 'กำลังตรวจสอบ' : 'บันทึก' }}</span>
               </button>
             </div>
@@ -73,6 +72,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import { store } from '@/store'
 import { fetchPrefix } from '@/api/apiPeople';
 import axios from 'axios';
@@ -147,7 +147,9 @@ export default {
       };
 
       try {
-        const response = await axios.get(`http://localhost:3000/heir/fullname?fname=${encodeURIComponent(form_data.first_name)}&lname=${encodeURIComponent(form_data.last_name)}`);
+        const response = await axios.get(`${DOMAIN_NAME}/heir/fullname?fname=${encodeURIComponent(form_data.first_name)}&lname=${encodeURIComponent(form_data.last_name)}`, {
+          withCredentials: true
+        });
         console.log('send:', response.data.length)
         if (response.data.length >= 1) {
           await showErrorAlert('มีชื่อนี้ซ้ำในระบบ!', 'ทายาทคนนี้มีอยู่ในระบบเรียบร้อยแล้ว');
@@ -160,14 +162,12 @@ export default {
         store.status_path_change = false;
         throw new Error('ไม่สามารถค้นหาข้อมูลได้')
       }
-      // const matchName = await checkFullnameMatchHeir(this.formHeirData.heir_fname, this.formHeirData.heir_lname)
 
-
-      console.log("Heir:", form_data)
-      console.log("Heir-length:", form_data.last_name.length)
       try {
-        const response = await axios.put(`http://localhost:3000/heir/${this.HEIR_ID}`, form_data);
-        console.log('Response:', response.data);
+        const response = await axios.put(`${DOMAIN_NAME}/heir/${this.HEIR_ID}`, form_data, {
+          withCredentials: true 
+        });
+        // console.log('Response:', response.data);
         const TITLE = 'การอัพเดทข้อมูลทายาท!'
         if (response.data.status) {
           await showSuccessAlert(TITLE, response.data.message)
@@ -182,14 +182,6 @@ export default {
         store.status_path_change = false;
       }
     },
-    compareData(newData, oldData) {
-      for (const key in newData) {
-        if (newData[key] !== oldData[key]) {
-          return true; // If any field is different, return true (indicating a change)
-        }
-      }
-      return false; // No changes detected
-    }
   },
   async created() {
     const heirID = decodeURIComponent(this.$route.params.id);
@@ -198,7 +190,7 @@ export default {
     this.prefixList = await fetchPrefix()
     try {
       const resHeir = await fetchOneHeir(heirID);
-      console.log('resHeir:', resHeir[0])
+      // console.log('resHeir:', resHeir[0])
       this.formHeirData = {
         heir_fname: resHeir[0].first_name,
         heir_lname: resHeir[0].last_name,
@@ -212,9 +204,10 @@ export default {
 </script>
 
 <style scoped>
-.button{
+.button {
   border-radius: 5px;
 }
+
 .date-picker-container {
   display: flex;
   flex-direction: column;

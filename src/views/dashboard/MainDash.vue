@@ -307,7 +307,7 @@ export default defineComponent({
 
             // console.log('res-dash:', res_dashboard);
             this.summariesLandUse = res;
-            console.log('res-dash:', res);
+            // console.log('res-dash:', res);
             this.isActive = true;
         } catch (error) {
             console.error(error);

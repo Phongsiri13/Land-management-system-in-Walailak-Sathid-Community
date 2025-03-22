@@ -142,6 +142,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
 import { showErrorAlert, showSuccessAlert, showWarningAlert } from '@/utils/alertFunc';
 import { getOneRelation } from '@/api/apiManageInformation';
@@ -234,7 +235,9 @@ export default {
             // Close the modal after saving
             this.loadingCreate = true;
             try {
-                const response = await axios.post('http://localhost:3000/manage_relation/create', createData);
+                const response = await axios.post(`${DOMAIN_NAME}/manage_relation/create`, createData, {
+                    withCredentials: true
+                });
                 // console.log('response:', response.data)
                 await showSuccessAlert('เพิ่มข้อมูลความสัมพันธ์', response.data.message);
                 if (response.data.success) {
@@ -271,8 +274,11 @@ export default {
             const active = this.statusActive == true ? '0' : '1';
 
             try {
-                const response = await axios.put(`http://localhost:3000/manage_relation/active/${item}`,
-                    { id: active }
+                const response = await axios.put(`${DOMAIN_NAME}/manage_relation/active/${item}`,
+                    { id: active },
+                    {
+                        withCredentials: true
+                    }
                 );
                 if (response.data.success) {
                     this.relationFiles = [];
@@ -299,8 +305,10 @@ export default {
 
             const active = this.statusActive == true ? '0' : '1';
             try {
-                const response = await axios.put(`http://localhost:3000/manage_relation/${this.updateRelation.value}`, {
+                const response = await axios.put(`${DOMAIN_NAME}/manage_relation/${this.updateRelation.value}`, {
                     label: this.updateRelation.label,
+                }, {
+                    withCredentials: true
                 });
                 await showSuccessAlert('อัพเดทข้อมูลสถานะ', response.data.message);
                 this.relationFiles = []
@@ -312,9 +320,9 @@ export default {
                     }
                 }
                 if (active) {
-                    this.activePage(active)
+                    this.activePage(this.statusActive)
                 } else {
-                    this.activePage(active)
+                    this.activePage(this.statusActive)
                 }
                 console.log('Response:', response.data);
             } catch (error) {

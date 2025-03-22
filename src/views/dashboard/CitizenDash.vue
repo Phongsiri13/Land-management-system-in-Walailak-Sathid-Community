@@ -64,10 +64,10 @@
                                 <!-- Result Row (Total) -->
                                 <tr v-if="selectedRows.length != 0" key="result">
                                     <td>ผลลัพธ์</td>
-                                    <td>{{ totalHuataphan }}</td>
-                                    <td>{{ totalTaiburi }}</td>
-                                    <td>{{ totalMale }}</td>
-                                    <td>{{ totalFemale }}</td>
+                                    <td>{{ totalHuataphan }} คน</td>
+                                    <td>{{ totalTaiburi }} คน</td>
+                                    <td>{{ totalMale }} คน</td>
+                                    <td>{{ totalFemale }} คน</td>
                                     <td>{{ totalCitizen }} คน</td>
                                 </tr>
                                 <tr v-else>
@@ -84,7 +84,6 @@
 
 <script>
 import { fetchCitizenTableDashboard } from '@/api/apiLand';
-import { createObjectCsvWriter } from 'csv-writer';
 import * as XLSX from 'xlsx';
 
 export default {
@@ -104,26 +103,26 @@ export default {
     },
     methods: {
         exportToCSV() {
-            const headers = ['ซอย', 'ราษฎร', 'หัวตะพาน', 'ไทยบุรี', 'ชาย', 'หญิง'];
+            const headers = ['ซอย', 'หัวตะพาน', 'ไทยบุรี', 'ชาย', 'หญิง', 'ราษฎร'];
             const data = this.rows
                 .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
                 .map(row => [
                     row.soi,
-                    row.total_citizen,
                     row.huataphan,
                     row.taiburi,
                     row.male,
                     row.female,
+                    row.total_citizen,
                 ]);
 
             // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
             const totals = [
                 'ผลลัพธ์',
-                this.totalCitizen,
                 this.totalHuataphan,
                 this.totalTaiburi,
                 this.totalMale,
                 this.totalFemale,
+                this.totalCitizen,
             ];
             data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
 
@@ -149,21 +148,21 @@ export default {
                 .filter(row => this.selectedRows.includes(row.id)) // กรองเฉพาะแถวที่เลือก
                 .map(row => ({
                     ซอย: row.soi,
-                    ราษฎร: row.total_citizen,
                     หัวตะพาน: row.huataphan,
                     ไทยบุรี: row.taiburi,
                     ชาย: row.male,
-                    หญิง: row.female
+                    หญิง: row.female,
+                    ราษฎร: row.total_citizen,
                 }));
 
             // เพิ่มข้อมูลสรุป (Totals) ลงในข้อมูล
             const totals = {
                 ซอย: 'ผลลัพธ์',
-                ราษฎร: this.totalCitizen,
                 หัวตะพาน: this.totalHuataphan,
                 ไทยบุรี: this.totalTaiburi,
                 ชาย: this.totalMale,
                 หญิง: this.totalFemale,
+                ราษฎร: this.totalCitizen
             };
             data.push(totals); // เพิ่มข้อมูลสรุปเป็นแถวสุดท้าย
 

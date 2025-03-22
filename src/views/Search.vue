@@ -31,6 +31,7 @@
 import axios from 'axios';
 import SearchDetail from '@/components/SearchDetail.vue';
 import { formatPhoneNumber } from '@/utils/commonFunc';
+import DOMAIN_NAME from '@/config/domain_setup';
 
 export default {
   components: {
@@ -51,9 +52,11 @@ export default {
     async search() {
       try {
         // ใช้ axios เรียก API ที่มี URL ตามที่กำหนด
-        const response = await axios.get(`http://localhost:3000/land/search?q=${this.keyword}`);
-        console.log('res-data:', response.data.results[0])
-        console.log('res-length:', response.data.results.length)
+        const response = await axios.get(`${DOMAIN_NAME}/land/search?q=${this.keyword}`,{
+          withCredentials: true
+        });
+        // console.log('res-data:', response.data.results[0])
+        // console.log('res-length:', response.data.results.length)
         if (response.data.results.length > 0) {
           // เก็บผลลัพธ์ที่ได้รับจาก API ลงใน results
           const squareWa = response.data.results[0].square_wa || 0;

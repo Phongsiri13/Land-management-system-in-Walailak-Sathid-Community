@@ -1,16 +1,15 @@
 import axios from 'axios'
 
-const prefix_url = 'http://localhost:3000/citizen/prefix'
-const people_search_url = 'http://localhost:3000/citizen/search'
+import DOMAIN_NAME from '@/config/domain_setup'
+const prefix_url = `${DOMAIN_NAME}/citizen/prefix`
+const people_search_url = `${DOMAIN_NAME}/citizen/search`
 
 // getPrefix
 export const fetchPrefix = async () => {
   try {
     const response = await axios.get(prefix_url)
-    // console.log('res-prefix:', response.data)
     const prefixList = []
     for (let d of response.data) {
-      // console.log(d)
       prefixList.push({
         value: d.prefix_id,
         label: d.prefix_name
@@ -48,7 +47,7 @@ export const fetchPeopleName = async (firstName) => {
 
 export const checkFullnameMatchCitizen = async (fname, lname) => {
   const response = await axios.get(
-    `http://localhost:3000/citizen/qf?firstname=${fname}&lastname=${lname}`
+    `${DOMAIN_NAME}/citizen/qf?firstname=${fname}&lastname=${lname}`
   )
   // console.log('send:', response.data)
   if (response.data.status) {
@@ -61,7 +60,9 @@ export const checkFullnameMatchCitizen = async (fname, lname) => {
 export const fetchPeopleID = async (ID_CARD) => {
   const citizen = ID_CARD
   try {
-    const response = await axios.get(`http://localhost:3000/citizen/${citizen}`)
+    const response = await axios.get(`${DOMAIN_NAME}/citizen/${citizen}`, {
+      withCredentials: true
+    })
     console.log('res-citizen:', response.data)
     const citizenNameList = response.data
     return citizenNameList

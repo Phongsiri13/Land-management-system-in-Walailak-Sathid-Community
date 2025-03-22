@@ -2,6 +2,14 @@
     <div class="primary_content">
         <div class="mx-5 py-5 is-flex is-justify-content-center">
             <div class="box column is-three-quarters-tablet is-two-thirds-desktop is-full-mobile">
+                <div class="is-flex is-justify-content-flex-start my-2">
+                    <button class="button is-primary is-small" @click="goHome">
+                        <span class="icon">
+                            <i class="fas fa-step-backward"></i>
+                        </span>
+                        <span>ย้อนกลับ</span>
+                    </button>
+                </div>
                 <div class="py-2 is-flex 
                 is-justify-content-space-between">
                     <h2 class="title has-text-link px-3 is-size-3">ข้อมูลทายาท</h2>
@@ -54,6 +62,7 @@
 </template>
 
 <script>
+import DOMAIN_NAME from '@/config/domain_setup';
 import roles from '@/role_config';
 import axios from 'axios';
 import { convertToThaiDate } from '@/utils/commonFunc';
@@ -68,7 +77,7 @@ export default {
             formHeirData: [],
             peopleList: [],
             prefixName: ''
-        }   
+        }
     },
     computed: {
         userRole() {
@@ -78,6 +87,9 @@ export default {
         }
     },
     methods: {
+        goHome() {
+            this.$router.back();
+        },
         ToThaiDate(date) {
             return convertToThaiDate(date)
         },
@@ -90,7 +102,9 @@ export default {
             const heirId = this.$route.params.id;
             const prefixes = await fetchPrefix();
             console.log('prefixList:', prefixes);
-            const response = await axios.get(`http://localhost:3000/heir/${heirId}`);
+            const response = await axios.get(`${DOMAIN_NAME}/heir/${heirId}`, {
+                withCredentials: true
+            });
             this.formHeirData = { ...response.data[0] }
             console.log('person:', response.data[0])
             const originalData = response.data[0]
@@ -112,7 +126,9 @@ export default {
                 lastName: originalData.last_name || "",
                 created: originalData.created_at || '-'
             };
-            const resConnectRelation = await axios.get(`http://localhost:3000/heir/related_heir/${heirId}`);
+            const resConnectRelation = await axios.get(`${DOMAIN_NAME}/heir/related_heir/${heirId}`, {
+                withCredentials: true
+            });
             console.log('le:', resConnectRelation.data)
             try {
                 if (resConnectRelation.data[0].relationships) {

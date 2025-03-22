@@ -1,6 +1,7 @@
 <template>
     <div class="primary_content">
         <div class="py-5 is-flex is-justify-content-center">
+
             <div class="modal" :class="{ 'is-active': isFilterModalActive }">
                 <div class="modal-background" @click="isFilterModalActive = false"></div>
                 <div class="modal-card">
@@ -107,30 +108,33 @@
                         </div>
                         <!-- f2 -->
                         <div class="table-container">
-                            <table v-if="land_values.length != 0"
-                                class="table is-striped is-bordered is-hoverable is-fullwidth">
-                                <thead class="table-header">
-                                    <tr>
-                                        <th>ลำดับ</th>
-                                        <th>แปลงเลขที่</th>
-                                        <th>ซอยที่ดิน</th>
-                                        <th>ชื่อ - นามสกุล</th>
-                                        <th>เบอร์โทรศัพท์</th>
-                                        <th>สถานะ</th>
-                                        <th>สถานะการใช้ที่ดิน</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <LandDataRow v-for="(land, index) in land_values" :key="land.id_land" :land="land"
-                                        :index="(currentPage - 1) * selectedLimit + index + 1"
-                                        @view-detail="goToDetail(land.id_land)" />
-                                </tbody>
-                            </table>
-                            <!-- load first data -->
+                            <LoadingSpinner v-if="loading_land" :isLoading="loading_land" fontSize="22px" />
                             <div v-else>
-                                <hr class="navbar-divider" />
-                                <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                <table v-if="land_values.length != 0"
+                                    class="table is-striped is-bordered is-hoverable is-fullwidth">
+                                    <thead class="table-header">
+                                        <tr>
+                                            <th>ลำดับ</th>
+                                            <th>แปลงเลขที่</th>
+                                            <th>ซอยที่ดิน</th>
+                                            <th>ชื่อ - นามสกุล</th>
+                                            <th>เบอร์โทรศัพท์</th>
+                                            <th>สถานะ</th>
+                                            <th>สถานะการใช้ที่ดิน</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <LandDataRow v-for="(land, index) in land_values" :key="land.id_land"
+                                            :land="land" :index="(currentPage - 1) * selectedLimit + index + 1"
+                                            @view-detail="goToDetail(land.id_land)" />
+                                    </tbody>
+                                </table>
+                                <!-- load first data -->
+                                <div v-else>
+                                    <hr class="navbar-divider" />
+                                    <p class="has-text-danger is-size-4">ไม่พบข้อมูล</p>
+                                </div>
                             </div>
                         </div>
                         <!-- pages -->
@@ -153,13 +157,14 @@
 </template>
 
 <script>
-
+import DOMAIN_NAME from '@/config/domain_setup';
 import axios from 'axios';
 import LandDataRow from '@/components/display_table/LandDataRow.vue';
 import { fetchLandStatus } from '@/api/apiLand';
+import LoadingSpinner from '@/components/LoadingSpinner.vue';
 
 export default {
-    components: { LandDataRow },
+    components: { LandDataRow, LoadingSpinner },
     props: {
         limit: {
             type: String, // Vue Router params จะเป็น String เสมอ
@@ -172,6 +177,7 @@ export default {
     },
     data() {
         return {
+            loading_land: true,
             isFilterModalActive: false, // ควบคุมการแสดง modal
             searchResult: [],
             land_values: [],
@@ -249,7 +255,8 @@ export default {
         },
         updateLimit() {
             // อัปเดต URL ให้ตรงกับค่าที่ผู้ใช้เลือก
-            this.$router.push(`/land_data/${this.selectedLimit}/${this.page}`);
+            // this.$router.push(`/land_data/${this.selectedLimit}/${this.page}`);
+            this.$router.push({ params: { limit: this.selectedLimit, page: 1 } });
         },
         setPage(page) {
             if (page !== this.currentPage) {
@@ -258,7 +265,6 @@ export default {
         },
         async searchData() {
             if (this.searchQuery == '') {
-                console.log('hi')
                 this.selectedSoi = '', // เก็บค่าซอยที่เลือก
                     this.statusActived = '', // เก็บค่าเพศที่เลือก
                     this.searchQuery = '',
@@ -286,11 +292,13 @@ export default {
             }
         },
         async fetchCompleteLandData() {
+            this.loading_land = true
             try {
                 const limit = this.limit;
                 const page = this.page;
                 // Send GET request to the endpoint /land/complete_land
-                const response = await axios.get(`http://localhost:3000/land/complete_land/${limit}/${page}`, {
+                const response = await axios.get(`${DOMAIN_NAME}/land/complete_land/${limit}/${page}`, {
+                    withCredentials: true,
                     params: {
                         searchType: this.searchType,
                         searchQuery: this.searchQuery,
@@ -310,7 +318,7 @@ export default {
                     }
                     this.totalPages = Math.ceil(response.data.data.totalCount / this.selectedLimit);
                 } else {
-                    console.log('no data')
+                    // console.log('no data')
                     this.land_values = []
                 }
             }
@@ -329,6 +337,10 @@ export default {
                     // Something else went wrong while setting up the request
                     console.error('General error:', error.message);
                 }
+            } finally {
+                setTimeout(() => {
+                    this.loading_land = false
+                }, 500);
             }
         },
         goToDetail(id_land) {
