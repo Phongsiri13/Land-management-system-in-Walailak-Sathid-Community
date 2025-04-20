@@ -64,7 +64,7 @@ const router = createRouter({
       name: 'dashboard',
       component: MainDash,
       meta: {
-        title: 'Dashboard'
+        title: 'ผลการใช้ประโยชน์จากที่ดิน'
       }
     },
     {
@@ -395,11 +395,11 @@ router.beforeEach(async (to, from, next) => {
 
   // ตรวจสอบคุกกี้ `token`
   const token = getCookie('token')
-  console.log('token:', token)
-  console.log('router guard is working')
+  // console.log('token:', token)
+  // console.log('router guard is working')
 
   if (!token) {
-    console.log('Notoken:', token)
+    // console.log('Notoken:', token)
     userStore.setUserRole(null)
   }else{
     await userStore.fetchUserRole()

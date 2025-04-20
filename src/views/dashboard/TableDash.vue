@@ -133,7 +133,7 @@ export default {
       const csvContent = [
         headers.join(','), // เพิ่มหัวข้อ
         ...data.map(row => row.join(',')) // เพิ่มข้อมูล
-      ].join('\n');
+      ].join('console.log');
 
       // เพิ่ม BOM (Byte Order Mark) เพื่อรองรับ UTF-8
       const BOM = '\uFEFF'; // BOM สำหรับ UTF-8

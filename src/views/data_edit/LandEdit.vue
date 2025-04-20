@@ -405,30 +405,7 @@ export default {
           withCredentials: true
         });
         console.log('res-hold:', resLandHold.data);
-
-        // can edit without checking
-        if (resLandHold.data.length == 1) {
-          totalArea = resLandHold.data.reduce((sum, land) => {
-            const rai = land.rai ? land.rai * 400 : 0; // แปลงไร่เป็นตารางวา
-            const ngan = land.ngan ? land.ngan * 100 : 0; // แปลงงานเป็นตารางวา
-            const squareWa = land.square_wa ? land.square_wa : 0; // ตารางวา
-            return sum + rai + ngan + squareWa; // รวมเข้ากับผลรวมทั้งหมด
-          }, 0);
-
-          const totalAreaPrepareAdding = totalArea + cal_result.totalSquareWa;
-          console.log('res-prepare-adding:', totalAreaPrepareAdding)
-          // new land checks total rai
-          if (totalAreaPrepareAdding > max_rai) {
-            const remainingLand = max_rai - parseInt(totalArea);
-            const { rai, ngan, squareWa } = convertSquareWaToRaiNganWa(remainingLand);
-            await showWarningAlert(
-              'จำนวนไร่ที่เพิ่มใหม่เกินกำหนด!',
-              `จำนวนที่ดินคงเหลือ ${rai} ไร่ ${ngan} งาน ${squareWa} ตารางวา`
-            );
-            return
-          }
-
-        } else if (resLandHold.data.length > 1) {
+        if (resLandHold.data.length > 1) {
           // ต้องจองที่ดินก่อนทั้งหมด ที่ไม่ใช่ตัวแก้ ก่อนที่จะทำการแก้ไข
           // จองพื้นที่
           totalArea = resLandHold.data.reduce((sum, land) => {
